@@ -59,7 +59,9 @@ export function ProductCard({
         <Link href={href} className="absolute inset-0 block" aria-label={shown.name} tabIndex={-1}>
           {members.map((m) => {
             const on = m.id === shown.id;
-            const [first, second] = m.images;
+            // The large homepage tile leads with the piece being worn; the flat shot shows on hover.
+            const worn = feature ? m.images.find((im) => /model/i.test(im.label)) : undefined;
+            const [first, second] = worn ? [worn, m.images.find((im) => im !== worn)] : m.images;
             return (
               <span key={m.id} className="cw-layer" data-on={on} aria-hidden={on ? undefined : true}>
                 {first && <ProductImage image={first} sizes={sizes} priority={priority && m.id === product.id} />}

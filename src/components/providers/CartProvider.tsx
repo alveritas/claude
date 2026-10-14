@@ -1,9 +1,10 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { readJSON, writeJSON } from "@/lib/client/storage";
 import { MAX_PER_LINE, resolveCart, type ResolvedLine } from "@/lib/shared/commerce";
-import type { CartLine } from "@/lib/shared/types";
+import { shippableCountries } from "@/lib/shared/shipping";
+import type { CartLine, ShippingZone } from "@/lib/shared/types";
 import { useStore } from "./StoreProvider";
 
 const KEY = "nh-cart-v1";
@@ -25,6 +26,27 @@ interface CartValue {
 
 const CartContext = createContext<CartValue | null>(null);
 
+/**
+ * A first guess at where the shopper is, from the region in their device's language setting ("en-GB" → GB),
+ * so the bag can show shipping straight away. Only countries the store ships to; they can change it.
+ */
+function guessCountry(zones: ShippingZone[]): string | null {
+  if (typeof navigator === "undefined") return null;
+  const ok = new Set(shippableCountries(zones));
+  const tags = [...(navigator.languages ?? []), navigator.language].filter(Boolean);
+  for (const tag of tags) {
+    let region: string | undefined;
+    try {
+      region = new Intl.Locale(tag).region;
+    } catch {
+      region = tag.split(/[-_]/)[1];
+    }
+    const code = region?.toUpperCase();
+    if (code && ok.has(code)) return code;
+  }
+  return null;
+}
+
 function sanitize(input: unknown): CartLine[] {
   if (!Array.isArray(input)) return [];
   return input
@@ -40,7 +62,8 @@ function sanitize(input: unknown): CartLine[] {
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const { products, settings } = useStore();
+  const { products, settings, zones } = useStore();
+  const zonesRef = useRef(zones);
   const [raw, setRaw] = useState<CartLine[]>([]);
   const [country, setCountryState] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
@@ -48,7 +71,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // Hydrate after mount so server and client markup match.
   useEffect(() => {
     setRaw(sanitize(readJSON(KEY, [])));
-    setCountryState(readJSON<string | null>(COUNTRY_KEY, null));
+    setCountryState(readJSON<string | null>(COUNTRY_KEY, null) ?? guessCountry(zonesRef.current));
     setReady(true);
     const onStorage = (e: StorageEvent) => {
       if (e.key === KEY) setRaw(sanitize(readJSON(KEY, [])));

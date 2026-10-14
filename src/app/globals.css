@@ -30,7 +30,7 @@
   --placeholder: #8b8a86;
   --danger: #a13b36;
   --danger-line: #b4544e;
-  --frame: #e8e6e1;
+  --frame: #edebe6;
   --tint: #ebe9e4;
   --skeleton-a: #e9e7e2;
   --skeleton-b: #f1efea;
@@ -465,8 +465,11 @@
     position: relative;
     overflow: hidden;
     background: var(--frame);
+    /* Studio shots on white sit in the frame's soft tone instead of reading as pasted-in boxes. */
+    isolation: isolate;
   }
   .frame img {
+    mix-blend-mode: multiply;
     transition:
       opacity 0.7s var(--ease-quiet),
       transform 1.4s var(--ease-quiet);
@@ -1092,7 +1095,8 @@ html[data-intro="1"] {
     height: 70px;
     outline: 1px solid transparent;
     outline-offset: 3px;
-    opacity: 0.62;
+    /* Other colours stay close to full strength so they don't read as unavailable. */
+    opacity: 0.86;
     transition:
       opacity 0.25s,
       outline-color 0.25s,

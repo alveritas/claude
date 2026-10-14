@@ -11,7 +11,7 @@ import { ProductCard } from "@/components/product/ProductCard";
 import { ProductImage } from "@/components/product/ProductImage";
 import { useStore } from "@/components/providers/StoreProvider";
 import { ExpandIcon } from "@/components/ui/Icons";
-import { groupFamilies, type Family } from "@/lib/shared/colorways";
+import type { Family } from "@/lib/shared/colorways";
 import { CATEGORIES, CATEGORY_LABELS, type Product } from "@/lib/shared/types";
 import { NewsletterForm } from "./NewsletterForm";
 
@@ -93,6 +93,7 @@ export function ShopByCategory() {
                   alt=""
                   fill
                   sizes="(min-width: 1024px) 25vw, 50vw"
+                  quality={90}
                   className="object-cover transition-transform duration-[1200ms] ease-[var(--ease-quiet)] group-hover:scale-[1.03]"
                   style={{ objectPosition: im.focal }}
                 />
@@ -101,9 +102,7 @@ export function ShopByCategory() {
                 <span className="card-title">
                   {CATEGORY_LABELS[c]} <span className="tile-arrow" aria-hidden="true">→</span>
                 </span>
-                <span className="muted text-[0.75rem]">
-                  {groupFamilies(items).length} {groupFamilies(items).length === 1 ? "piece" : "pieces"}
-                </span>
+                <span className="muted text-[0.75rem]">Shop now</span>
               </div>
             </Link>
           );

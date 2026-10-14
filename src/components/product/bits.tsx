@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useStore } from "@/components/providers/StoreProvider";
 import { useWishlist } from "@/components/providers/WishlistProvider";
 import { HeartIcon } from "@/components/ui/Icons";
@@ -57,5 +58,22 @@ export function BrandName({ name, className = "" }: { name: string; className?: 
       <span className="sr-only">NEVERHOLLOW </span>
       {name}
     </span>
+  );
+}
+
+/** The store's email as a link, or the Contact page when no email is set. */
+export function ContactEmail({ className = "text-link text-bone" }: { className?: string }) {
+  const { settings } = useStore();
+  if (!settings.contactEmail) {
+    return (
+      <Link href="/info/contact" className={className}>
+        contact us
+      </Link>
+    );
+  }
+  return (
+    <a href={`mailto:${settings.contactEmail}`} className={className}>
+      {settings.contactEmail}
+    </a>
   );
 }

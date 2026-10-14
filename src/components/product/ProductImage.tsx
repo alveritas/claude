@@ -30,6 +30,7 @@ export function ProductImage({
       fill
       sizes={sizes}
       priority={priority}
+      quality={90}
       onLoad={() => setLoaded(true)}
       data-loaded={loaded}
       className={priority ? className : `img-fade ${className}`}

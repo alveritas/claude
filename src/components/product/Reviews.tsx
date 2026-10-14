@@ -73,7 +73,8 @@ export function ReviewsSection({ reviews, tally, live }: { reviews: Review[]; ta
     if (sort === "low") list.sort((a, b) => a.rating - b.rating || b.createdAt.localeCompare(a.createdAt));
     return list;
   }, [reviews, sort]);
-  if (!reviews.length && !live) return null;
+  // Until the first verified buyer writes one, there's nothing to show: no empty "0 reviews" block.
+  if (!reviews.length) return null;
 
   const count = tally.count || reviews.length;
   const avg = tally.count ? average(tally) : 0;

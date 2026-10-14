@@ -48,6 +48,8 @@ const nextConfig: NextConfig = {
   typescript: { ignoreBuildErrors: true },
   images: {
     formats: ["image/avif", "image/webp"],
+    // 75 is the default; product photos ask for 90 so fabric texture and print edges stay crisp.
+    qualities: [75, 90],
     remotePatterns: host
       ? [{ protocol: "https", hostname: host, pathname: "/storage/v1/object/public/**" }]
       : [],

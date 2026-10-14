@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { BrandName, PriceText } from "@/components/product/bits";
+import { BrandName, ContactEmail, PriceText } from "@/components/product/bits";
 import { ProductCard } from "@/components/product/ProductCard";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { PurchasePanel, SizeChart } from "@/components/product/PurchasePanel";
@@ -91,7 +91,7 @@ export function ProductView({ product, reviews = [] }: { product: Product; revie
             )}
           </div>
           {product.priceCents != null && (
-            <p className="muted mt-1 text-[0.75rem]">Shipping and taxes are calculated at checkout.</p>
+            <p className="muted mt-1 text-[0.75rem]">Shipping is added at checkout.</p>
           )}
           {tally.count > 0 && (
             <div className="mt-3">
@@ -126,14 +126,23 @@ export function ProductView({ product, reviews = [] }: { product: Product; revie
                   {product.care && <span className="mt-3 block">{product.care}</span>}
                 </>
               ) : (
-                <span className="muted">Fabric and care details are coming soon. Email us if you need them before you order.</span>
+                <span className="muted">
+                  Questions about fabric or care? Email <ContactEmail /> and we’ll answer before you order.
+                </span>
               )}
             </Section>
             <Section title="Size & fit">
-              {product.fit ?? <span className="muted">Fit notes are coming soon.</span>}
-              <div className="mt-5 whitespace-normal">
-                <SizeChart text={product.sizeGuide} />
-              </div>
+              {product.fit ?? (
+                <span className="muted">
+                  Unisex sizing. Not sure which size to get? Email <ContactEmail /> with your usual size and we’ll help you
+                  choose.
+                </span>
+              )}
+              {product.sizeGuide?.trim() && (
+                <div className="mt-5 whitespace-normal">
+                  <SizeChart text={product.sizeGuide} />
+                </div>
+              )}
             </Section>
             <Section title="Shipping & returns">
               {content.checkout_note}

@@ -39,7 +39,7 @@ export const CONTENT_FIELDS = [
     key: "marquee_live",
     label: "Ticker under the cover, once released (separate lines with |)",
     group: "Homepage",
-    defaultValue: "Drop 001 — out now | Ships worldwide | Apple Pay and Cash App Pay | Not made to explain",
+    defaultValue: "Drop 001 — out now | Ships worldwide | Secure checkout | Not made to explain",
   },
   { key: "collection_heading", label: "Collection heading", group: "Homepage", defaultValue: "THE FIRST COLLECTION" },
   {
@@ -273,7 +273,7 @@ These terms are governed by the laws of the place where NEVERHOLLOW is establish
     key: "payment_methods_note",
     label: "Payment methods line in the bag",
     group: "Checkout",
-    defaultValue: "Pay by card, Apple Pay, Google Pay or Cash App Pay.",
+    defaultValue: "Pay by debit or credit card, or PayPal.",
   },
   {
     key: "checkout_note",
@@ -301,6 +301,8 @@ const LEGACY_PROCESSOR: [string, string][] = [
   ["Stripe (payments and fraud prevention)", "{payment_processor} (payments and fraud prevention)"],
   ["Payment is taken by Stripe when you place your order.", "Payment is taken by {payment_processor} when you place your order."],
   ["Pay by card, Apple Pay or Cash App Pay.", "Pay by card, Apple Pay, Google Pay or Cash App Pay."],
+  // The ticker once promised wallets the current checkout may not offer.
+  ["| Apple Pay and Cash App Pay |", "| Secure checkout |"],
 ];
 
 export function mergeContent(rows: { key: string; value: string }[] | null | undefined): SiteContent {

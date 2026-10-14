@@ -21,7 +21,7 @@ import { parseSizeGuide } from "@/lib/shared/sizechart";
 import { formatPrice } from "@/lib/shared/format";
 import { shippableCountries } from "@/lib/shared/shipping";
 import type { Product } from "@/lib/shared/types";
-import { WishlistButton } from "./bits";
+import { ContactEmail, WishlistButton } from "./bits";
 import { NotifyForm } from "./NotifyForm";
 
 export function QuantityStepper({
@@ -69,7 +69,11 @@ export function QuantityStepper({
 export function SizeChart({ text, selected }: { text: string | null; selected?: string | null }) {
   const blocks = parseSizeGuide(text);
   if (!blocks.length) {
-    return <p className="muted">Measurements for this piece are coming soon. Email us if you’d like help with sizing.</p>;
+    return (
+      <p className="muted">
+        Unisex sizing. Email <ContactEmail /> with your usual size and we’ll help you choose.
+      </p>
+    );
   }
   return (
     <div className="flex flex-col gap-4">
@@ -115,6 +119,8 @@ export function SizeChart({ text, selected }: { text: string | null; selected?: 
 
 export function SizeGuide({ product, selected }: { product: Product; selected?: string | null }) {
   const [open, setOpen] = useState(false);
+  // Nothing to put in the guide yet: the Size & fit section below covers sizing help instead.
+  if (!product.sizeGuide?.trim() && !product.fit?.trim()) return null;
   return (
     <>
       <button type="button" className="text-link text-[0.75rem] muted" onClick={() => setOpen(true)}>

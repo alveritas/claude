@@ -5,7 +5,8 @@ import { Editorial, FeaturedCollection, Marquee, Newsletter, ShopByCategory, Spo
 import { useStore } from "@/components/providers/StoreProvider";
 import { groupFamilies } from "@/lib/shared/colorways";
 
-export const SPOTLIGHT_SLUG = "vow-waffle-long-sleeve";
+// The fur hood is the drop's statement piece; the long sleeve already leads the grid above.
+export const SPOTLIGHT_SLUG = "vigil-fur-zip-hoodie-fawn";
 
 export function HomeView() {
   const { products } = useStore();
