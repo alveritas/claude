@@ -395,3 +395,13 @@ revoke all on public.checkout_refs from anon, authenticated;
 -- links the buyer's return to the confirmation page with their order.
 alter table public.orders add column if not exists checkout_ref uuid;
 create index if not exists orders_checkout_ref_idx on public.orders (checkout_ref);
+
+-- ───────────────────────── Checkout details and Cash App ─────────────────────────
+-- What the shopper typed on the checkout page (contact and shipping), kept with the checkout so
+-- the order can use it (their phone number, mainly) when the payment company doesn't send it.
+alter table public.checkout_refs add column if not exists details jsonb;
+-- Cash App orders wait as "awaiting_payment" until the owner sees the money in Cash App and
+-- marks them Paid. stripe_session_id holds "cashapp:<checkout ref>".
+alter table public.orders drop constraint if exists orders_status_check;
+alter table public.orders add constraint orders_status_check
+  check (status in ('awaiting_payment', 'paid', 'fulfilled', 'shipped', 'delivered', 'refunded', 'canceled'));

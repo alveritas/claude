@@ -9,6 +9,8 @@ import { formatDate, formatPrice } from "@/lib/shared/format";
 import { updateOrder } from "../actions";
 
 const STATUSES = ["paid", "fulfilled", "shipped", "delivered", "refunded", "canceled"];
+const LABEL: Record<string, string> = { awaiting_payment: "Awaiting payment" };
+const label = (s: string) => LABEL[s] ?? s[0].toUpperCase() + s.slice(1);
 
 export default async function OrdersAdmin() {
   const { supabase } = await requireAdmin();
@@ -36,9 +38,10 @@ export default async function OrdersAdmin() {
   return (
     <>
       <AdminHead title="Orders">
-        Orders are recorded as soon as a payment succeeds, and stock goes down at the same moment. Refunds are made in your
-        payment dashboard (Square: Transactions); the status here updates automatically. Marking an order Shipped emails the
-        customer their tracking link and review link.
+        Card and PayPal orders are recorded as soon as PayPal confirms the payment, and stock goes down at the same moment.
+        Refunds are made in PayPal; the status here updates automatically. Cash App orders arrive as “Awaiting payment”:
+        mark one Paid only once the money shows in your Cash App with its order number in the note. Marking an order Shipped
+        emails the customer their tracking link and review link.
       </AdminHead>
       {synced ? <p className="mb-6 text-[0.875rem]">Added {synced} paid order{synced === 1 ? "" : "s"} from Square.</p> : null}
       {syncError && <p className="form-error mb-6">Couldn’t check Square for new orders: {syncError}</p>}
@@ -46,7 +49,10 @@ export default async function OrdersAdmin() {
       {orders?.map((o) => {
         const a = o.shipping_address as { line1?: string; line2?: string; city?: string; state?: string; postal_code?: string; country?: string } | null;
         return (
-          <Panel key={o.id} title={`${o.livemode === false ? "Test order" : "Order"} ${o.order_number} — ${formatPrice(o.total_cents, o.currency)}`}>
+          <Panel
+            key={o.id}
+            title={`${o.livemode === false ? "Test order" : "Order"} ${o.order_number} — ${formatPrice(o.total_cents, o.currency)}${o.status === "awaiting_payment" ? " — awaiting Cash App payment" : ""}`}
+          >
             <div className="grid gap-6 text-[0.8125rem] md:grid-cols-3">
               <div>
                 <p className="muted">Placed</p>
@@ -56,6 +62,8 @@ export default async function OrdersAdmin() {
                 {o.phone && <p>{o.phone}</p>}
                 {o.livemode === false && <p className="muted mt-3">A test payment. Stock wasn’t changed.</p>}
                 {o.payment_provider === "square" && <p className="muted mt-3">Paid through Square</p>}
+                {o.payment_provider === "paypal" && <p className="muted mt-3">Paid through PayPal</p>}
+                {o.payment_provider === "cashapp" && <p className="muted mt-3">Cash App</p>}
                 {o.stock_issue && <p className="form-error mt-3">Stock was short for at least one item. Check inventory.</p>}
                 {o.note && <p className="form-error mt-3">{o.note}</p>}
                 {links.get(o.id) && (
@@ -95,7 +103,9 @@ export default async function OrdersAdmin() {
                   <div>
                     <label className="label" htmlFor={`st-${o.id}`}>Status</label>
                     <select id={`st-${o.id}`} name="status" defaultValue={o.status} className="select w-full">
-                      {STATUSES.map((s) => <option key={s} value={s}>{s[0].toUpperCase() + s.slice(1)}</option>)}
+                      {(o.status === "awaiting_payment" ? ["awaiting_payment", ...STATUSES] : STATUSES).map((s) => (
+                        <option key={s} value={s}>{label(s)}</option>
+                      ))}
                     </select>
                   </div>
                   <Field label="Carrier" name="carrier" defaultValue={o.carrier} />

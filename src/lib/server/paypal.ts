@@ -8,6 +8,7 @@
  * real prices before the order is treated as paid in full.
  */
 import { LAUNCH } from "@/data/launch";
+import { splitName, type CheckoutCustomer } from "@/lib/shared/checkout";
 import { env, siteUrl } from "./env";
 
 /** PAYPAL_EMAIL overrides the address in launch.ts; PAYPAL_EMAIL=off switches PayPal off. */
@@ -43,6 +44,8 @@ export function paypalCheckoutUrl(args: {
   shippingCents: number;
   country: string;
   email: string | null;
+  /** What the shopper entered on the site's checkout page, filled in on PayPal's page for them. */
+  customer?: CheckoutCustomer | null;
 }): string {
   const base = siteUrl();
   const p = new URLSearchParams({
@@ -58,7 +61,7 @@ export function paypalCheckoutUrl(args: {
     country: args.country,
     cbt: "Return to NEVERHOLLOW",
     return: `${base}/checkout/success?ref=${args.ref}`,
-    cancel_return: `${base}/cart`,
+    cancel_return: `${base}/checkout`,
     notify_url: paypalNotifyUrl(),
     invoice: args.ref,
     custom: `${args.ref}|${args.country}`,
@@ -72,7 +75,21 @@ export function paypalCheckoutUrl(args: {
   });
   // One flat shipping charge for the whole bag, on the first line ("regardless of quantity").
   if (args.shippingCents > 0) p.set("shipping_1", dollars(args.shippingCents));
-  if (args.email) p.set("email", args.email);
+  const c = args.customer;
+  if (c) {
+    // Prefills PayPal's guest (card) form; PayPal account holders still confirm the address there.
+    const [first, last] = splitName(c.name);
+    p.set("first_name", first.slice(0, 64));
+    if (last) p.set("last_name", last.slice(0, 64));
+    p.set("address1", c.line1.slice(0, 100));
+    if (c.line2) p.set("address2", c.line2.slice(0, 100));
+    p.set("city", c.city.slice(0, 40));
+    if (c.state) p.set("state", c.state.slice(0, 40));
+    if (c.postal) p.set("zip", c.postal.slice(0, 32));
+    p.set("country", c.country);
+  }
+  const email = c?.email ?? args.email;
+  if (email) p.set("email", email);
   return `${webscr()}?${p.toString()}`;
 }
 

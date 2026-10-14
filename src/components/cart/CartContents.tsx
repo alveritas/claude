@@ -2,11 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { QuantityStepper } from "@/components/product/PurchasePanel";
 import { useCart } from "@/components/providers/CartProvider";
 import { useStore } from "@/components/providers/StoreProvider";
-import { startCheckout } from "@/lib/client/api";
 import { MAX_PER_LINE } from "@/lib/shared/commerce";
 import { countryName } from "@/lib/shared/countries";
 import { dayRange, shippableCountries, shippingCents as shippingFor, zoneFor } from "@/lib/shared/shipping";
@@ -65,11 +64,10 @@ export function CartLines({ onNavigate, compact = false }: { onNavigate?: () => 
   );
 }
 
-export function CheckoutBox() {
+/** Bag totals and the way into checkout, where the shopper enters their details and pays. */
+export function CheckoutBox({ onNavigate }: { onNavigate?: () => void }) {
   const { lines, subtotalCents, country, setCountry } = useCart();
   const { settings, zones, commerce, content } = useStore();
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const countries = useMemo(
     () =>
@@ -85,24 +83,7 @@ export function CheckoutBox() {
   const shippingCents = zone == null ? null : shippingFor(zone, subtotalCents);
   const delivery = zone ? dayRange(zone.minDays, zone.maxDays) : null;
 
-  const checkout = async () => {
-    setError(null);
-    if (!validCountry || !country) {
-      setError("Choose where we’re shipping to.");
-      return;
-    }
-    setPending(true);
-    const res = await startCheckout(
-      lines.map((l) => ({ productId: l.product.id, variantId: l.variant.id, quantity: l.quantity })),
-      country,
-    );
-    if (res.ok) {
-      window.location.assign(res.data.url);
-      return;
-    }
-    setPending(false);
-    setError(res.message);
-  };
+  const canCheckout = commerce.checkoutEnabled && !blocked && !unpriced && lines.length > 0;
 
   return (
     <div className="flex flex-col gap-5">
@@ -156,14 +137,15 @@ export function CheckoutBox() {
         <p className="muted text-[0.75rem]">Have a promotion code? You can enter it at checkout.</p>
       )}
 
-      <button
-        type="button"
-        className="btn btn-solid btn-block"
-        disabled={!commerce.checkoutEnabled || pending || blocked || unpriced || lines.length === 0}
-        onClick={checkout}
-      >
-        {pending ? "Opening secure checkout…" : "Checkout"}
-      </button>
+      {canCheckout ? (
+        <Link href="/checkout" onClick={onNavigate} className="btn btn-solid btn-block">
+          Checkout
+        </Link>
+      ) : (
+        <button type="button" className="btn btn-solid btn-block" disabled>
+          Checkout
+        </button>
+      )}
       {!commerce.checkoutEnabled && commerce.message && (
         <p className="muted text-[0.8125rem]" role="status">
           {commerce.message}
@@ -171,11 +153,6 @@ export function CheckoutBox() {
       )}
       {commerce.checkoutEnabled && blocked && (
         <p className="form-error">Remove the items that can’t be bought before checking out.</p>
-      )}
-      {error && (
-        <p className="form-error" role="alert">
-          {error}
-        </p>
       )}
       {commerce.checkoutEnabled && (commerce.methods ?? content.payment_methods_note) && (
         <p className="muted -mt-2 text-center text-[0.75rem]">{commerce.methods ?? content.payment_methods_note}</p>

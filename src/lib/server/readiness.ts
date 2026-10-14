@@ -1,4 +1,5 @@
 import type { CommerceStatus, Product, ShippingZone, StoreSettings } from "@/lib/shared/types";
+import { cashAppReady, cashTag } from "./cashapp";
 import { hasEmail, hasServiceRole, hasSupabase } from "./env";
 import { activeProvider, paymentMethodsText, paymentMode, processorName } from "./payments";
 
@@ -8,7 +9,9 @@ import { activeProvider, paymentMethodsText, paymentMode, processorName } from "
  */
 export function getCommerceStatus(settings: StoreSettings, zones: ShippingZone[], paymentsReady: boolean): CommerceStatus {
   const processor = processorName();
-  const methods = paymentMethodsText();
+  // Square already takes Cash App Pay itself; the $Cashtag option is for the other checkouts.
+  const tag = activeProvider() !== "square" && cashAppReady(settings.currency) ? cashTag() : null;
+  const methods = paymentMethodsText(Boolean(tag));
   if (settings.mode === "prelaunch") {
     return { checkoutEnabled: false, message: "Checkout opens when Drop 001 is released.", processor, methods };
   }
@@ -21,7 +24,7 @@ export function getCommerceStatus(settings: StoreSettings, zones: ShippingZone[]
   if (!zones.some((z) => z.isActive)) {
     return { checkoutEnabled: false, message: "Shipping destinations haven’t been opened yet, so checkout is closed.", processor, methods };
   }
-  return { checkoutEnabled: true, message: null, testMode: paymentMode() === "test", processor, methods };
+  return { checkoutEnabled: true, message: null, testMode: paymentMode() === "test", processor, methods, ...(tag ? { cashTag: tag } : {}) };
 }
 
 export interface ReadinessItem {
@@ -74,6 +77,18 @@ export function getReadiness(args: {
           : mode === "live"
             ? `Connected — ${(paymentMethodsText() ?? "").replace(/^Pay by /, "").replace(/\.$/, "")}.`
             : "Test mode — only test payments work.",
+    },
+    {
+      label: "Cash App ($Cashtag)",
+      ok: Boolean(cashTag()) && hasServiceRole() && settings.currency.toLowerCase() === "usd",
+      optional: true,
+      detail: !cashTag()
+        ? "Off. Add your $Cashtag as CASHAPP_TAG in Netlify (Site configuration → Environment variables) and redeploy. US shoppers can then choose Cash App at checkout."
+        : !hasServiceRole()
+          ? `${cashTag()} is set, but Cash App orders are kept in the database, so it switches on once Supabase is connected.`
+          : settings.currency.toLowerCase() !== "usd"
+            ? "Cash App only takes US dollars; set the store currency to USD to offer it."
+            : `On. US shoppers can send their payment to ${cashTag()}. Their orders wait under Orders as “Awaiting payment”: mark each one Paid once the money shows in Cash App.`,
     },
     {
       label: "Shipping destinations",

@@ -68,6 +68,19 @@ export async function handlePayPalNotification(p: URLSearchParams): Promise<Resu
   if (paid + 1 < expectedTotal) notes.push(`Paid ${(paid / 100).toFixed(2)} but the order comes to ${(expectedTotal / 100).toFixed(2)}. Don’t ship until it’s sorted.`);
   if (paidCountry && shipCountry && paidCountry !== shipCountry) notes.push(`Shipping was paid for ${paidCountry} but the address is in ${shipCountry}. Check the shipping cost before sending.`);
 
+  // What the shopper typed on the checkout page: fills the phone number (PayPal rarely sends it)
+  // and flags an address that differs from the one PayPal confirmed.
+  type Typed = { phone?: string | null; postal?: string | null; country?: string | null };
+  const typed: Typed | null =
+    ref && UUID.test(ref)
+      ? (((await sb.from("checkout_refs").select("details").eq("ref", ref).maybeSingle()).data?.details as Typed | undefined) ?? null)
+      : null;
+  const paypalZip = (p.get("address_zip") ?? "").replace(/\s/g, "").toUpperCase();
+  const typedZip = (typed?.postal ?? "").replace(/\s/g, "").toUpperCase();
+  if (typed && paypalZip && typedZip && paypalZip !== typedZip) {
+    notes.push("The address chosen in PayPal differs from the one typed at checkout. Ship to the PayPal address (it's the one PayPal's seller protection covers).");
+  }
+
   const street = (p.get("address_street") ?? "").split(/\r?\n/);
   const shippingCentsPaid = toCents(p.get("mc_shipping")) + toCents(p.get("mc_handling"));
   const tax = toCents(p.get("tax"));
@@ -76,7 +89,7 @@ export async function handlePayPalNotification(p: URLSearchParams): Promise<Resu
     stripe_payment_intent: txn,
     livemode: paypalMode() === "live",
     email: p.get("payer_email"),
-    phone: p.get("contact_phone"),
+    phone: p.get("contact_phone") ?? typed?.phone ?? null,
     status: "paid",
     currency,
     subtotal_cents: Math.max(0, paid - shippingCentsPaid - tax),
@@ -136,12 +149,17 @@ export async function handlePayPalNotification(p: URLSearchParams): Promise<Resu
   return "recorded";
 }
 
-/** The confirmation page after PayPal sends the buyer back: paid once PayPal's confirmation arrived. */
-export async function confirmPayPalReturn(ref: string | undefined): Promise<{ paid: boolean; email: string | null; orderNumber: string | null }> {
-  const none = { paid: false, email: null, orderNumber: null };
+/**
+ * The confirmation page after PayPal sends the buyer back: paid once PayPal's confirmation arrived.
+ * canConfirm is false without the database: PayPal's own receipt email is then the confirmation.
+ */
+export async function confirmPayPalReturn(
+  ref: string | undefined,
+): Promise<{ paid: boolean; email: string | null; orderNumber: string | null; canConfirm: boolean }> {
   const sb = getServiceSupabase();
+  const none = { paid: false, email: null, orderNumber: null, canConfirm: Boolean(sb) };
   if (!sb || !ref || !UUID.test(ref)) return none;
   const { data, error } = await sb.from("orders").select("order_number, email, status").eq("checkout_ref", ref).maybeSingle();
   if (error || !data || data.status === "refunded" || data.status === "canceled") return none;
-  return { paid: true, email: data.email ?? null, orderNumber: data.order_number };
+  return { paid: true, email: data.email ?? null, orderNumber: data.order_number, canConfirm: true };
 }

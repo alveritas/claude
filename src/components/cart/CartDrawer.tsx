@@ -25,7 +25,7 @@ export function CartDrawer() {
       </div>
       {lines.length > 0 && (
         <div className="flex-none border-t border-rule px-5 py-5">
-          <CheckoutBox />
+          <CheckoutBox onNavigate={close} />
           <Link href="/cart" onClick={close} className="text-link muted mt-4 inline-block text-[0.75rem]">
             View full bag
           </Link>

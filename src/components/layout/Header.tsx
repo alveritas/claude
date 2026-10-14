@@ -121,7 +121,6 @@ export function Header() {
   const { count, ready } = useCart();
   const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
-  const [heroMarkVisible, setHeroMarkVisible] = useState(isHome);
   const [menu, setMenu] = useState(false);
   const closeTimer = useRef<number | null>(null);
 
@@ -140,24 +139,6 @@ export function Header() {
     return () => window.removeEventListener("keydown", onKey);
   }, [menu]);
 
-  // On the homepage the hero carries the large wordmark; the header logo appears once it scrolls away.
-  useEffect(() => {
-    if (!isHome) {
-      setHeroMarkVisible(false);
-      return;
-    }
-    const target = document.querySelector("[data-hero-mark]");
-    if (!target || !("IntersectionObserver" in window)) {
-      setHeroMarkVisible(false);
-      return;
-    }
-    const io = new IntersectionObserver(([e]) => setHeroMarkVisible(e.isIntersecting), {
-      rootMargin: "-80px 0px 0px 0px",
-    });
-    io.observe(target);
-    return () => io.disconnect();
-  }, [isHome, pathname]);
-
   const openMenu = () => {
     if (closeTimer.current) window.clearTimeout(closeTimer.current);
     setMenu(true);
@@ -174,7 +155,6 @@ export function Header() {
       className="site-top"
       data-overlay={isHome && !scrolled && !menu}
       data-collapsed={scrolled}
-      data-hide-logo={isHome && heroMarkVisible && !menu}
     >
       {settings.announcement && <Announcement text={settings.announcement} />}
       <header className="site-header" onMouseLeave={closeMenuSoon}>

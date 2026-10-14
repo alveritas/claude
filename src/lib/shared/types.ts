@@ -100,6 +100,8 @@ export interface CommerceStatus {
   processor?: string | null;
   /** How customers can pay, e.g. "Pay by debit or credit card, or PayPal." */
   methods?: string | null;
+  /** The store's $Cashtag when Cash App is offered (US shoppers paying in USD), otherwise absent. */
+  cashTag?: string | null;
 }
 
 export interface CartLine {
@@ -110,7 +112,7 @@ export interface CartLine {
 
 export type ApiResult<T = undefined> =
   | ({ ok: true } & (T extends undefined ? { data?: undefined } : { data: T }))
-  | { ok: false; code: string; message: string };
+  | { ok: false; code: string; message: string; fields?: Partial<Record<string, string>> };
 
 export type ReviewFit = "small" | "true" | "large";
 

@@ -83,6 +83,16 @@ On your site, create an account at `/account/register` with the `ADMIN_EMAIL` ad
 - **Launch → Release now**, then buy something with test card `4242 4242 4242 4242`.
 - Finish activating Stripe (ID, bank) until Payments shows "Can take payments: Yes". In Vercel, replace `STRIPE_SECRET_KEY` with the live key (`sk_live_…`), redeploy, and press **Connect order webhook** again. You're selling.
 
+## Accounts, email sign-ups and Cash App (needs the database)
+
+Shopper accounts, "Join the list" sign-ups and Cash App orders are kept in a free Supabase database. Until it's connected, the store still sells by card and PayPal.
+
+1. At supabase.com create a free project and save its database password. Press **Connect**, choose the **Session pooler** connection string and put your password where it says `[YOUR-PASSWORD]`.
+2. In Supabase → **Authentication → Sign In / Providers → Email**, switch **Confirm email** off (Supabase's built-in email only reaches your own team, so shoppers couldn't confirm). Under **URL Configuration** set Site URL to `https://neverhollow.online` and add `https://neverhollow.online/auth/callback`.
+3. In Netlify → **Site configuration → Environment variables**, add `DATABASE_URL` (the connection string), `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY` (Supabase → Project Settings → API keys; the legacy anon and service_role keys work). Then **Deploys → Trigger deploy**. The build creates the tables itself.
+4. Create your own account on the site, then add `ADMIN_EMAIL` with that email and redeploy. (Doing it in this order means nobody else can claim the admin address.)
+5. **Cash App:** add `CASHAPP_TAG` (for example `$neverhollow`) and redeploy. US shoppers then see Cash App at checkout. Their orders wait under **Admin → Orders** as "Awaiting payment". Mark one **Paid** only once the money shows in your Cash App with its order number in the note; that takes the stock and sends the confirmation. Cash App asks sellers to use a Cash App for Business account.
+
 ## Deploying on Netlify instead of Vercel
 
 Everything works the same on Netlify: the project includes `netlify.toml`, Netlify's Next.js adapter is applied automatically, and the site still creates its own database tables during each build. The difference is that Supabase is created at supabase.com rather than inside the host, so you copy one connection string.

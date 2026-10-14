@@ -95,3 +95,25 @@ export function shippingConfirmationEmail(args: {
   }`;
   return { subject: `Order ${args.orderNumber} has shipped`, html, text };
 }
+
+/** Cash App orders: what to send, where, and the note to add. Sent when the order is placed. */
+export function cashAppInstructionsEmail(args: {
+  orderNumber: string;
+  cashTag: string;
+  totalCents: number;
+  currency: string;
+  payUrl: string;
+  orderUrl: string;
+}) {
+  const total = formatPrice(args.totalCents, args.currency);
+  const html = layout(
+    "Your order is reserved. Send your payment to finish.",
+    `<p>Order ${esc(args.orderNumber)}</p>
+<p>In Cash App, send <strong style="color:#080808">${esc(total)}</strong> to <strong style="color:#080808">${esc(args.cashTag)}</strong> and write <strong style="color:#080808">${esc(args.orderNumber)}</strong> in the “For” note.</p>
+<p><a href="${esc(args.payUrl)}" style="display:inline-block;background:#080808;color:#F4F3F0;padding:12px 22px;text-decoration:none;font-size:12px;letter-spacing:2px">OPEN CASH APP</a></p>
+<p>We ship once the payment arrives and email you when it’s on its way. Orders that aren’t paid within 48 hours are cancelled.</p>
+<p>Only ever send money to ${esc(args.cashTag)}. We never ask you to pay anyone else. <a href="${esc(args.orderUrl)}" style="color:#080808">View your order</a></p>`,
+  );
+  const text = `Order ${args.orderNumber} is reserved.\n\nIn Cash App, send ${total} to ${args.cashTag} and write ${args.orderNumber} in the "For" note: ${args.payUrl}\n\nWe ship once the payment arrives. Orders that aren't paid within 48 hours are cancelled. Only ever send money to ${args.cashTag}.\n\nYour order: ${args.orderUrl}`;
+  return { subject: `Order ${args.orderNumber}: send ${total} to ${args.cashTag}`, html, text };
+}

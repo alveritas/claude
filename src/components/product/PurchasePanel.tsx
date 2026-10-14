@@ -222,7 +222,7 @@ export function PurchasePanel({
     setJustAdded(true);
     onAdded?.();
     if (thenCheckout) {
-      router.push("/cart");
+      router.push("/checkout");
     } else {
       ui.open("cart");
     }

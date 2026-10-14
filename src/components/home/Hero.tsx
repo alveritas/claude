@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Wordmark } from "@/components/brand/Brand";
 import { useStore } from "@/components/providers/StoreProvider";
 import { useParallax } from "@/lib/client/hooks";
 import { launchCountdown } from "@/lib/shared/commerce";
@@ -33,7 +32,8 @@ export function Countdown({ launchDate }: { launchDate: string | null }) {
 /**
  * Full-bleed cover. The cover photo is a studio shot cut out to a transparent WebP
  * (public/images/hero/cover.webp), so the figures stand on the page's own off-white and
- * their legs dissolve under the wordmark. It starts below the header so nothing is cut off, and runs
+ * their legs dissolve into the page. No wordmark sits on the photo: the brand is on the
+ * clothes and in the header. It starts below the header so nothing is cut off, and runs
  * past the bottom of the screen so the fade does the cropping.
  */
 export function Hero() {
@@ -59,11 +59,11 @@ export function Hero() {
       )}
       <div className="hero-shade pointer-events-none absolute inset-0" />
       <div className="absolute inset-x-0 bottom-0 flex flex-col items-center px-4 pb-[max(9vh,72px)] text-center">
-        <h1 data-hero-mark className="hero-mark w-[min(86vw,700px)]">
-          <Wordmark priority sizes="(min-width: 768px) 700px, 86vw" className="w-full" />
-        </h1>
-        <div className="hero-copy mt-6 flex flex-col items-center gap-4 md:mt-8">
-          <p className="text-[1rem] font-light tracking-[0.02em] text-bone md:text-[1.125rem]">{content.hero_tagline}</p>
+        <div className="hero-copy flex flex-col items-center gap-4">
+          <h1 className="text-[1.375rem] font-light tracking-[0.02em] text-bone md:text-[1.75rem]">
+            <span className="sr-only">NEVERHOLLOW. </span>
+            {content.hero_tagline}
+          </h1>
           <p className="caps muted">{settings.mode === "live" ? content.hero_status_live : content.hero_status}</p>
           <Countdown launchDate={settings.launchDate} />
           <div className="mt-3 flex flex-col gap-3 sm:flex-row">

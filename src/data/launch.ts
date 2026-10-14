@@ -13,6 +13,11 @@ export const LAUNCH = {
   /** Where PayPal sends the money (the owner's PayPal account email). Not a secret: PayPal shows it to buyers. */
   paypalEmail: "stillmysaint@gmail.com",
   announcement: "Drop 001 is out now | Worldwide shipping",
+  /**
+   * The owner's Cash App $Cashtag (e.g. "$neverhollow"), or null. Once it's set (here or as the
+   * CASHAPP_TAG setting in Netlify) and the database is connected, US shoppers can choose Cash App.
+   */
+  cashTag: null as string | null,
 } as const;
 
 /** Announcement texts from before release, replaced by the launch announcement. */

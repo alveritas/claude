@@ -21,11 +21,15 @@ export const processorName = (): string | null => {
   return p ? NAMES[p] : null;
 };
 
-/** How customers can pay, in the words shown under the buy buttons and in the bag. */
-export const paymentMethodsText = (): string | null => {
+/**
+ * How customers can pay, in the words shown under the buy buttons and in the bag.
+ * cashApp: the store also takes Cash App by $Cashtag (US shoppers).
+ */
+export const paymentMethodsText = (cashApp = false): string | null => {
   const p = activeProvider();
   if (p === "square") return "Pay by card, Apple Pay, Google Pay or Cash App Pay.";
-  if (p === "paypal") return "Pay by debit or credit card, or PayPal.";
+  if (p === "paypal") return cashApp ? "Pay by debit or credit card, PayPal, or Cash App (US)." : "Pay by debit or credit card, or PayPal.";
+  if (p === "stripe" && cashApp) return "Pay by card, or Cash App (US).";
   return null;
 };
 

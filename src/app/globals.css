@@ -364,10 +364,6 @@
   .site-header .logo {
     transition: opacity 0.6s var(--ease-quiet);
   }
-  .site-top[data-hide-logo="true"] .site-header .logo {
-    opacity: 0;
-    pointer-events: none;
-  }
   .nav-link {
     font-size: var(--text-micro);
     letter-spacing: 0.22em;
@@ -726,14 +722,9 @@
   transform: scale(1.08);
   animation: settle 2.6s var(--ease-quiet) calc(var(--d, 0s) + var(--intro-delay, 0s)) forwards;
 }
-.hero-mark {
-  opacity: 0;
-  clip-path: inset(0 100% 0 0);
-  animation: write 1.6s cubic-bezier(0.6, 0, 0.2, 1) calc(0.65s + var(--intro-delay, 0s)) forwards;
-}
 .hero-copy {
   opacity: 0;
-  animation: fade-up 1.2s var(--ease-quiet) calc(1.1s + var(--intro-delay, 0s)) forwards;
+  animation: fade-up 1.2s var(--ease-quiet) calc(0.8s + var(--intro-delay, 0s)) forwards;
 }
 .scroll-cue {
   width: 1px;
@@ -1111,6 +1102,40 @@ html[data-intro="1"] {
   .cw-tile[data-selected="true"] {
     opacity: 1;
     outline-color: var(--color-bone);
+  }
+
+  /* Checkout: payment choices */
+  .pay-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    width: 100%;
+    padding: 16px 18px;
+    border: 1px solid var(--color-rule);
+    transition: border-color 0.25s;
+  }
+  .pay-option:hover {
+    border-color: var(--color-silver);
+  }
+  .pay-option[data-checked="true"] {
+    border-color: var(--color-bone);
+  }
+  .pay-dot {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    border: 1px solid #8a8a8a;
+    border-radius: 999px;
+    display: grid;
+    place-content: center;
+  }
+  .pay-option[data-checked="true"] .pay-dot::after {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--color-bone);
   }
 
   /* Quick add on product cards (desktop) */

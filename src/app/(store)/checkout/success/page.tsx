@@ -18,7 +18,9 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
   const { session_id, ref, try: attempt } = await searchParams;
   if (ref) {
     const paypal = activeProvider() === "paypal";
-    const r = paypal ? await confirmPayPalReturn(ref) : await confirmSquareReturn(ref);
+    const r = paypal ? await confirmPayPalReturn(ref) : { ...(await confirmSquareReturn(ref)), canConfirm: true };
+    // Without the database the site can't see PayPal's confirmation; PayPal's receipt email is it.
+    if (!r.canConfirm) return <CheckoutSuccessView paid={false} email={null} orderRef={null} receivedBy="PayPal" />;
     // The payment company's confirmation can take a few seconds (PayPal up to a minute):
     // re-check before saying anything other than "confirming".
     const confirming = !r.paid && Number(attempt ?? "0") < (paypal ? 16 : 6);

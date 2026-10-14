@@ -28,6 +28,7 @@ export function PageTitle({ children, sub }: { children: ReactNode; sub?: ReactN
 
 export function CartView() {
   const { lines, ready } = useCart();
+  const { commerce } = useStore();
   return (
     <div className="shell pb-24 pt-10 md:pt-16">
       <PageTitle>Bag</PageTitle>
@@ -45,7 +46,8 @@ export function CartView() {
               <CheckoutBox />
             </div>
             <p className="muted mt-4 text-[0.75rem]">
-              Payment is handled on a secure checkout page. Card details never touch this site.
+              Next you’ll add your shipping details, then pay on {commerce.processor ? `${commerce.processor}’s` : "a"} secure
+              page. Card details never touch this site.
             </p>
           </aside>
         </div>
@@ -412,17 +414,37 @@ export function CheckoutSuccessView({
   email,
   orderRef,
   confirming = false,
+  receivedBy,
 }: {
   paid: boolean;
   email: string | null;
   orderRef: string | null;
   /** The payment company hasn't confirmed yet: check again in a moment. */
   confirming?: boolean;
+  /**
+   * Back from the payment company's page, but this site can't check the payment itself (no
+   * database yet): the payment company's receipt email is the confirmation. Never says "paid".
+   */
+  receivedBy?: string;
 }) {
   const { clear } = useCart();
   useEffect(() => {
-    if (paid) clear();
-  }, [paid, clear]);
+    if (paid || receivedBy) clear();
+  }, [paid, receivedBy, clear]);
+  if (receivedBy) {
+    return (
+      <div className="shell flex min-h-[60vh] flex-col items-start justify-center gap-6 py-24">
+        <PageTitle
+          sub={`Once ${receivedBy} confirms your payment, they email your receipt. We’ll email you again when your order ships.`}
+        >
+          Thanks for your order
+        </PageTitle>
+        <Link href="/shop" className="btn btn-line">
+          Continue browsing
+        </Link>
+      </div>
+    );
+  }
   useEffect(() => {
     if (!confirming) return;
     const t = window.setTimeout(() => {

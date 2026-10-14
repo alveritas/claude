@@ -5,6 +5,7 @@ import { hasSupabase } from "@/lib/server/env";
 import { formatDate, formatPrice } from "@/lib/shared/format";
 
 const STATUS: Record<string, string> = {
+  awaiting_payment: "Awaiting Cash App payment",
   paid: "Confirmed",
   fulfilled: "Being prepared",
   shipped: "Shipped",

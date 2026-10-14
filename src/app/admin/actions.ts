@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/server/auth";
+import { settleCashAppOrder } from "@/lib/server/cashapp-orders";
 import { shippingConfirmationEmail, sendEmail } from "@/lib/server/email";
 import { paymentMode, paymentsReady } from "@/lib/server/payments";
 import { ensureSquareWebhook } from "@/lib/server/square";
@@ -493,20 +494,31 @@ export async function updateOrder(_: AdminState, fd: FormData): Promise<AdminSta
   const { supabase } = await requireAdmin();
   const id = str(fd, "id", 64);
   const status = str(fd, "status");
-  if (!["paid", "fulfilled", "shipped", "delivered", "refunded", "canceled"].includes(status)) return { error: "Choose a status." };
+  if (!["awaiting_payment", "paid", "fulfilled", "shipped", "delivered", "refunded", "canceled"].includes(status)) return { error: "Choose a status." };
   const trackingUrl = opt(fd, "tracking_url", 500);
   if (trackingUrl && !/^https:\/\//.test(trackingUrl)) return { error: "Tracking link must start with https://" };
   const { data: before } = await supabase.from("orders").select("status, email, order_number, livemode").eq("id", id).maybeSingle();
+  const prevStatus: string | undefined = before?.status;
   const update = {
     status,
     carrier: opt(fd, "carrier", 60),
     tracking_number: opt(fd, "tracking_number", 120),
     tracking_url: trackingUrl,
   };
+  if (status === "awaiting_payment" && prevStatus !== "awaiting_payment") {
+    return { error: "Only new Cash App orders wait for payment. Choose another status." };
+  }
   const { error } = await supabase.from("orders").update(update).eq("id", id);
   if (error) return { error: error.message };
   let note = "";
-  if (status === "shipped" && before?.status !== "shipped" && bool(fd, "notify") && before?.email) {
+  // A Cash App order whose money has arrived: take the stock and send the confirmation now.
+  if (prevStatus === "awaiting_payment" && ["paid", "fulfilled", "shipped", "delivered"].includes(status)) {
+    const settled = await settleCashAppOrder(id);
+    await supabase.from("orders").update({ note: null }).eq("id", id);
+    note += settled.emailed ? " Order confirmation sent to the customer." : "";
+    note += settled.stockIssue ? " Stock was short for at least one item: check inventory." : "";
+  }
+  if (status === "shipped" && prevStatus !== "shipped" && bool(fd, "notify") && before?.email) {
     const sent = await sendEmail({
       to: before.email,
       ...shippingConfirmationEmail({

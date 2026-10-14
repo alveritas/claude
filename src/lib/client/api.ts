@@ -1,5 +1,6 @@
 "use client";
 
+import type { CheckoutCustomer, PaymentMethod } from "@/lib/shared/checkout";
 import type { ApiResult, CartLine } from "@/lib/shared/types";
 
 async function post<T>(url: string, body: unknown): Promise<ApiResult<T>> {
@@ -21,8 +22,9 @@ export function subscribeToNewsletter(email: string, consent: boolean, source: s
   return post<undefined>("/api/newsletter", { email, consent, source });
 }
 
-export function startCheckout(lines: CartLine[], country: string) {
-  return post<{ url: string }>("/api/checkout", { lines, country });
+/** Sends the bag and the shopper's details; answers with where to go to pay. */
+export function startCheckout(lines: CartLine[], customer: CheckoutCustomer, method: PaymentMethod) {
+  return post<{ url: string }>("/api/checkout", { lines, country: customer.country, customer, method });
 }
 
 export function syncWishlist(action: "merge" | "add" | "remove", productIds: string[]) {

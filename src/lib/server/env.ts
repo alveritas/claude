@@ -32,6 +32,8 @@ export const env = {
   paypalEmail: clean(process.env.PAYPAL_EMAIL),
   /** "1" to use PayPal's sandbox (test) site instead of real payments. */
   paypalSandbox: clean(process.env.PAYPAL_SANDBOX) === "1",
+  /** The owner's Cash App $Cashtag (public: shoppers send money to it). Overrides launch.ts. */
+  cashTag: clean(process.env.CASHAPP_TAG),
   stripeSecretKey: clean(process.env.STRIPE_SECRET_KEY),
   stripeWebhookSecret: clean(process.env.STRIPE_WEBHOOK_SECRET),
   resendApiKey: clean(process.env.RESEND_API_KEY),
