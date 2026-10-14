@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { CheckoutSuccessView } from "@/components/views/MiscViews";
+import { activeProvider } from "@/lib/server/payments";
+import { confirmPayPalReturn } from "@/lib/server/paypal-orders";
 import { confirmSquareReturn } from "@/lib/server/square-orders";
 import { getStripe } from "@/lib/server/stripe";
 
@@ -15,9 +17,11 @@ type Props = { searchParams: Promise<{ session_id?: string; ref?: string; try?: 
 export default async function CheckoutSuccessPage({ searchParams }: Props) {
   const { session_id, ref, try: attempt } = await searchParams;
   if (ref) {
-    const r = await confirmSquareReturn(ref);
-    // Square can take a few seconds to settle a payment: re-check up to six times first.
-    const confirming = !r.paid && Number(attempt ?? "0") < 6;
+    const paypal = activeProvider() === "paypal";
+    const r = paypal ? await confirmPayPalReturn(ref) : await confirmSquareReturn(ref);
+    // The payment company's confirmation can take a few seconds (PayPal up to a minute):
+    // re-check before saying anything other than "confirming".
+    const confirming = !r.paid && Number(attempt ?? "0") < (paypal ? 16 : 6);
     return <CheckoutSuccessView paid={r.paid} email={r.email} orderRef={r.orderNumber} confirming={confirming} />;
   }
   const stripe = getStripe();

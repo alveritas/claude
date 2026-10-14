@@ -285,7 +285,7 @@ function FaqView() {
     },
     {
       q: "How can I pay? Is checkout secure?",
-      a: `${content.payment_methods_note} Payment is handled by ${commerce.processor ?? "our payment provider"} on its secure checkout page; your card details never reach our servers.`,
+      a: `${commerce.methods ?? content.payment_methods_note} Payment is handled by ${commerce.processor ?? "our payment provider"} on its secure checkout page; your card details never reach our servers.`,
     },
     {
       q: "How do I track my order?",
@@ -447,8 +447,8 @@ export function CheckoutSuccessView({
           Thank you
         </PageTitle>
       ) : (
-        <PageTitle sub="We couldn’t confirm a completed payment for this checkout. If you were charged, contact us and we’ll sort it out.">
-          Payment not confirmed
+        <PageTitle sub="We haven’t received confirmation from the payment page yet. If you completed payment, your receipt is in your email and your order confirmation will follow. If anything looks wrong, contact us.">
+          Payment not confirmed yet
         </PageTitle>
       )}
       {paid && orderRef && <p className="muted text-[0.8125rem]">Order {orderRef}</p>}

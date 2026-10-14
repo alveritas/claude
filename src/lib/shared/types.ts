@@ -96,8 +96,10 @@ export interface CommerceStatus {
   message: string | null;
   /** Test keys (Square sandbox / Stripe test mode): checkout works but only accepts test payments. */
   testMode?: boolean;
-  /** The payment company's name, for the trust line and the policies ("Square"). */
+  /** The payment company's name, for the trust line and the policies ("PayPal"). */
   processor?: string | null;
+  /** How customers can pay, e.g. "Pay by debit or credit card, or PayPal." */
+  methods?: string | null;
 }
 
 export interface CartLine {

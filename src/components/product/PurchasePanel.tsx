@@ -309,7 +309,7 @@ export function PurchasePanel({
       {buyable && (
         <ul className="muted flex flex-col gap-2.5 text-[0.75rem]">
           <li className="flex items-center gap-2.5">
-            <LockIcon size={15} /> Secure checkout{commerce.processor ? ` by ${commerce.processor}` : ""}. {content.payment_methods_note}
+            <LockIcon size={15} /> Secure checkout{commerce.processor ? ` by ${commerce.processor}` : ""}. {commerce.methods ?? content.payment_methods_note}
           </li>
           {zones.some((z) => z.isActive) && (
             <li className="flex items-center gap-2.5">

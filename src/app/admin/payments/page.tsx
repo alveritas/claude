@@ -18,6 +18,7 @@ import {
 } from "@/lib/server/stripe";
 import { connectWebhook, enableStoreWallets, savePaymentSettings } from "../actions";
 import { activeProvider } from "@/lib/server/payments";
+import { PayPalPayments } from "./PayPalPanel";
 import { SquarePayments, SquareSetup } from "./SquarePanel";
 
 export const dynamic = "force-dynamic";
@@ -60,6 +61,7 @@ export default async function PaymentsAdmin() {
   // Square is the store's payment company; Stripe stays only as a fallback if it's the one set up.
   const provider = activeProvider();
   if (provider === "square") return <SquarePayments />;
+  if (provider === "paypal") return <PayPalPayments />;
   if (!provider) return <SquareSetup />;
   const settings = await adminSettings(supabase);
   const stripe = getStripe();

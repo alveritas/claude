@@ -84,7 +84,7 @@ export function Footer() {
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
           {settings.mode === "live" && (
             <p>
-              Secure checkout{commerce.processor ? ` by ${commerce.processor}` : ""} · {content.payment_methods_note.replace(/^Pay by\s*/i, "").replace(/\.$/, "")}
+              Secure checkout{commerce.processor ? ` by ${commerce.processor}` : ""} · {(commerce.methods ?? content.payment_methods_note).replace(/^Pay by\s*/i, "").replace(/\.$/, "")}
             </p>
           )}
           <p>Prices in {settings.currency.toUpperCase()}</p>

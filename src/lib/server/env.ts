@@ -28,6 +28,10 @@ export const env = {
   squareLocationId: clean(process.env.SQUARE_LOCATION_ID),
   /** Optional: a webhook signature key made by hand in Square's Developer Console. */
   squareWebhookKey: clean(process.env.SQUARE_WEBHOOK_SIGNATURE_KEY),
+  /** PayPal account email that receives payments. Defaults to the one in src/data/launch.ts. */
+  paypalEmail: clean(process.env.PAYPAL_EMAIL),
+  /** "1" to use PayPal's sandbox (test) site instead of real payments. */
+  paypalSandbox: clean(process.env.PAYPAL_SANDBOX) === "1",
   stripeSecretKey: clean(process.env.STRIPE_SECRET_KEY),
   stripeWebhookSecret: clean(process.env.STRIPE_WEBHOOK_SECRET),
   resendApiKey: clean(process.env.RESEND_API_KEY),

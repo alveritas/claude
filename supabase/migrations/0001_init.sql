@@ -389,3 +389,9 @@ create table if not exists public.checkout_refs (
 );
 alter table public.checkout_refs enable row level security;
 revoke all on public.checkout_refs from anon, authenticated;
+
+-- ───────────────────────── PayPal payments ─────────────────────────
+-- For PayPal orders, stripe_session_id holds "paypal:<transaction id>" (unique). checkout_ref
+-- links the buyer's return to the confirmation page with their order.
+alter table public.orders add column if not exists checkout_ref uuid;
+create index if not exists orders_checkout_ref_idx on public.orders (checkout_ref);

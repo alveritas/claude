@@ -1,6 +1,6 @@
 import type { CommerceStatus, Product, ShippingZone, StoreSettings } from "@/lib/shared/types";
 import { hasEmail, hasServiceRole, hasSupabase } from "./env";
-import { activeProvider, paymentMode, processorName } from "./payments";
+import { activeProvider, paymentMethodsText, paymentMode, processorName } from "./payments";
 
 /**
  * What the public storefront is told about checkout. No configuration details leak out.
@@ -8,19 +8,20 @@ import { activeProvider, paymentMode, processorName } from "./payments";
  */
 export function getCommerceStatus(settings: StoreSettings, zones: ShippingZone[], paymentsReady: boolean): CommerceStatus {
   const processor = processorName();
+  const methods = paymentMethodsText();
   if (settings.mode === "prelaunch") {
-    return { checkoutEnabled: false, message: "Checkout opens when Drop 001 is released.", processor };
+    return { checkoutEnabled: false, message: "Checkout opens when Drop 001 is released.", processor, methods };
   }
-  // Square keeps every order itself, so it can sell even before the database is connected;
-  // Stripe orders are only kept here, so Stripe needs the database.
-  const needsDatabase = activeProvider() !== "square";
+  // Square and PayPal keep every order themselves (and email the seller), so they can sell even
+  // before the database is connected; Stripe orders are only kept here, so Stripe needs it.
+  const needsDatabase = activeProvider() === "stripe";
   if (!activeProvider() || !paymentsReady || (needsDatabase && (!hasSupabase() || !hasServiceRole()))) {
-    return { checkoutEnabled: false, message: "Checkout isn’t available yet. Your bag is saved on this device.", processor };
+    return { checkoutEnabled: false, message: "Checkout isn’t available yet. Your bag is saved on this device.", processor, methods };
   }
   if (!zones.some((z) => z.isActive)) {
-    return { checkoutEnabled: false, message: "Shipping destinations haven’t been opened yet, so checkout is closed.", processor };
+    return { checkoutEnabled: false, message: "Shipping destinations haven’t been opened yet, so checkout is closed.", processor, methods };
   }
-  return { checkoutEnabled: true, message: null, testMode: paymentMode() === "test", processor };
+  return { checkoutEnabled: true, message: null, testMode: paymentMode() === "test", processor, methods };
 }
 
 export interface ReadinessItem {
@@ -62,17 +63,17 @@ export function getReadiness(args: {
         : "Connect Supabase to the site (Vercel: Storage tab; Netlify: Extensions → Supabase) and redeploy.",
     },
     {
-      label: `Payments (${processorName() ?? "Square"})`,
+      label: `Payments (${processorName() ?? "PayPal"})`,
       ok: Boolean(provider) && mode === "live" && webhookReady,
       detail: !provider
-        ? "Add SQUARE_ACCESS_TOKEN in your host’s environment variables and redeploy (SETUP.md → Payments)."
+        ? "Add the PayPal email that receives payments (src/data/launch.ts or PAYPAL_EMAIL) and redeploy."
         : !webhookReady
           ? provider === "square"
             ? "Square didn’t accept the access token. Check SQUARE_ACCESS_TOKEN under Payments."
             : "Not connected. Open Payments and press “Connect order webhook”."
           : mode === "live"
-            ? "Connected — card, Apple Pay, Google Pay and Cash App Pay."
-            : "Test mode — only test payments work. Use the production access token to take real payments.",
+            ? `Connected — ${(paymentMethodsText() ?? "").replace(/^Pay by /, "").replace(/\.$/, "")}.`
+            : "Test mode — only test payments work.",
     },
     {
       label: "Shipping destinations",
@@ -140,7 +141,7 @@ export function releaseBlockers(args: {
   const { settings, products, zones, webhookReady } = args;
   const out: string[] = [];
   if (!hasSupabase() || !hasServiceRole()) out.push("Supabase isn’t fully connected (service role key missing).");
-  if (!activeProvider()) out.push("Payments aren’t connected. Add SQUARE_ACCESS_TOKEN (SETUP.md → Payments).");
+  if (!activeProvider()) out.push("Payments aren’t connected. Add the PayPal email that receives payments.");
   else if (!webhookReady) {
     out.push(
       activeProvider() === "stripe"

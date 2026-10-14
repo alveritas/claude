@@ -10,6 +10,8 @@ export const LAUNCH = {
   marker: "launch_drop_001",
   stockPerSize: 150,
   contactEmail: "neverhollowonline@gmail.com",
+  /** Where PayPal sends the money (the owner's PayPal account email). Not a secret: PayPal shows it to buyers. */
+  paypalEmail: "stillmysaint@gmail.com",
   announcement: "Drop 001 is out now | Worldwide shipping",
 } as const;
 

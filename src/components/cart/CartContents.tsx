@@ -177,8 +177,8 @@ export function CheckoutBox() {
           {error}
         </p>
       )}
-      {commerce.checkoutEnabled && content.payment_methods_note && (
-        <p className="muted -mt-2 text-center text-[0.75rem]">{content.payment_methods_note}</p>
+      {commerce.checkoutEnabled && (commerce.methods ?? content.payment_methods_note) && (
+        <p className="muted -mt-2 text-center text-[0.75rem]">{commerce.methods ?? content.payment_methods_note}</p>
       )}
       {commerce.checkoutEnabled && commerce.testMode && (
         <p className="border border-rule px-3 py-2 text-[0.75rem] leading-relaxed" role="note">

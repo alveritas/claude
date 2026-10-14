@@ -5,6 +5,7 @@ import { getStoreData } from "@/lib/server/catalog";
 import { siteUrl } from "@/lib/server/env";
 import { activeProvider, paymentsReady } from "@/lib/server/payments";
 import { getCommerceStatus } from "@/lib/server/readiness";
+import { paypalCheckoutUrl } from "@/lib/server/paypal";
 import { createSquareCheckout, type SquareCheckoutLine } from "@/lib/server/square";
 import { getStripe } from "@/lib/server/stripe";
 import { getServiceSupabase } from "@/lib/server/supabase";
@@ -93,6 +94,20 @@ export async function POST(req: Request) {
 
   const shippingAmount = shippingCents(zone, subtotal);
   const session = await getSessionUser();
+
+  if (provider === "paypal") {
+    // PayPal's own page: card or PayPal. The order is recorded when PayPal confirms the payment.
+    const ref = crypto.randomUUID();
+    const url = paypalCheckoutUrl({
+      ref,
+      lines: squareLines.map((l) => ({ name: l.name, size: l.size, quantity: l.quantity, unitCents: l.unitCents, variantId: l.variantId })),
+      currency: settings.currency,
+      shippingCents: shippingAmount,
+      country,
+      email: session?.user.email ?? null,
+    });
+    return NextResponse.json({ ok: true, data: { url } });
+  }
 
   if (provider === "square") {
     // A reference for this checkout, so the confirmation page can find the order on return.

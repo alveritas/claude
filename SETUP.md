@@ -1,36 +1,32 @@
 # NEVERHOLLOW — go-live guide
 
-Payments run on **Square**: customers pay on Square's secure checkout page with card, Apple Pay, Google Pay or Cash App Pay. The site takes worldwide orders, lowers stock with each sale, sends order emails, and has an admin you only need when you want to change something.
+Payments run on **PayPal**, paid to **stillmysaint@gmail.com** (set in `src/data/launch.ts`; `PAYPAL_EMAIL` in Netlify overrides it). Customers pay on PayPal's secure page with a debit or credit card or their PayPal account. There are no keys to set up.
 
-> **First build:** this code was written in a workspace that couldn't download npm packages, so your host's build is its first real compile. If the build log shows an error, send it over and it can be fixed quickly. The database SQL has been run on PostgreSQL 16 with 52 permission checks, and the checkout, Square, order-recording, launch, reviews and admin code has 136 automated tests run against a simulated Square, Stripe and database.
+> The database SQL has been run on PostgreSQL 16 with 52 permission checks, and the checkout, PayPal, Square, order-recording, launch, reviews and admin code has 156 automated tests run against simulated payment companies and database.
 
 ---
 
-## Go live on neverhollow.online (four steps)
+## How it went live
 
-1. **Upload this version.** Unzip over your `neverhollow` folder (replace files). In **GitHub Desktop**: summary "Launch with Square", **Commit to main**, **Push origin**.
-2. **Square account.** Sign up at [squareup.com/signup](https://squareup.com/signup) and answer the questions about you and your bank account, so Square can pay you out.
-3. **Square access token.** Open [developer.squareup.com/apps](https://developer.squareup.com/apps), sign in with the same account, press **+** and name the app "NEVERHOLLOW website". In the app, choose **Production**, open **Credentials** and copy the **Production Access token**.
-4. **Netlify.** Site configuration → Environment variables → **Add a variable**: key `SQUARE_ACCESS_TOKEN`, value the token. Then Deploys → **Trigger deploy**.
+The site deploys from GitHub (`alveritas/claude`, branch `main`) on Netlify: every push goes live by itself. On the first deploy with PayPal, the store opened for sale by itself, once:
+- every size of every piece stocked at **150**;
+- contact email **neverhollowonline@gmail.com**;
+- shipping on: **United States $8, free over $200**, **everywhere else $35** (Admin → Shipping);
+- the store live with the announcement "Drop 001 is out now".
 
-That's it. On that deploy the store opens for sale by itself, once:
-- every size of every piece is stocked at **150**;
-- the contact email is **neverhollowonline@gmail.com**;
-- shipping is on: **United States $8, free over $200**, and **everywhere else $35** (change under Admin → Shipping);
-- the store switches to live with the announcement "Drop 001 is out now";
-- Square is connected to send each paid order to the site (stock goes down, the order appears in Admin → Orders).
+Anything you change in the admin afterwards stays as you set it.
 
-The launch only happens with a **Production** token (a Sandbox token stays Coming soon), and only once: anything you change in the admin afterwards stays as you set it.
+**How a sale works:** the buyer pays on PayPal's page; PayPal emails you the payment with the shipping address; the site checks the payment back with PayPal, compares the amount with your prices, records the order (Admin → Orders) and lowers stock. If an amount doesn't match (someone tampered with the checkout), the order shows a red "Don't ship" note.
 
-**After that, nothing is required.** Optional extras:
-- Buy something small yourself, then refund it in the Square Dashboard (Transactions → the payment → Issue refund). The order in Admin → Orders turns Refunded by itself.
-- **Order emails from your domain** (shipping emails carry each buyer's review link): a free resend.com account, verify neverhollow.online, add `RESEND_API_KEY` and `EMAIL_FROM` (e.g. `NEVERHOLLOW <orders@neverhollow.online>`), redeploy. Square sends its own receipts either way.
-- In the admin: your business name and address (Content → Business), measurements (Size guide), fabric and care for each piece.
-- **Sales tax:** Square's checkout doesn't add sales tax by itself. Ask an accountant whether you need to collect it where you're based.
+**Good to know:**
+- If PayPal asks you to upgrade to a free **Business** account when the first payment comes in, say yes: that's what lets buyers pay by card without a PayPal account.
+- Refunds: PayPal → Activity → the payment → Issue a refund. The order turns Refunded by itself.
+- **Sales tax** isn't added at checkout. Ask an accountant whether you need to collect it where you're based.
+- Optional: Square instead of PayPal (card, Apple Pay, Google Pay, Cash App Pay) — add `SQUARE_ACCESS_TOKEN` in Netlify and redeploy; Square is used whenever that's set.
 
-**Where orders are:** Admin → Orders on your site, and the Square Dashboard (Orders and Transactions). If the site isn't connected to its database, Square still takes and keeps every order; you'll find them in the Square Dashboard.
+**Where orders are:** Admin → Orders on your site, and your PayPal account (Activity), which also emails you each payment with the buyer's address. If the site isn't connected to its database, PayPal still takes and keeps every payment.
 
-**Stripe** is no longer used. If `STRIPE_SECRET_KEY` is still set in Netlify you can delete it; Square is used whenever `SQUARE_ACCESS_TOKEN` is set.
+**Stripe** is no longer used. If `STRIPE_SECRET_KEY` is still set in Netlify you can delete it.
 
 **After launch**
 - When you ship an order, set it to **Shipped** in Admin → Orders with the tracking link: the customer gets the tracking email with their personal review link. (Without email set up, copy the review link shown on the order and send it yourself.)
