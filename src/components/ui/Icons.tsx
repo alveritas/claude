@@ -107,3 +107,15 @@ export const CheckIcon = (p: P) => (
     <path d="M5 12.5l4.5 4.5L19 7.5" />
   </Svg>
 );
+export const MailIcon = (p: P) => (
+  <Svg {...p}>
+    <rect x="3.5" y="5.5" width="17" height="13" />
+    <path d="M3.5 6.5 12 13l8.5-6.5" />
+  </Svg>
+);
+export const ReturnIcon = (p: P) => (
+  <Svg {...p}>
+    <path d="M9 6.5 5 10.5l4 4" />
+    <path d="M5 10.5h9.5a4.5 4.5 0 0 1 0 9H11" />
+  </Svg>
+);

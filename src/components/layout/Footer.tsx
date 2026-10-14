@@ -39,7 +39,7 @@ export function Footer() {
             <>
               <p className="section-title mt-8">Join the list</p>
               <p className="muted mt-2 text-[0.8125rem] leading-relaxed">
-                Early access to releases, restocks and announcements.
+                New drops, restocks and exclusive releases.
               </p>
               <NewsletterForm consentText={content.newsletter_consent} source="footer" compact />
             </>

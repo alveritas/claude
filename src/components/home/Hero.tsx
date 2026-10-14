@@ -60,18 +60,18 @@ export function Hero() {
       <div className="hero-shade pointer-events-none absolute inset-0" />
       <div className="absolute inset-x-0 bottom-0 flex flex-col items-center px-4 pb-[max(9vh,72px)] text-center">
         <div className="hero-copy flex flex-col items-center gap-4">
-          <h1 className="text-[1.375rem] font-light tracking-[0.02em] text-bone md:text-[1.75rem]">
-            <span className="sr-only">NEVERHOLLOW. </span>
-            {content.hero_tagline}
-          </h1>
+          {/* Set in the site's type, on the faded part of the cover, so it reads cleanly (the script
+              logo stays in the header, where it isn't laid over the photo). */}
+          <h1 className="hero-title">NEVERHOLLOW</h1>
+          <p className="text-[1rem] font-light tracking-[0.02em] text-bone md:text-[1.125rem]">{content.hero_tagline}</p>
           <p className="caps muted">{settings.mode === "live" ? content.hero_status_live : content.hero_status}</p>
           <Countdown launchDate={settings.launchDate} />
           <div className="mt-3 flex flex-col gap-3 sm:flex-row">
             <Link href="/shop" className="btn btn-solid min-w-[230px]">
-              Explore collection
+              Shop the collection
             </Link>
             <Link href="/about" className="btn btn-line min-w-[230px]">
-              Discover the brand
+              Explore Neverhollow
             </Link>
           </div>
         </div>

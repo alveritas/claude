@@ -33,3 +33,19 @@ export function dayRange(min: number | null, max: number | null): string | null 
   const b = max ?? min!;
   return a === b ? `${a} business day${a === 1 ? "" : "s"}` : `${Math.min(a, b)}–${Math.max(a, b)} business days`;
 }
+
+/**
+ * One line per active zone, cheapest destination first: "United States $8 (free over $200)".
+ * The rates are the ones checkout charges, so the product page never shows a different price.
+ */
+export function shippingSummary(zones: ShippingZone[], money: (cents: number) => string): string[] {
+  return zones
+    .filter((z) => z.isActive)
+    .sort((a, b) => Number(a.countries.includes(WORLDWIDE)) - Number(b.countries.includes(WORLDWIDE)) || a.rateCents - b.rateCents)
+    .map((z) => {
+      const name = z.countries.includes(WORLDWIDE) ? (zones.filter((x) => x.isActive).length > 1 ? "Everywhere else" : "Worldwide") : z.name;
+      const rate = z.rateCents === 0 ? "free" : money(z.rateCents);
+      const free = z.rateCents > 0 && z.freeOverCents != null ? ` (free over ${money(z.freeOverCents)})` : "";
+      return `${name} ${rate}${free}`;
+    });
+}

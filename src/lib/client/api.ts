@@ -22,6 +22,11 @@ export function subscribeToNewsletter(email: string, consent: boolean, source: s
   return post<undefined>("/api/newsletter", { email, consent, source });
 }
 
+/** One email when a sold-out size is back in stock. */
+export function requestRestock(email: string, variantId: string) {
+  return post<undefined>("/api/restock", { email, variantId });
+}
+
 /** Sends the bag and the shopper's details; answers with where to go to pay. */
 export function startCheckout(lines: CartLine[], customer: CheckoutCustomer, method: PaymentMethod) {
   return post<{ url: string }>("/api/checkout", { lines, country: customer.country, customer, method });

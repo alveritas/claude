@@ -6,7 +6,7 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useCart } from "@/components/providers/CartProvider";
 import { useStore } from "@/components/providers/StoreProvider";
 import { useUI } from "@/components/providers/UIProvider";
-import { CheckIcon, GlobeIcon, LockIcon, MinusIcon, PlusIcon } from "@/components/ui/Icons";
+import { CheckIcon, GlobeIcon, LockIcon, MailIcon, MinusIcon, PlusIcon, ReturnIcon } from "@/components/ui/Icons";
 import { Overlay } from "@/components/ui/Overlay";
 import {
   isBuyable,
@@ -19,10 +19,10 @@ import { familyKey } from "@/lib/shared/colorways";
 import { sizeRank } from "@/lib/shared/filters";
 import { parseSizeGuide } from "@/lib/shared/sizechart";
 import { formatPrice } from "@/lib/shared/format";
-import { shippableCountries } from "@/lib/shared/shipping";
+import { dayRange, shippableCountries, shippingSummary } from "@/lib/shared/shipping";
 import type { Product } from "@/lib/shared/types";
 import { ContactEmail, WishlistButton } from "./bits";
-import { NotifyForm } from "./NotifyForm";
+import { NotifyForm, RestockForm } from "./NotifyForm";
 
 export function QuantityStepper({
   value,
@@ -177,6 +177,7 @@ export function PurchasePanel({
   const [error, setError] = useState<string | null>(null);
   const [justAdded, setJustAdded] = useState(false);
   const [barVisible, setBarVisible] = useState(false);
+  const [restockOpen, setRestockOpen] = useState(false);
   const actions = useRef<HTMLDivElement>(null);
   const sizePicker = useRef<HTMLFieldSetElement>(null);
 
@@ -195,6 +196,8 @@ export function PurchasePanel({
 
   const productState = productAvailability(product, settings);
   const buyable = isBuyable(productState);
+  const soldOutSizes = variants.filter((v) => variantAvailability(product, v, settings) === "sold_out");
+  const dispatch = dayRange(settings.dispatchMinDays, settings.dispatchMaxDays);
   const variant = variants.find((v) => v.id === variantId) ?? null;
   const inCart = variant
     ? (cart.rawLines.find((l) => l.productId === product.id && l.variantId === variant.id)?.quantity ?? 0)
@@ -273,6 +276,17 @@ export function PurchasePanel({
         {buyable && variant && variant.stock > 0 && variant.stock <= LOW_STOCK_AT && (
           <p className="mt-3 text-[0.8125rem] muted">Only {variant.stock} left in this size.</p>
         )}
+        {buyable && soldOutSizes.length > 0 && (
+          <div className="mt-4">
+            {restockOpen ? (
+              <RestockForm productName={product.name} sizes={soldOutSizes} />
+            ) : (
+              <button type="button" className="text-link muted text-[0.75rem]" onClick={() => setRestockOpen(true)}>
+                {soldOutSizes.length === 1 ? `${soldOutSizes[0].size} sold out?` : "Size sold out?"} Get an email when it’s back
+              </button>
+            )}
+          </div>
+        )}
       </fieldset>
 
       <div ref={actions} className="flex flex-col gap-6">
@@ -308,24 +322,54 @@ export function PurchasePanel({
           </div>
         </>
       ) : (
-        <NotifyForm productSlug={product.slug} productName={product.name} soldOut={productState === "sold_out"} />
+        productState === "sold_out" && variants.length ? (
+          <RestockForm productName={product.name} sizes={variants} />
+        ) : (
+          <NotifyForm productSlug={product.slug} productName={product.name} soldOut={productState === "sold_out"} />
+        )
       )}
       </div>
       <WishlistButton product={product} withLabel className="btn-block" />
       {buyable && (
-        <ul className="muted flex flex-col gap-2.5 text-[0.75rem]">
-          <li className="flex items-center gap-2.5">
-            <LockIcon size={15} /> Secure checkout{commerce.processor ? ` by ${commerce.processor}` : ""}. {commerce.methods ?? content.payment_methods_note}
+        <ul className="muted flex flex-col gap-3 text-[0.75rem] leading-relaxed" aria-label="Payment, shipping and returns">
+          <li className="flex items-start gap-2.5">
+            <LockIcon size={15} className="mt-px flex-none" />
+            <span>
+              Secure checkout{commerce.processor ? ` by ${commerce.processor}` : ""}. {commerce.methods ?? content.payment_methods_note}
+            </span>
           </li>
           {zones.some((z) => z.isActive) && (
-            <li className="flex items-center gap-2.5">
-              <GlobeIcon size={15} />
-              {zones.some((z) => z.isActive && z.countries.includes("*"))
-                ? "Ships worldwide."
-                : `Ships to ${shippableCountries(zones).length} countries.`}{" "}
-              <Link href="/info/shipping" className="text-link">Rates</Link>
+            <li className="flex items-start gap-2.5">
+              <GlobeIcon size={15} className="mt-px flex-none" />
+              <span>
+                {zones.some((z) => z.isActive && z.countries.includes("*"))
+                  ? "Ships worldwide"
+                  : `Ships to ${shippableCountries(zones).length} countries`}
+                : {shippingSummary(zones, (c) => formatPrice(c, settings.currency)).join(" · ")}.
+                {dispatch ? ` Leaves us within ${dispatch}.` : ""}{" "}
+                <Link href="/info/shipping" className="text-link">
+                  Delivery times
+                </Link>
+              </span>
             </li>
           )}
+          {content.checkout_note && (
+            <li className="flex items-start gap-2.5">
+              <ReturnIcon size={15} className="mt-px flex-none" />
+              <span>
+                {content.checkout_note}{" "}
+                <Link href="/info/returns" className="text-link">
+                  Returns
+                </Link>
+              </span>
+            </li>
+          )}
+          <li className="flex items-start gap-2.5">
+            <MailIcon size={15} className="mt-px flex-none" />
+            <span>
+              Questions before you order? <ContactEmail className="text-link" />
+            </span>
+          </li>
         </ul>
       )}
       {sticky && (

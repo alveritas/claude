@@ -41,7 +41,7 @@ export const CONTENT_FIELDS = [
     group: "Homepage",
     defaultValue: "Drop 001 — out now | Ships worldwide | Secure checkout | Not made to explain",
   },
-  { key: "collection_heading", label: "Collection heading", group: "Homepage", defaultValue: "THE FIRST COLLECTION" },
+  { key: "collection_heading", label: "Collection heading", group: "Homepage", defaultValue: "DROP 001" },
   {
     key: "collection_subheading",
     label: "Collection subheading",
@@ -82,7 +82,7 @@ export const CONTENT_FIELDS = [
     label: "Newsletter text",
     group: "Homepage",
     multiline: true,
-    defaultValue: "Early access to releases, exclusive announcements, and the first NEVERHOLLOW collection.",
+    defaultValue: "New drops, restocks and exclusive releases, sent to your inbox first.",
   },
   {
     key: "newsletter_consent",
@@ -301,6 +301,8 @@ const LEGACY_PROCESSOR: [string, string][] = [
   ["Stripe (payments and fraud prevention)", "{payment_processor} (payments and fraud prevention)"],
   ["Payment is taken by Stripe when you place your order.", "Payment is taken by {payment_processor} when you place your order."],
   ["Pay by card, Apple Pay or Cash App Pay.", "Pay by card, Apple Pay, Google Pay or Cash App Pay."],
+  // Copy written before the release, kept up to date now that Drop 001 is out.
+  ["Early access to releases, exclusive announcements, and the first NEVERHOLLOW collection.", "New drops, restocks and exclusive releases, sent to your inbox first."],
   // The ticker once promised wallets the current checkout may not offer.
   ["| Apple Pay and Cash App Pay |", "| Secure checkout |"],
 ];

@@ -405,3 +405,21 @@ alter table public.checkout_refs add column if not exists details jsonb;
 alter table public.orders drop constraint if exists orders_status_check;
 alter table public.orders add constraint orders_status_check
   check (status in ('awaiting_payment', 'paid', 'fulfilled', 'shipped', 'delivered', 'refunded', 'canceled'));
+
+-- ───────────────────────── Back-in-stock requests ─────────────────────────
+-- One row per shopper per sold-out size. Written by the server only; the owner reads them in
+-- the admin. notified_at is set when the restock email goes out, so nobody is emailed twice.
+create table if not exists public.restock_requests (
+  id uuid primary key default gen_random_uuid(),
+  email text not null check (email = lower(email)),
+  product_id uuid references public.products (id) on delete cascade,
+  variant_id uuid not null references public.product_variants (id) on delete cascade,
+  created_at timestamptz not null default now(),
+  notified_at timestamptz,
+  unique (email, variant_id)
+);
+alter table public.restock_requests enable row level security;
+revoke all on public.restock_requests from anon, authenticated;
+grant select on public.restock_requests to authenticated;
+drop policy if exists "restock admin read" on public.restock_requests;
+create policy "restock admin read" on public.restock_requests for select using (public.is_admin());

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/server/auth";
 import { settleCashAppOrder } from "@/lib/server/cashapp-orders";
+import { sendRestockAlerts } from "@/lib/server/restock";
 import { shippingConfirmationEmail, sendEmail } from "@/lib/server/email";
 import { paymentMode, paymentsReady } from "@/lib/server/payments";
 import { ensureSquareWebhook } from "@/lib/server/square";
@@ -299,7 +300,11 @@ export async function saveVariants(_: AdminState, fd: FormData): Promise<AdminSt
   const sizes = clean.map((r) => r.size.toLowerCase());
   if (new Set(sizes).size !== sizes.length) return { error: "Each size can only appear once." };
 
-  const { data: existing } = await supabase.from("product_variants").select("id").eq("product_id", productId);
+  const { data: existing } = await supabase.from("product_variants").select("id, stock").eq("product_id", productId);
+  // Sizes coming back from sold out: people waiting on them get their email after the save.
+  const backInStock = clean
+    .filter((r) => r.id && r.stock > 0 && (existing ?? []).some((e) => e.id === r.id && Number(e.stock) <= 0))
+    .map((r) => r.id as string);
   const keep = new Set(clean.map((r) => r.id).filter(Boolean));
   const remove = (existing ?? []).map((e) => e.id).filter((id) => !keep.has(id));
   if (remove.length) {
@@ -314,7 +319,13 @@ export async function saveVariants(_: AdminState, fd: FormData): Promise<AdminSt
     if (error) return { error: error.code === "23505" ? `Size ${r.size} already exists.` : error.message };
   }
   refreshStore();
-  return { ok: "Sizes and stock saved." };
+  const alerts = await sendRestockAlerts(backInStock);
+  const restockNote = alerts.sent
+    ? ` Emailed ${alerts.sent} ${alerts.sent === 1 ? "person" : "people"} who asked to hear when it was back.`
+    : alerts.waiting
+      ? ` ${alerts.waiting} ${alerts.waiting === 1 ? "person asked" : "people asked"} to hear when it was back, but email isn’t set up, so no alert was sent. Their addresses are under Newsletter.`
+      : "";
+  return { ok: `Sizes and stock saved.${restockNote}` };
 }
 
 /**

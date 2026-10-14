@@ -722,6 +722,25 @@
   transform: scale(1.08);
   animation: settle 2.6s var(--ease-quiet) calc(var(--d, 0s) + var(--intro-delay, 0s)) forwards;
 }
+.hero-title {
+  font-size: clamp(1.75rem, 7.6vw, 5.25rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.2em;
+  /* The tracking also follows the last letter; pull it back so the word sits centred. */
+  margin-right: -0.2em;
+  color: var(--color-bone);
+  /* A soft halo of the page colour keeps the letters clear of the figures behind them. */
+  text-shadow:
+    0 0 28px var(--color-ink),
+    0 0 10px var(--color-ink);
+}
+@media (min-width: 48rem) {
+  .hero-title {
+    letter-spacing: 0.3em;
+    margin-right: -0.3em;
+  }
+}
 .hero-copy {
   opacity: 0;
   animation: fade-up 1.2s var(--ease-quiet) calc(0.8s + var(--intro-delay, 0s)) forwards;

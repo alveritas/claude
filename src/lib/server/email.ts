@@ -117,3 +117,15 @@ export function cashAppInstructionsEmail(args: {
   const text = `Order ${args.orderNumber} is reserved.\n\nIn Cash App, send ${total} to ${args.cashTag} and write ${args.orderNumber} in the "For" note: ${args.payUrl}\n\nWe ship once the payment arrives. Orders that aren't paid within 48 hours are cancelled. Only ever send money to ${args.cashTag}.\n\nYour order: ${args.orderUrl}`;
   return { subject: `Order ${args.orderNumber}: send ${total} to ${args.cashTag}`, html, text };
 }
+
+/** Back-in-stock alert for a size the shopper asked about. Sent once. */
+export function restockEmail(args: { productName: string; size: string; url: string }) {
+  const html = layout(
+    `${args.productName} is back in ${args.size}.`,
+    `<p>You asked us to tell you when it was back. It’s in stock now, while it lasts.</p>
+<p><a href="${esc(args.url)}" style="display:inline-block;background:#080808;color:#F4F3F0;padding:12px 22px;text-decoration:none;font-size:12px;letter-spacing:2px">SHOP NOW</a></p>
+<p>This is the only email you’ll get about it.</p>`,
+  );
+  const text = `${args.productName} is back in ${args.size}: ${args.url}\n\nThis is the only email you'll get about it.`;
+  return { subject: `Back in stock: ${args.productName}, ${args.size}`, html, text };
+}
