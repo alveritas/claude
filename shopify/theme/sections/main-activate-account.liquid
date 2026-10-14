@@ -1,0 +1,12 @@
+<section class="shell page-pad auth">
+  <h1 class="page-title page-title-gap">Activate your account</h1>
+  {%- form 'activate_customer_password', class: 'auth-form' -%}
+    {%- if form.errors -%}<p class="form-error" role="alert">{{ form.errors | default_errors }}</p>{%- endif -%}
+    <div><label class="label" for="act-pw">Password</label><input class="field" id="act-pw" type="password" name="customer[password]" autocomplete="new-password"></div>
+    <div><label class="label" for="act-pw2">Confirm password</label><input class="field" id="act-pw2" type="password" name="customer[password_confirmation]" autocomplete="new-password"></div>
+    <button type="submit" class="btn btn-solid btn-block">Activate</button>
+  {%- endform -%}
+</section>
+{% schema %}
+{ "name": "Activate account", "class": "section-activate", "settings": [] }
+{% endschema %}

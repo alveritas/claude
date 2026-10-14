@@ -1,0 +1,79 @@
+<footer class="site-footer">
+  <div class="shell footer-grid">
+    <div class="footer-brand">
+      <a href="{{ routes.root_url }}" class="footer-logo" aria-label="{{ shop.name }} home">
+        <span class="brand-mark brand-wordmark" role="img" aria-label="{{ shop.name }}"></span>
+      </a>
+      {%- comment -%} The homepage has its own sign-up section, so the footer doesn't repeat it there. {%- endcomment -%}
+      {%- unless request.page_type == 'index' -%}
+        <p class="section-title footer-heading">{{ section.settings.signup_heading }}</p>
+        <p class="muted small">{{ section.settings.signup_text }}</p>
+        {% render 'newsletter-form', form_id: 'newsletter-footer', compact: true %}
+      {%- else -%}
+        <p class="muted small footer-heading">Independent unisex streetwear. Drop 001 is out now.</p>
+      {%- endunless -%}
+    </div>
+
+    <div class="footer-col">
+      <p class="caps muted footer-label">Shop</p>
+      <ul>
+        <li><a href="{{ routes.all_products_collection_url }}">All products</a></li>
+        {%- for type in shop.types -%}
+          {%- if type != blank -%}<li><a href="{{ type | url_for_type }}">{{ type }}</a></li>{%- endif -%}
+        {%- endfor -%}
+        <li><a href="{{ routes.collections_url }}">Collections</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <p class="caps muted footer-label">Help</p>
+      <ul>
+        <li><a href="/pages/contact">Contact</a></li>
+        {%- if shop.shipping_policy.url != blank -%}<li><a href="{{ shop.shipping_policy.url }}">Shipping</a></li>{%- endif -%}
+        {%- if shop.refund_policy.url != blank -%}<li><a href="{{ shop.refund_policy.url }}">Returns</a></li>{%- endif -%}
+        <li><a href="/pages/faq">FAQ</a></li>
+        {%- if shop.customer_accounts_enabled -%}<li><a href="{{ routes.account_url }}">Account</a></li>{%- endif -%}
+      </ul>
+      {%- if settings.contact_email != blank -%}
+        <p class="footer-email"><a class="muted" href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a></p>
+      {%- endif -%}
+    </div>
+
+    <div class="footer-col">
+      <p class="caps muted footer-label">Brand</p>
+      <ul>
+        <li><a href="/pages/about">About</a></li>
+        {%- if shop.privacy_policy.url != blank -%}<li><a href="{{ shop.privacy_policy.url }}">Privacy Policy</a></li>{%- endif -%}
+        {%- if shop.terms_of_service.url != blank -%}<li><a href="{{ shop.terms_of_service.url }}">Terms of Service</a></li>{%- endif -%}
+        {%- if settings.instagram_url != blank -%}<li><a href="{{ settings.instagram_url }}" rel="noopener" target="_blank">Instagram</a></li>{%- endif -%}
+        {%- if settings.tiktok_url != blank -%}<li><a href="{{ settings.tiktok_url }}" rel="noopener" target="_blank">TikTok</a></li>{%- endif -%}
+      </ul>
+    </div>
+  </div>
+
+  <div class="shell footer-bottom">
+    <p class="caps muted">&copy; {{ 'now' | date: '%Y' }} {{ shop.name | upcase }}. All rights reserved.</p>
+    <div class="footer-pay">
+      {%- if shop.enabled_payment_types.size > 0 -%}
+        <span class="caps muted">Secure checkout</span>
+        <ul class="pay-icons" aria-label="Ways to pay">
+          {%- for type in shop.enabled_payment_types -%}
+            <li>{{ type | payment_type_svg_tag: class: 'pay-icon' }}</li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+      <span class="caps muted">Prices in {{ cart.currency.iso_code }}</span>
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "class": "section-footer",
+  "settings": [
+    { "type": "text", "id": "signup_heading", "label": "Sign-up heading", "default": "Join the list" },
+    { "type": "text", "id": "signup_text", "label": "Sign-up text", "default": "New drops, restocks and exclusive releases." }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#f4f3f0">
+    <meta name="color-scheme" content="only light">
+    <link rel="canonical" href="{{ canonical_url }}">
+    {%- if settings.favicon != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 64, height: 64 }}">
+    {%- else -%}
+      <link rel="icon" type="image/png" href="{{ 'nh-favicon.png' | asset_url }}">
+    {%- endif -%}
+    <link rel="apple-touch-icon" href="{{ 'nh-favicon.png' | asset_url }}">
+
+    {%- capture seo_title -%}
+      {%- if request.page_type == 'index' -%}
+        {{ shop.name }} | {{ settings.brand_tagline }}
+      {%- else -%}
+        {{ page_title }}{% if current_tags %} – {{ current_tags | join: ', ' }}{% endif %}{% if current_page != 1 %} – Page {{ current_page }}{% endif %} | {{ shop.name }}
+      {%- endif -%}
+    {%- endcapture -%}
+    <title>{{ seo_title | strip }}</title>
+    {%- if page_description -%}
+      <meta name="description" content="{{ page_description | escape }}">
+    {%- endif -%}
+    {% render 'meta-tags' %}
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+      :root {
+        --mark-wordmark: url("{{ 'cursive-mask.webp' | asset_url }}");
+        --mark-monogram: url("{{ 'nh-mask.webp' | asset_url }}");
+      }
+    </style>
+    {{ 'base.css' | asset_url | stylesheet_tag }}
+    <script>
+      window.NH = {
+        routes: {
+          cart: {{ routes.cart_url | json }},
+          cartAdd: {{ routes.cart_add_url | json }},
+          cartChange: {{ routes.cart_change_url | json }},
+          root: {{ routes.root_url | json }}
+        },
+        moneyFormat: {{ shop.money_format | json }}
+      };
+    </script>
+    <script src="{{ 'theme.js' | asset_url }}" defer></script>
+
+    {{ content_for_header }}
+  </head>
+
+  <body class="template-{{ request.page_type | handle }}">
+    <a class="skip-link" href="#main">Skip to content</a>
+    {% section 'announcement-bar' %}
+    {% section 'header' %}
+
+    <main id="main" tabindex="-1">
+      {{ content_for_layout }}
+    </main>
+
+    {% section 'footer' %}
+    {% section 'cart-drawer' %}
+
+    {%- if request.page_type == 'index' -%}
+      <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": {{ shop.name | json }},
+          "url": {{ request.origin | append: routes.root_url | json }}{% if settings.instagram_url != blank or settings.tiktok_url != blank %},
+          "sameAs": [{% if settings.instagram_url != blank %}{{ settings.instagram_url | json }}{% endif %}{% if settings.instagram_url != blank and settings.tiktok_url != blank %},{% endif %}{% if settings.tiktok_url != blank %}{{ settings.tiktok_url | json }}{% endif %}]{% endif %}
+        }
+      </script>
+    {%- endif -%}
+  </body>
+</html>

@@ -1,0 +1,52 @@
+{%- liquid
+  assign product = section.settings.product
+  if product == blank
+    assign product = all_products['vigil-fur-zip-hoodie']
+  endif
+  if product == blank
+    assign product = collections.all.products.first
+  endif
+-%}
+{%- if product != blank and product.media.size > 0 -%}
+  <section class="band-tint" aria-labelledby="spot-{{ section.id }}" data-spotlight>
+    <div class="shell spotlight">
+      <div class="spot-media">
+        <div class="frame spot-frame">
+          {%- for media in product.media limit: 6 -%}
+            <div class="spot-slide{% if forloop.first %} is-active{% endif %}" data-spot-slide="{{ forloop.index0 }}">
+              {{ media.preview_image | image_url: width: 1200 | image_tag: widths: '540, 720, 900, 1200', sizes: '(min-width: 768px) 560px, 100vw', loading: 'lazy', alt: media.alt }}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+      <div class="spot-copy">
+        <h2 id="spot-{{ section.id }}" class="page-title">{{ section.settings.heading | default: product.title | escape }}</h2>
+        {%- if section.settings.text != blank -%}<p class="muted spot-text">{{ section.settings.text | escape }}</p>{%- endif -%}
+        <div class="spot-thumbs" role="tablist" aria-label="Views">
+          {%- for media in product.media limit: 6 -%}
+            <button type="button" class="spot-thumb frame" role="tab" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" data-spot-tab="{{ forloop.index0 }}" aria-label="View {{ forloop.index }}">
+              {{ media.preview_image | image_url: width: 200 | image_tag: loading: 'lazy', alt: '', sizes: '72px', widths: '120, 200' }}
+            </button>
+          {%- endfor -%}
+        </div>
+        <div class="spot-actions">
+          <a href="{{ product.url }}" class="btn btn-solid">View the piece</a>
+          <span class="muted">{{ product.price | money_without_trailing_zeros }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Spotlight",
+  "class": "section-spotlight",
+  "settings": [
+    { "type": "product", "id": "product", "label": "Piece", "info": "Leave empty for the Vigil Fur Zip Hoodie." },
+    { "type": "text", "id": "heading", "label": "Heading", "info": "Leave empty to use the piece's name." },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Made for late nights. Choose a view to look closer." }
+  ],
+  "presets": [{ "name": "Spotlight" }]
+}
+{% endschema %}

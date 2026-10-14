@@ -1,0 +1,40 @@
+{%- liquid
+  assign messages = section.blocks | where: 'type', 'message'
+-%}
+{%- if messages.size > 0 -%}
+  <div class="announcement" data-announcement role="region" aria-label="Announcement">
+    {%- for block in messages -%}
+      <p class="ann-msg{% if forloop.first %} is-active{% endif %}" {{ block.shopify_attributes }}>
+        {%- if block.settings.link != blank -%}
+          <a href="{{ block.settings.link }}">{{ block.settings.text | escape }}</a>
+        {%- else -%}
+          {{ block.settings.text | escape }}
+        {%- endif -%}
+      </p>
+    {%- endfor -%}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Announcement bar",
+  "class": "section-announcement",
+  "max_blocks": 4,
+  "blocks": [
+    {
+      "type": "message",
+      "name": "Message",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text", "default": "Drop 001 is out now" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      { "type": "message", "settings": { "text": "Drop 001 is out now" } },
+      { "type": "message", "settings": { "text": "Worldwide shipping" } }
+    ]
+  }
+}
+{% endschema %}

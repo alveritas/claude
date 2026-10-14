@@ -1,0 +1,23 @@
+<section class="shell page-pad">
+  <h1 class="page-title page-title-gap">Collections</h1>
+  <div class="grid grid--3 collections-list">
+    {%- for c in collections -%}
+      {%- if c.handle != 'frontpage' and c.products_count > 0 -%}
+        {%- assign img = c.image | default: c.products.first.featured_media.preview_image -%}
+        <a class="cat-tile" href="{{ c.url }}">
+          <span class="frame cat-frame">
+            {%- if img -%}{{ img | image_url: width: 1000 | image_tag: widths: '400, 600, 800, 1000', sizes: '(min-width: 1024px) 33vw, 100vw', loading: 'lazy', alt: '', class: 'cat-img' }}{%- endif -%}
+          </span>
+          <span class="cat-label">
+            <span class="card-title">{{ c.title }} <span class="tile-arrow" aria-hidden="true">→</span></span>
+            <span class="muted small">{{ c.products_count }} {% if c.products_count == 1 %}piece{% else %}pieces{% endif %}</span>
+          </span>
+        </a>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{ "name": "Collections list", "class": "section-list-collections", "settings": [] }
+{% endschema %}

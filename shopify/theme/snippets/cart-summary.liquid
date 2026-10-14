@@ -1,0 +1,12 @@
+<div class="cart-summary">
+  <dl class="sum">
+    <div class="sum-row"><dt>Subtotal</dt><dd class="tabular" data-cart-subtotal>{{ cart.total_price | money_without_trailing_zeros }}</dd></div>
+    <div class="sum-row muted"><dt>Shipping</dt><dd>Added at checkout</dd></div>
+  </dl>
+  {%- if settings.shipping_summary != blank -%}<p class="muted micro">{{ settings.shipping_summary | escape }}</p>{%- endif -%}
+  <form action="{{ routes.cart_url }}" method="post" class="checkout-form">
+    <button type="submit" name="checkout" class="btn btn-solid btn-block">Checkout</button>
+  </form>
+  <p class="muted micro center">{% render 'icon', name: 'lock', size: 12 %} Secure checkout. Card details never touch this site.</p>
+  {%- if settings.returns_note != blank -%}<p class="micro">{{ settings.returns_note | escape }}</p>{%- endif -%}
+</div>

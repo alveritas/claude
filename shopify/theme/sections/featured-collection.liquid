@@ -1,0 +1,81 @@
+{%- liquid
+  assign collection = section.settings.collection
+  if collection == blank
+    assign collection = collections['drop-001']
+  endif
+  if collection == blank or collection.products_count == 0
+    assign collection = collections.all
+  endif
+  assign limit = section.settings.limit
+  assign n = collection.products.size
+  if n > limit
+    assign n = limit
+  endif
+  assign odd = n | modulo: 2
+  assign mod4 = n | modulo: 4
+  assign mod3 = n | modulo: 3
+  assign feature = false
+  if n >= 5 and mod4 == 1
+    assign feature = true
+  endif
+  assign three = false
+  if feature == false and mod4 != 0 and mod3 == 0
+    assign three = true
+  endif
+-%}
+<section class="shell section-pad" aria-labelledby="featured-{{ section.id }}">
+  <div class="section-head">
+    <div>
+      <h2 id="featured-{{ section.id }}" class="section-title">{{ section.settings.heading | escape }}</h2>
+      {%- if section.settings.subheading != blank -%}<p class="muted small">{{ section.settings.subheading | escape }}</p>{%- endif -%}
+    </div>
+    <a class="text-link caps" href="{{ collection.url }}">View all</a>
+  </div>
+  {%- if n > 0 -%}
+    <div class="grid featured-grid{% if three %} grid--3{% endif %}{% if feature %} grid--feature{% endif %}">
+      {%- for product in collection.products limit: limit -%}
+        {%- liquid
+          assign big = false
+          if feature and forloop.first
+            assign big = true
+          endif
+          assign cls = ''
+          if forloop.first and odd == 1
+            assign cls = 'span-mobile'
+          endif
+          if big
+            assign cls = cls | append: ' span-feature'
+            assign card_sizes = '(min-width: 1024px) 50vw, 100vw'
+          elsif three
+            assign card_sizes = '(min-width: 1024px) 33vw, 50vw'
+          else
+            assign card_sizes = '(min-width: 1024px) 25vw, 50vw'
+          endif
+          assign eager = false
+          if forloop.index <= 2
+            assign eager = true
+          endif
+        -%}
+        <div class="grid-cell {{ cls }}">
+          {% render 'product-card', product: product, feature: big, sizes: card_sizes, eager: eager %}
+        </div>
+      {%- endfor -%}
+    </div>
+  {%- else -%}
+    <p class="muted">Products you add in Shopify appear here.</p>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Featured products",
+  "class": "section-featured",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "DROP 001" },
+    { "type": "text", "id": "subheading", "label": "Subheading", "default": "Designed with intention. Made to be worn." },
+    { "type": "collection", "id": "collection", "label": "Collection", "info": "Leave empty for the Drop 001 collection (or all products)." },
+    { "type": "range", "id": "limit", "label": "Products shown", "min": 2, "max": 12, "step": 1, "default": 8 }
+  ],
+  "presets": [{ "name": "Featured products" }]
+}
+{% endschema %}

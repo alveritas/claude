@@ -1,0 +1,251 @@
+{%- liquid
+  assign current = product.selected_or_first_available_variant
+  assign color_index = nil
+  for option in product.options_with_values
+    assign oname = option.name | downcase
+    if oname == 'color' or oname == 'colour'
+      assign color_index = forloop.index0
+    endif
+  endfor
+  assign single_default = false
+  if product.has_only_default_variant
+    assign single_default = true
+  endif
+-%}
+<section class="product-page" data-product-section data-section-id="{{ section.id }}">
+  <div class="shell">
+    <nav aria-label="Breadcrumb" class="breadcrumb muted">
+      <ol>
+        <li><a href="{{ routes.all_products_collection_url }}">Shop</a></li>
+        {%- if product.type != blank -%}
+          <li aria-hidden="true">/</li>
+          <li><a href="{{ product.type | url_for_type }}">{{ product.type }}</a></li>
+        {%- endif -%}
+        <li aria-hidden="true">/</li>
+        <li aria-current="page">{{ product.title }}</li>
+      </ol>
+    </nav>
+  </div>
+
+  <div class="shell product-grid">
+    {%- comment -%} Gallery: every photo; with colours, only the chosen colour's photos show. {%- endcomment -%}
+    <div class="gallery" data-gallery>
+      <div class="gallery-track" data-gallery-track tabindex="0" aria-label="Product photos">
+        {%- for media in product.media -%}
+          <figure class="gallery-slide frame" data-media-id="{{ media.id }}">
+            <button type="button" class="gallery-zoom" data-zoom aria-label="Open photo {{ forloop.index }} full screen">
+              {%- assign eager = 'lazy' -%}
+              {%- if forloop.first -%}{%- assign eager = 'eager' -%}{%- endif -%}
+              {{ media.preview_image | image_url: width: 1800 | image_tag: widths: '540, 720, 900, 1200, 1500, 1800', sizes: '(min-width: 768px) 50vw, 100vw', loading: eager, alt: media.alt, class: 'gallery-img' }}
+            </button>
+          </figure>
+        {%- else -%}
+          <figure class="gallery-slide frame">{{ 'product-apparel-1' | placeholder_svg_tag: 'placeholder' }}</figure>
+        {%- endfor -%}
+      </div>
+      {%- if product.media.size > 1 -%}
+        <div class="gallery-bar">
+          <span class="muted small" data-gallery-count>1 / {{ product.media.size }}</span>
+          <div class="gallery-arrows">
+            <button type="button" class="icon-btn" data-gallery-prev aria-label="Previous photo">{% render 'icon', name: 'chevron-left' %}</button>
+            <button type="button" class="icon-btn" data-gallery-next aria-label="Next photo">{% render 'icon', name: 'chevron-right' %}</button>
+          </div>
+        </div>
+        <div class="gallery-thumbs desktop-only-flex" role="tablist" aria-label="Choose a photo">
+          {%- for media in product.media -%}
+            <button type="button" class="gallery-thumb frame" role="tab" data-thumb="{{ media.id }}" aria-label="Photo {{ forloop.index }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+              {{ media.preview_image | image_url: width: 240 | image_tag: loading: 'lazy', alt: '', sizes: '80px', widths: '120, 240' }}
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="product-info">
+      <h1 class="page-title">{{ product.title }}</h1>
+      <div class="price-row">
+        <span class="price" data-price>{{ current.price | money_without_trailing_zeros }}</span>
+        {%- if current.compare_at_price > current.price -%}
+          <s class="muted" data-compare>{{ current.compare_at_price | money_without_trailing_zeros }}</s>
+        {%- endif -%}
+        <span class="muted small" data-availability>{% if current.available %}Available{% else %}Sold out{% endif %}</span>
+      </div>
+      <p class="muted micro">Shipping is added at checkout.</p>
+
+      {%- form 'product', product, id: 'product-form', class: 'product-form', novalidate: 'novalidate' -%}
+        <input type="hidden" name="id" value="{{ current.id }}" data-variant-input>
+
+        {%- unless single_default -%}
+          {%- for option in product.options_with_values -%}
+            {%- assign is_color = false -%}
+            {%- if forloop.index0 == color_index -%}{%- assign is_color = true -%}{%- endif -%}
+            <fieldset class="option" data-option="{{ forloop.index0 }}">
+              <div class="option-head">
+                <legend class="option-legend">{{ option.name }}<span class="muted">: <span data-option-value="{{ forloop.index0 }}">{{ option.selected_value }}</span></span></legend>
+                {%- unless is_color -%}
+                  {%- if product.metafields.custom.size_guide != blank and forloop.last -%}
+                    <a href="#size-fit" class="text-link micro muted" data-open-size>Size guide</a>
+                  {%- endif -%}
+                {%- endunless -%}
+              </div>
+              <div class="option-values{% if is_color %} option-values--color{% endif %}" role="radiogroup" aria-label="{{ option.name }}">
+                {%- assign key = 'option' | append: option.position -%}
+                {%- for value in option.values -%}
+                  {%- if is_color -%}
+                    {%- assign v = product.variants | where: key, value | first -%}
+                    {%- assign vm = v.featured_media -%}
+                    <button type="button" class="color-tile" role="radio" data-value="{{ value | escape }}" aria-checked="{% if option.selected_value == value %}true{% else %}false{% endif %}" aria-label="{{ value | escape }}" title="{{ value | escape }}">
+                      <span class="frame color-tile-img">
+                        {%- if vm -%}
+                          {{ vm.preview_image | image_url: width: 160 | image_tag: loading: 'lazy', alt: '', sizes: '56px', widths: '112, 160' }}
+                        {%- else -%}
+                          <span class="dot dot--lg" style="--dot: {% render 'swatch', color: value %}"></span>
+                        {%- endif -%}
+                      </span>
+                    </button>
+                  {%- else -%}
+                    <button type="button" class="size-option" role="radio" data-value="{{ value | escape }}" aria-checked="{% if option.selected_value == value %}true{% else %}false{% endif %}">{{ value }}</button>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            </fieldset>
+          {%- endfor -%}
+        {%- endunless -%}
+
+        <div class="buy" data-buy>
+          <div class="qty-row">
+            <div class="qty" data-qty>
+              <button type="button" data-qty-minus aria-label="Decrease quantity">{% render 'icon', name: 'minus', size: 14 %}</button>
+              <input type="number" name="quantity" value="1" min="1" max="10" inputmode="numeric" aria-label="Quantity">
+              <button type="button" data-qty-plus aria-label="Increase quantity">{% render 'icon', name: 'plus', size: 14 %}</button>
+            </div>
+            <span class="muted micro">Quantity</span>
+          </div>
+          <button type="submit" name="add" class="btn btn-solid btn-block" data-add {% unless current.available %}disabled{% endunless %}>
+            <span data-add-label>{% if current.available %}Add to bag{% else %}Sold out{% endif %}</span>
+          </button>
+          <div class="dynamic-checkout" data-dynamic-checkout {% unless current.available %}hidden{% endunless %}>
+            {{ form | payment_button }}
+          </div>
+          <p class="form-error" role="alert" data-form-error hidden></p>
+        </div>
+      {%- endform -%}
+
+      {%- comment -%}
+        Back-in-stock: the request reaches the store as a contact message with the piece and size.
+      {%- endcomment -%}
+      <div class="restock" data-restock {% if current.available %}hidden{% endif %}>
+        {%- form 'contact', id: 'restock-form', class: 'restock-form' -%}
+          {%- if form.posted_successfully? -%}
+            <p class="note" role="status">Done. We’ll email you when it’s back.</p>
+          {%- else -%}
+            <input type="hidden" name="contact[subject]" value="Back-in-stock request">
+            <input type="hidden" name="contact[Piece]" value="{{ product.title | escape }}">
+            <input type="hidden" name="contact[Option]" value="{{ current.title | escape }}" data-restock-option>
+            <label class="small" for="restock-email"><span data-restock-label>{{ current.title }}</span> is sold out. Leave your email and we’ll let you know when it’s back.</label>
+            <div class="restock-row">
+              <input id="restock-email" class="boxed" type="email" name="contact[email]" autocomplete="email" placeholder="Email address" required>
+              <button type="submit" class="btn btn-solid">Notify me</button>
+            </div>
+            {%- if form.errors -%}<p class="form-error" role="alert">Enter a valid email address.</p>{%- endif -%}
+            <p class="muted micro">One email when it’s restocked. You won’t be added to the newsletter.</p>
+          {%- endif -%}
+        {%- endform -%}
+      </div>
+
+      <ul class="trust" aria-label="Payment, shipping and returns">
+        <li>{% render 'icon', name: 'lock', size: 15 %}<span>Secure checkout.{% if shop.enabled_payment_types.size > 0 %} <span class="trust-pay">{% for type in shop.enabled_payment_types limit: 6 %}{{ type | payment_type_svg_tag: class: 'pay-icon pay-icon--sm' }}{% endfor %}</span>{% endif %}</span></li>
+        {%- if settings.shipping_summary != blank -%}
+          <li>{% render 'icon', name: 'globe', size: 15 %}<span>{{ settings.shipping_summary | escape }}{% if settings.processing_time != blank %} {{ settings.processing_time | escape }}{% endif %}{% if shop.shipping_policy.url != blank %} <a class="text-link" href="{{ shop.shipping_policy.url }}">Shipping</a>{% endif %}</span></li>
+        {%- endif -%}
+        {%- if settings.returns_note != blank -%}
+          <li>{% render 'icon', name: 'return', size: 15 %}<span>{{ settings.returns_note | escape }}{% if shop.refund_policy.url != blank %} <a class="text-link" href="{{ shop.refund_policy.url }}">Returns</a>{% endif %}</span></li>
+        {%- endif -%}
+        {%- if settings.contact_email != blank -%}
+          <li>{% render 'icon', name: 'mail', size: 15 %}<span>Questions before you order? <a class="text-link" href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a></span></li>
+        {%- endif -%}
+      </ul>
+
+      <div class="accordions">
+        <details class="acc" open>
+          <summary>Details {% render 'icon', name: 'plus', size: 14 %}</summary>
+          <div class="acc-body rte">
+            {{ product.description }}
+            {%- if product.metafields.custom.fabric != blank -%}<p>{{ product.metafields.custom.fabric }}</p>{%- endif -%}
+            {%- if product.metafields.custom.care != blank -%}<p>{{ product.metafields.custom.care }}</p>{%- endif -%}
+            {%- if product.metafields.custom.fabric == blank and settings.contact_email != blank -%}
+              <p class="muted">Questions about fabric or care? Email <a class="text-link" href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a> and we’ll answer before you order.</p>
+            {%- endif -%}
+          </div>
+        </details>
+        <details class="acc" id="size-fit">
+          <summary>Size &amp; fit {% render 'icon', name: 'plus', size: 14 %}</summary>
+          <div class="acc-body rte">
+            {%- if product.metafields.custom.size_guide != blank -%}
+              {{ product.metafields.custom.size_guide | metafield_tag }}
+            {%- else -%}
+              <p class="muted">Unisex sizing. Not sure which size to get?{% if settings.contact_email != blank %} Email <a class="text-link" href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a> with your usual size and we’ll help you choose.{% endif %}</p>
+            {%- endif -%}
+          </div>
+        </details>
+        <details class="acc">
+          <summary>Shipping &amp; returns {% render 'icon', name: 'plus', size: 14 %}</summary>
+          <div class="acc-body rte">
+            {%- if settings.shipping_summary != blank -%}<p>{{ settings.shipping_summary | escape }}</p>{%- endif -%}
+            {%- if settings.returns_note != blank -%}<p>{{ settings.returns_note | escape }}</p>{%- endif -%}
+            <p>
+              {%- if shop.shipping_policy.url != blank -%}<a class="text-link" href="{{ shop.shipping_policy.url }}">Shipping policy</a>&nbsp;&nbsp; {%- endif -%}
+              {%- if shop.refund_policy.url != blank -%}<a class="text-link" href="{{ shop.refund_policy.url }}">Returns policy</a>{%- endif -%}
+            </p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <div class="sticky-buy" data-sticky-buy aria-hidden="true">
+    <div class="sticky-buy-text">
+      <p class="truncate">{{ product.title }}</p>
+      <p class="muted micro" data-sticky-meta>{{ current.price | money_without_trailing_zeros }}{% unless single_default %} · {{ current.title }}{% endunless %}</p>
+    </div>
+    <button type="button" class="btn btn-solid" data-sticky-add tabindex="-1">Add to bag</button>
+  </div>
+
+  <script type="application/json" data-product-json>{{ product | json }}</script>
+  <script type="application/json" data-product-meta>{"colorIndex": {{ color_index | json }}, "singleDefault": {{ single_default | json }}}</script>
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "name": {{ product.title | json }},
+      "url": {{ request.origin | append: product.url | json }},
+      {%- if product.featured_media -%}
+      "image": [{% for media in product.media limit: 6 %}{{ media.preview_image | image_url: width: 1200 | prepend: 'https:' | json }}{% unless forloop.last %},{% endunless %}{% endfor %}],
+      {%- endif -%}
+      "description": {{ product.description | strip_html | strip | json }},
+      "brand": { "@type": "Brand", "name": {{ product.vendor | json }} },
+      "offers": [
+        {%- for variant in product.variants -%}
+          {
+            "@type": "Offer",
+            "sku": {{ variant.sku | default: variant.id | json }},
+            "name": {{ variant.title | json }},
+            "availability": "http://schema.org/{% if variant.available %}InStock{% else %}OutOfStock{% endif %}",
+            "price": {{ variant.price | divided_by: 100.0 | json }},
+            "priceCurrency": {{ cart.currency.iso_code | json }},
+            "url": {{ request.origin | append: variant.url | json }}
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      ]
+    }
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Product page",
+  "class": "section-main-product",
+  "settings": []
+}
+{% endschema %}

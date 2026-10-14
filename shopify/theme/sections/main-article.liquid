@@ -1,0 +1,9 @@
+<article class="shell page-pad narrow">
+  <p class="muted small">{{ article.published_at | date: '%B %-d, %Y' }}</p>
+  <h1 class="page-title page-title-gap">{{ article.title }}</h1>
+  {%- if article.image -%}<div class="frame article-img">{{ article.image | image_url: width: 1600 | image_tag: sizes: '(min-width: 768px) 720px, 100vw', widths: '600, 900, 1200, 1600', alt: article.image.alt }}</div>{%- endif -%}
+  <div class="rte prose">{{ article.content }}</div>
+</article>
+{% schema %}
+{ "name": "Article", "class": "section-article", "settings": [] }
+{% endschema %}

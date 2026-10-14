@@ -1,0 +1,26 @@
+<section class="shell page-pad auth">
+  <div data-login-panel>
+    <h1 class="page-title page-title-gap">Sign in</h1>
+    {%- form 'customer_login', class: 'auth-form', novalidate: 'novalidate' -%}
+      {%- if form.errors -%}<p class="form-error" role="alert">That email and password don’t match an account.</p>{%- endif -%}
+      <div><label class="label" for="login-email">Email</label><input class="field" id="login-email" type="email" name="customer[email]" autocomplete="email" required></div>
+      {%- if form.password_needed -%}
+        <div><label class="label" for="login-pw">Password</label><input class="field" id="login-pw" type="password" name="customer[password]" autocomplete="current-password" required></div>
+      {%- endif -%}
+      <button type="submit" class="btn btn-solid btn-block">Sign in</button>
+      <p class="muted small"><a class="text-link" href="#recover" data-show-recover>Forgot your password?</a></p>
+      <p class="muted small">New here? <a class="text-link" href="{{ routes.account_register_url }}">Create an account</a></p>
+    {%- endform -%}
+  </div>
+  <div id="recover" class="recover">
+    <h2 class="section-title">Reset your password</h2>
+    {%- form 'recover_customer_password', class: 'auth-form' -%}
+      {%- if form.posted_successfully? -%}<p class="note" role="status">We’ve emailed you a link to reset your password.</p>{%- endif -%}
+      <div><label class="label" for="recover-email">Email</label><input class="field" id="recover-email" type="email" name="email" autocomplete="email" required></div>
+      <button type="submit" class="btn btn-line btn-block">Send reset link</button>
+    {%- endform -%}
+  </div>
+</section>
+{% schema %}
+{ "name": "Sign in", "class": "section-login", "settings": [] }
+{% endschema %}

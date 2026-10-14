@@ -1,0 +1,37 @@
+<section class="shell page-pad">
+  <div class="account-head">
+    <h1 class="page-title">Account</h1>
+    <a class="text-link muted small" href="{{ routes.account_logout_url }}">Sign out</a>
+  </div>
+  <div class="account-grid">
+    <div>
+      <h2 class="section-title">Orders</h2>
+      {%- paginate customer.orders by 20 -%}
+        {%- if customer.orders.size > 0 -%}
+          <ul class="orders">
+            {%- for order in customer.orders -%}
+              <li class="order-row">
+                <a class="text-link" href="{{ order.customer_url }}">Order {{ order.name }}</a>
+                <span class="muted small">{{ order.created_at | date: '%B %-d, %Y' }}</span>
+                <span class="small">{{ order.fulfillment_status_label }}</span>
+                <span class="tabular">{{ order.total_price | money_without_trailing_zeros }}</span>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- else -%}
+          <p class="muted">No orders yet.</p>
+        {%- endif -%}
+      {%- endpaginate -%}
+    </div>
+    <div>
+      <h2 class="section-title">Details</h2>
+      <p>{{ customer.name }}</p>
+      <p class="muted">{{ customer.email }}</p>
+      {%- if customer.default_address -%}<address class="muted small not-italic">{{ customer.default_address | format_address }}</address>{%- endif -%}
+      <a class="text-link small" href="{{ routes.account_addresses_url }}">Addresses ({{ customer.addresses_count }})</a>
+    </div>
+  </div>
+</section>
+{% schema %}
+{ "name": "Account", "class": "section-account", "settings": [] }
+{% endschema %}

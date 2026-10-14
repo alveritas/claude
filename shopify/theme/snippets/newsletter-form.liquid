@@ -1,0 +1,26 @@
+{%- comment -%}
+  Email sign-up. Shopify saves each address as a customer who agreed to marketing emails
+  (Customers in the admin), ready for Shopify Email or any email app.
+  Accepts: form_id, compact.
+{%- endcomment -%}
+{%- form 'customer', id: form_id, class: 'nl-form', novalidate: 'novalidate' -%}
+  <input type="hidden" name="contact[tags]" value="newsletter">
+  {%- if form.posted_successfully? -%}
+    <p class="nl-done" role="status" tabindex="-1" autofocus>You’re on the list. New drops and restocks reach you first.</p>
+  {%- else -%}
+    <div class="nl-row">
+      <div class="nl-field">
+        <label class="label" for="{{ form_id }}-email">Email address</label>
+        <input class="field" id="{{ form_id }}-email" type="email" name="contact[email]" autocomplete="email" inputmode="email" placeholder="you@example.com" required
+          {% if form.errors %}aria-invalid="true" aria-describedby="{{ form_id }}-error"{% endif %}>
+      </div>
+      <button type="submit" class="btn btn-solid">Join</button>
+    </div>
+    {%- if form.errors -%}
+      <p class="form-error" id="{{ form_id }}-error" role="alert">
+        {%- if form.errors.messages['email'] contains 'taken' -%}That email is already on the list.{%- else -%}Enter a valid email address.{%- endif -%}
+      </p>
+    {%- endif -%}
+    <p class="nl-consent{% if compact %} nl-consent--compact{% endif %}">By joining you agree to receive emails from {{ shop.name }} about new drops and restocks. Unsubscribe at any time.</p>
+  {%- endif -%}
+{%- endform -%}

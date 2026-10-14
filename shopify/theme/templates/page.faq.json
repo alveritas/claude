@@ -1,0 +1,81 @@
+{
+  "sections": {
+    "main": {
+      "type": "faq",
+      "settings": {
+        "heading": "FAQ"
+      },
+      "blocks": {
+        "q1": {
+          "type": "question",
+          "settings": {
+            "question": "When will my order ship?",
+            "answer": "<p>As soon as your order ships, you get an email with the carrier and a tracking link.</p>"
+          }
+        },
+        "q2": {
+          "type": "question",
+          "settings": {
+            "question": "Where do you ship, and how much is it?",
+            "answer": "<p>We ship worldwide. United States: $8, free over $200. Everywhere else: $35. The exact cost for your address is shown at checkout before you pay.</p>"
+          }
+        },
+        "q3": {
+          "type": "question",
+          "settings": {
+            "question": "Will I pay customs or import duties?",
+            "answer": "<p>International orders may be charged import duties and taxes by the destination country. These aren’t included in our prices or shipping, and are paid by you to the carrier or customs on delivery.</p>"
+          }
+        },
+        "q4": {
+          "type": "question",
+          "settings": {
+            "question": "Can I return or exchange something?",
+            "answer": "<p>All sales are final — no returns or exchanges. Damaged or incorrect items are replaced or refunded.</p>"
+          }
+        },
+        "q5": {
+          "type": "question",
+          "settings": {
+            "question": "How do I find my size?",
+            "answer": "<p>Each product page lists the fit. Still unsure? Email us with your usual size and we’ll help you choose.</p>"
+          }
+        },
+        "q6": {
+          "type": "question",
+          "settings": {
+            "question": "How can I pay? Is checkout secure?",
+            "answer": "<p>Checkout runs on Shopify’s secure checkout page, so your card details never reach us. The ways to pay are shown at checkout.</p>"
+          }
+        },
+        "q7": {
+          "type": "question",
+          "settings": {
+            "question": "How do I track my order?",
+            "answer": "<p>Use the tracking link in your shipping email.</p>"
+          }
+        },
+        "q8": {
+          "type": "question",
+          "settings": {
+            "question": "How do I contact you?",
+            "answer": "<p>Email us, or use the Contact page. Include your order number if you have one.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "q5",
+        "q6",
+        "q7",
+        "q8"
+      ]
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

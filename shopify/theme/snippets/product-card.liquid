@@ -1,0 +1,79 @@
+{%- comment -%}
+  One card per piece. Colours are dots under it: pointing at one shows that colour's photo,
+  and the link opens the piece in that colour.
+  Accepts: product, feature (large first tile), sizes, eager (load the first photo straight away).
+{%- endcomment -%}
+{%- liquid
+  assign sizes = sizes | default: '(min-width: 1024px) 25vw, 50vw'
+  assign loading = 'lazy'
+  if eager
+    assign loading = 'eager'
+  endif
+
+  assign color_option = nil
+  for option in product.options_with_values
+    assign oname = option.name | downcase
+    if oname == 'color' or oname == 'colour'
+      assign color_option = option
+    endif
+  endfor
+
+  assign first_media = product.featured_media
+  if feature
+    for m in product.media
+      assign alt_down = m.alt | downcase
+      if alt_down contains 'worn' or alt_down contains 'model'
+        assign first_media = m
+        break
+      endif
+    endfor
+  endif
+  assign second_media = nil
+  for m in product.media
+    if m.id != first_media.id
+      assign second_media = m
+      break
+    endif
+  endfor
+-%}
+<article class="card{% if feature %} card--feature{% endif %}" data-card>
+  <a class="card-frame frame" href="{{ product.url }}" data-card-link tabindex="-1" aria-hidden="true">
+    {%- if first_media -%}
+      {{ first_media.preview_image | image_url: width: 1400 | image_tag: widths: '360, 540, 720, 900, 1200, 1400', sizes: sizes, loading: loading, alt: first_media.alt, class: 'card-img card-img--main' }}
+      {%- if second_media -%}
+        {{ second_media.preview_image | image_url: width: 1200 | image_tag: widths: '360, 540, 720, 900, 1200', sizes: sizes, loading: 'lazy', alt: '', class: 'card-img card-img--alt' }}
+      {%- endif -%}
+    {%- else -%}
+      {{ 'product-apparel-1' | placeholder_svg_tag: 'placeholder' }}
+    {%- endif -%}
+    {%- unless product.available -%}
+      <span class="tag">Sold out</span>
+    {%- endunless -%}
+  </a>
+  <div class="card-body">
+    <h3 class="card-title"><a href="{{ product.url }}" data-card-link>{{ product.title }}</a></h3>
+    <p class="card-price">{{ product.price | money_without_trailing_zeros }}{% if product.price_varies %}+{% endif %}</p>
+    {%- if color_option and color_option.values.size > 1 -%}
+      {%- assign key = 'option' | append: color_option.position -%}
+      <div class="card-swatches" role="group" aria-label="Colors">
+        {%- for value in color_option.values -%}
+          {%- assign v = product.variants | where: key, value | first -%}
+          {%- assign vm = v.featured_media | default: product.featured_media -%}
+          <a
+            class="dot"
+            href="{{ v.url | default: product.url }}"
+            style="--dot: {% render 'swatch', color: value %}"
+            aria-label="{{ product.title | escape }}, {{ value | escape }}"
+            data-swatch
+            data-name="{{ value | escape }}"
+            {% if vm %}data-src="{{ vm.preview_image | image_url: width: 900 }}" data-srcset="{{ vm.preview_image | image_url: width: 540 }} 540w, {{ vm.preview_image | image_url: width: 900 }} 900w, {{ vm.preview_image | image_url: width: 1400 }} 1400w"{% endif %}
+            {% if forloop.first %}aria-current="true"{% endif %}
+          ></a>
+        {%- endfor -%}
+        <span class="card-color" data-card-color>{{ color_option.values.first }}</span>
+      </div>
+    {%- elsif color_option -%}
+      <p class="card-color">{{ color_option.values.first }}</p>
+    {%- endif -%}
+  </div>
+</article>

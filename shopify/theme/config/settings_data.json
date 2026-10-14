@@ -1,0 +1,11 @@
+{
+  "current": "Default",
+  "presets": {
+    "Default": {
+      "brand_tagline": "An identity without explanation.",
+      "contact_email": "neverhollowonline@gmail.com",
+      "shipping_summary": "Ships worldwide: United States $8 (free over $200) · Everywhere else $35.",
+      "returns_note": "All sales are final — no returns or exchanges. Damaged or incorrect items are replaced or refunded."
+    }
+  }
+}

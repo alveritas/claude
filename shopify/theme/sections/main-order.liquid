@@ -1,0 +1,24 @@
+<section class="shell page-pad">
+  <a class="text-link muted small" href="{{ routes.account_url }}">Back to account</a>
+  <h1 class="page-title page-title-gap">Order {{ order.name }}</h1>
+  <p class="muted small">Placed {{ order.created_at | date: '%B %-d, %Y' }} · {{ order.financial_status_label }} · {{ order.fulfillment_status_label }}</p>
+  <ul class="orders">
+    {%- for item in order.line_items -%}
+      <li class="order-row">
+        <span>{{ item.title }} × {{ item.quantity }}</span>
+        <span class="tabular">{{ item.final_line_price | money_without_trailing_zeros }}</span>
+        {%- if item.fulfillment.tracking_url -%}<a class="text-link small" href="{{ item.fulfillment.tracking_url }}">Track</a>{%- endif -%}
+      </li>
+    {%- endfor -%}
+  </ul>
+  <dl class="sum order-sum">
+    <div class="sum-row"><dt>Subtotal</dt><dd>{{ order.line_items_subtotal_price | money_without_trailing_zeros }}</dd></div>
+    {%- for line in order.shipping_methods -%}<div class="sum-row"><dt>Shipping</dt><dd>{{ line.price | money_without_trailing_zeros }}</dd></div>{%- endfor -%}
+    {%- for tax in order.tax_lines -%}<div class="sum-row"><dt>Tax</dt><dd>{{ tax.price | money_without_trailing_zeros }}</dd></div>{%- endfor -%}
+    <div class="sum-row"><dt>Total</dt><dd>{{ order.total_price | money_without_trailing_zeros }}</dd></div>
+  </dl>
+  {%- if order.shipping_address -%}<p class="muted small">Shipping to</p><address class="not-italic small">{{ order.shipping_address | format_address }}</address>{%- endif -%}
+</section>
+{% schema %}
+{ "name": "Order", "class": "section-order", "settings": [] }
+{% endschema %}

@@ -1,0 +1,21 @@
+{%- layout none -%}
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Your {{ gift_card.balance | money_without_trailing_zeros }} gift card | {{ shop.name }}</title>
+    {{ 'base.css' | asset_url | stylesheet_tag }}
+    {{ content_for_header }}
+  </head>
+  <body>
+    <main class="shell page-pad center-block">
+      <h1 class="page-title">{{ shop.name }} gift card</h1>
+      <p class="hero-tagline">{{ gift_card.balance | money_without_trailing_zeros }}</p>
+      {%- if gift_card.expired -%}<p class="muted">This gift card has expired.</p>{%- endif -%}
+      <p class="muted small">Code</p>
+      <p class="gift-code">{{ gift_card.code | format_code }}</p>
+      <a class="btn btn-solid" href="{{ shop.url }}">Shop now</a>
+    </main>
+  </body>
+</html>

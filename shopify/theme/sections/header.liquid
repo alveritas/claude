@@ -1,0 +1,120 @@
+{%- liquid
+  assign menu = linklists[section.settings.menu]
+-%}
+<div class="site-top" data-header {% if request.page_type == 'index' %}data-overlay="true"{% endif %}>
+  <header class="site-header">
+    <div class="shell header-row">
+      <button type="button" class="icon-btn mobile-only" data-open="menu" aria-label="Open menu" aria-controls="mobile-menu">
+        {% render 'icon', name: 'menu' %}
+      </button>
+
+      <nav class="header-nav desktop-only" aria-label="Main">
+        <div class="nav-item has-mega" data-mega>
+          <a class="nav-link{% if request.page_type == 'collection' or request.page_type == 'product' %} is-active{% endif %}" href="{{ routes.all_products_collection_url }}" aria-haspopup="true">Shop</a>
+          <div class="mega" data-mega-panel>
+            <div class="shell mega-inner">
+              <ul class="mega-list">
+                <li><a href="{{ routes.all_products_collection_url }}">All products</a></li>
+                {%- for type in shop.types -%}
+                  {%- if type != blank -%}
+                    <li><a href="{{ type | url_for_type }}">{{ type }}</a></li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+              {%- assign promo = collections.all.products.first -%}
+              {%- if promo and promo.featured_media -%}
+                <a class="mega-feature" href="{{ promo.url }}">
+                  <span class="frame mega-img">{{ promo.featured_media.preview_image | image_url: width: 600 | image_tag: loading: 'lazy', sizes: '220px', widths: '300, 450, 600', alt: '' }}</span>
+                  <span class="card-title">{{ promo.title }}</span>
+                </a>
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+        {%- if menu.links.size > 0 -%}
+          {%- for link in menu.links -%}
+            <a class="nav-link{% if link.active %} is-active{% endif %}" href="{{ link.url }}">{{ link.title }}</a>
+          {%- endfor -%}
+        {%- else -%}
+          <a class="nav-link{% if request.page_type == 'list-collections' %} is-active{% endif %}" href="{{ routes.collections_url }}">Collections</a>
+          <a class="nav-link" href="/pages/about">About</a>
+        {%- endif -%}
+      </nav>
+
+      <a class="logo" href="{{ routes.root_url }}" aria-label="{{ shop.name }} home">
+        <span class="brand-mark brand-wordmark desktop-only" role="img" aria-label="{{ shop.name }}"></span>
+        <span class="brand-mark brand-monogram mobile-only" role="img" aria-label="{{ shop.name }}"></span>
+      </a>
+
+      <div class="header-icons">
+        <button type="button" class="icon-btn" data-open="search" aria-label="Search" aria-controls="search-panel">
+          {% render 'icon', name: 'search' %}
+        </button>
+        {%- if shop.customer_accounts_enabled -%}
+          <a class="icon-btn desktop-only" href="{{ routes.account_url }}" aria-label="Account">{% render 'icon', name: 'user' %}</a>
+        {%- endif -%}
+        <a class="icon-btn bag-btn" href="{{ routes.cart_url }}" data-open="cart" aria-label="Bag, {{ cart.item_count }} items">
+          {% render 'icon', name: 'bag' %}
+          <span class="badge" data-cart-count {% if cart.item_count == 0 %}hidden{% endif %}>{{ cart.item_count }}</span>
+        </a>
+      </div>
+    </div>
+  </header>
+</div>
+<div class="top-spacer{% if request.page_type == 'index' %} top-spacer--overlay{% endif %}" aria-hidden="true"></div>
+
+<div class="overlay" id="search-panel" data-panel="search" hidden>
+  <div class="overlay-scrim" data-close></div>
+  <div class="search-panel" role="dialog" aria-modal="true" aria-label="Search">
+    <form action="{{ routes.search_url }}" method="get" role="search" class="shell search-form">
+      <input type="hidden" name="type" value="product">
+      <label for="search-input" class="sr-only">Search</label>
+      <input id="search-input" class="search-input" type="search" name="q" placeholder="Search the collection" autocomplete="off">
+      <button type="button" class="caps" data-close>Close</button>
+    </form>
+  </div>
+</div>
+
+<div class="overlay" id="mobile-menu" data-panel="menu" hidden>
+  <div class="overlay-scrim" data-close></div>
+  <nav class="drawer drawer-left" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="drawer-head">
+      <span class="brand-mark brand-monogram drawer-mark" role="img" aria-label="{{ shop.name }}"></span>
+      <button type="button" class="icon-btn" data-close aria-label="Close menu">{% render 'icon', name: 'close' %}</button>
+    </div>
+    <ul class="mobile-links">
+      <li><a href="{{ routes.all_products_collection_url }}">Shop all</a></li>
+      {%- for type in shop.types -%}
+        {%- if type != blank -%}
+          <li class="sub"><a href="{{ type | url_for_type }}">{{ type }}</a></li>
+        {%- endif -%}
+      {%- endfor -%}
+      {%- if menu.links.size > 0 -%}
+        {%- for link in menu.links -%}
+          <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+        {%- endfor -%}
+      {%- else -%}
+        <li><a href="{{ routes.collections_url }}">Collections</a></li>
+        <li><a href="/pages/about">About</a></li>
+      {%- endif -%}
+      {%- if shop.customer_accounts_enabled -%}
+        <li><a href="{{ routes.account_url }}">Account</a></li>
+      {%- endif -%}
+    </ul>
+  </nav>
+</div>
+
+{% schema %}
+{
+  "name": "Header",
+  "class": "section-header",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Extra menu links",
+      "info": "Shown after Shop. Leave empty to show Collections and About."
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,48 @@
+{
+  "sections": {
+    "intro": {
+      "type": "rich-text",
+      "settings": {
+        "heading": "About",
+        "first": true,
+        "large": true,
+        "text": "<p>NEVERHOLLOW is built on the idea that clothing should speak through its construction, silhouette, and presence.</p><p>No unnecessary noise. No forced identity.</p><p>Just considered pieces designed to exist beyond a moment.</p>"
+      }
+    },
+    "brand": {
+      "type": "rich-text",
+      "settings": {
+        "heading": "The Brand",
+        "text": "<p>An independent, unisex label. Dark, oversized pieces with branding kept to a line of script or a small monogram — present when you look for it, quiet when you don’t.</p>"
+      }
+    },
+    "approach": {
+      "type": "rich-text",
+      "settings": {
+        "heading": "Our Approach",
+        "text": "<p>Each piece starts with its silhouette. Proportion comes first, then the details that only show up close: a label, a cuff, the way a line of script follows a sleeve.</p>"
+      }
+    },
+    "philosophy": {
+      "type": "rich-text",
+      "settings": {
+        "heading": "Design Philosophy",
+        "text": "<p>Restraint over volume. A small palette of black, charcoal and silver-gray, so that shape and detail carry the design rather than color or logos.</p>"
+      }
+    },
+    "future": {
+      "type": "rich-text",
+      "settings": {
+        "heading": "What’s Next",
+        "text": "<p>Drop 001 is out now. New releases and restocks are announced to the mailing list first.</p>"
+      }
+    }
+  },
+  "order": [
+    "intro",
+    "brand",
+    "approach",
+    "philosophy",
+    "future"
+  ]
+}

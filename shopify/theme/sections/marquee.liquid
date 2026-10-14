@@ -1,0 +1,25 @@
+{%- assign items = section.settings.text | split: '|' -%}
+{%- if items.size > 0 -%}
+  <div class="marquee">
+    <p class="sr-only">{% for t in items %}{{ t | strip | escape }}. {% endfor %}</p>
+    <div class="marquee-track" aria-hidden="true">
+      {%- for round in (1..6) -%}
+        {%- for t in items -%}
+          {%- assign tt = t | strip -%}
+          {%- if tt != blank -%}<span class="marquee-item">{{ tt | escape }}</span>{%- endif -%}
+        {%- endfor -%}
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Ticker",
+  "class": "section-marquee",
+  "settings": [
+    { "type": "text", "id": "text", "label": "Lines (separate with |)", "default": "Drop 001 — out now | Ships worldwide | Secure checkout | Not made to explain" }
+  ],
+  "presets": [{ "name": "Ticker" }]
+}
+{% endschema %}

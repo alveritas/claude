@@ -1,0 +1,75 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {}
+    },
+    "ticker": {
+      "type": "marquee",
+      "settings": {}
+    },
+    "featured": {
+      "type": "featured-collection",
+      "settings": {
+        "limit": 8
+      }
+    },
+    "categories": {
+      "type": "category-tiles",
+      "settings": {},
+      "blocks": {
+        "tops": {
+          "type": "category",
+          "settings": {
+            "title": "Tops"
+          }
+        },
+        "hoodies": {
+          "type": "category",
+          "settings": {
+            "title": "Hoodies"
+          }
+        },
+        "bottoms": {
+          "type": "category",
+          "settings": {
+            "title": "Bottoms"
+          }
+        },
+        "footwear": {
+          "type": "category",
+          "settings": {
+            "title": "Footwear"
+          }
+        }
+      },
+      "block_order": [
+        "tops",
+        "hoodies",
+        "bottoms",
+        "footwear"
+      ]
+    },
+    "editorial": {
+      "type": "editorial",
+      "settings": {}
+    },
+    "spotlight": {
+      "type": "spotlight",
+      "settings": {}
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {}
+    }
+  },
+  "order": [
+    "hero",
+    "ticker",
+    "featured",
+    "categories",
+    "editorial",
+    "spotlight",
+    "newsletter"
+  ]
+}

@@ -1,0 +1,31 @@
+<section class="shell page-pad narrow">
+  <a class="text-link muted small" href="{{ routes.account_url }}">Back to account</a>
+  <h1 class="page-title page-title-gap">Addresses</h1>
+  {%- for address in customer.addresses -%}
+    <div class="panel address-card">
+      <address class="not-italic small">{{ address | format_address }}</address>
+      {%- if address == customer.default_address -%}<p class="muted micro">Default</p>{%- endif -%}
+      <form method="post" action="/account/addresses/{{ address.id }}">
+        <input type="hidden" name="_method" value="delete">
+        <button type="submit" class="text-link muted small">Delete</button>
+      </form>
+    </div>
+  {%- endfor -%}
+  <h2 class="section-title">Add an address</h2>
+  {%- form 'customer_address', customer.new_address, class: 'auth-form' -%}
+    <div><label class="label" for="a-first">First name</label><input class="field" id="a-first" name="address[first_name]" autocomplete="given-name"></div>
+    <div><label class="label" for="a-last">Last name</label><input class="field" id="a-last" name="address[last_name]" autocomplete="family-name"></div>
+    <div><label class="label" for="a-1">Address</label><input class="field" id="a-1" name="address[address1]" autocomplete="address-line1"></div>
+    <div><label class="label" for="a-2">Apartment, suite</label><input class="field" id="a-2" name="address[address2]" autocomplete="address-line2"></div>
+    <div><label class="label" for="a-city">City</label><input class="field" id="a-city" name="address[city]" autocomplete="address-level2"></div>
+    <div><label class="label" for="a-country">Country</label><select class="select" id="a-country" name="address[country]" autocomplete="country">{{ all_country_option_tags }}</select></div>
+    <div><label class="label" for="a-prov">State / province</label><input class="field" id="a-prov" name="address[province]" autocomplete="address-level1"></div>
+    <div><label class="label" for="a-zip">ZIP / postal code</label><input class="field" id="a-zip" name="address[zip]" autocomplete="postal-code"></div>
+    <div><label class="label" for="a-phone">Phone</label><input class="field" id="a-phone" name="address[phone]" autocomplete="tel"></div>
+    <label class="check-row"><input type="checkbox" class="check" name="address[default]" value="1"> <span class="small">Make this my default address</span></label>
+    <button type="submit" class="btn btn-solid">Save address</button>
+  {%- endform -%}
+</section>
+{% schema %}
+{ "name": "Addresses", "class": "section-addresses", "settings": [] }
+{% endschema %}

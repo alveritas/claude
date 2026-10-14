@@ -1,0 +1,102 @@
+{%- comment -%}
+  One tile per category. Each tile uses its own photo if one is chosen, otherwise a worn photo
+  of a piece in that category.
+{%- endcomment -%}
+{%- liquid
+  assign tiles = section.blocks
+  assign count = tiles.size
+  if count == 0
+    assign count = shop.types.size
+  endif
+-%}
+<section class="shell section-pad-bottom" aria-labelledby="cats-{{ section.id }}">
+  <div class="section-head">
+    <h2 id="cats-{{ section.id }}" class="section-title">{{ section.settings.heading | escape }}</h2>
+    <a class="text-link caps" href="{{ routes.all_products_collection_url }}">Shop all</a>
+  </div>
+  <div class="grid cat-grid{% if count >= 4 %} grid--4{% else %} grid--3{% endif %}">
+    {%- if section.blocks.size > 0 -%}
+      {%- for block in section.blocks -%}
+        {%- assign t = block.settings.title -%}
+        {%- assign link = block.settings.link | default: '' -%}
+        {%- if link == blank -%}{%- assign link = t | url_for_type -%}{%- endif -%}
+        {%- assign img = block.settings.image -%}
+        {%- if img == blank -%}
+          {%- for p in collections.all.products -%}
+            {%- if p.type == t -%}
+              {%- assign pick = p.media[1] | default: p.featured_media -%}
+              {%- assign img = pick.preview_image -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+        <a class="cat-tile" href="{{ link }}" {{ block.shopify_attributes }}>
+          <span class="frame cat-frame">
+            {%- if img != blank -%}
+              {{ img | image_url: width: 900 | image_tag: widths: '360, 540, 720, 900', sizes: '(min-width: 1024px) 25vw, 50vw', loading: 'lazy', alt: '', class: 'cat-img' }}
+            {%- else -%}
+              {{ 'collection-1' | placeholder_svg_tag: 'placeholder' }}
+            {%- endif -%}
+          </span>
+          <span class="cat-label">
+            <span class="card-title">{{ t | escape }} <span class="tile-arrow" aria-hidden="true">→</span></span>
+            <span class="muted small">Shop now</span>
+          </span>
+        </a>
+      {%- endfor -%}
+    {%- else -%}
+      {%- for t in shop.types -%}
+        {%- if t != blank -%}
+          {%- assign img = nil -%}
+          {%- for p in collections.all.products -%}
+            {%- if p.type == t -%}
+              {%- assign pick = p.media[1] | default: p.featured_media -%}
+              {%- assign img = pick.preview_image -%}
+            {%- endif -%}
+          {%- endfor -%}
+          <a class="cat-tile" href="{{ t | url_for_type }}">
+            <span class="frame cat-frame">
+              {%- if img -%}{{ img | image_url: width: 900 | image_tag: widths: '360, 540, 720, 900', sizes: '(min-width: 1024px) 25vw, 50vw', loading: 'lazy', alt: '', class: 'cat-img' }}{%- endif -%}
+            </span>
+            <span class="cat-label">
+              <span class="card-title">{{ t }} <span class="tile-arrow" aria-hidden="true">→</span></span>
+              <span class="muted small">Shop now</span>
+            </span>
+          </a>
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Shop by category",
+  "class": "section-categories",
+  "max_blocks": 8,
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Shop by category" }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Product type", "default": "Tops", "info": "Must match the product Type in Shopify (Tops, Hoodies, Bottoms, Footwear)." },
+        { "type": "image_picker", "id": "image", "label": "Photo", "info": "Leave empty to use a worn photo of a piece in this category." },
+        { "type": "url", "id": "link", "label": "Link", "info": "Leave empty to link to every piece of this type." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop by category",
+      "blocks": [
+        { "type": "category", "settings": { "title": "Tops" } },
+        { "type": "category", "settings": { "title": "Hoodies" } },
+        { "type": "category", "settings": { "title": "Bottoms" } },
+        { "type": "category", "settings": { "title": "Footwear" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
