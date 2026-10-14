@@ -1,0 +1,25 @@
+# Netlify builds Next.js sites with its own Next.js adapter automatically; nothing else to install.
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# One address for search engines and customers: the Netlify subdomain forwards to the real domain.
+[[redirects]]
+  from = "https://soft-lolly-fd0cd8.netlify.app/*"
+  to = "https://neverhollow.online/:splat"
+  status = 301
+  force = true
+
+# Photos and logo files rarely change; let browsers and Netlify's CDN keep them for a week.
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/brand/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
