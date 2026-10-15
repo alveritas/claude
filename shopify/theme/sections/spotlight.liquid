@@ -1,6 +1,9 @@
 {%- liquid
   assign product = section.settings.product
   if product == blank
+    assign product = all_products['vigil-fur-hoodie']
+  endif
+  if product == blank
     assign product = all_products['vigil-fur-zip-hoodie']
   endif
   if product == blank
@@ -43,7 +46,7 @@
   "name": "Spotlight",
   "class": "section-spotlight",
   "settings": [
-    { "type": "product", "id": "product", "label": "Piece", "info": "Leave empty for the Vigil Fur Zip Hoodie." },
+    { "type": "product", "id": "product", "label": "Piece", "info": "Leave empty for the Vigil Fur Hoodie." },
     { "type": "text", "id": "heading", "label": "Heading", "info": "Leave empty to use the piece's name." },
     { "type": "textarea", "id": "text", "label": "Text", "default": "Made for late nights. Choose a view to look closer." }
   ],

@@ -1,5 +1,7 @@
 import csv
 BASE = "https://neverhollow.online/images/products/"
+MEDIA = "https://raw.githubusercontent.com/alveritas/claude/main/shopify/media/"
+url = lambda f: f if f.startswith("http") else BASE + f + ".jpg"
 SIZES = ["XS", "S", "M", "L", "XL", "XXL"]
 SLIDE_SIZES = ["US 6–7", "US 8–9", "US 10–11", "US 12–13"]
 P = [
@@ -21,16 +23,12 @@ P = [
                ("Bone", [("tee-white-flat","Hush Tee Bone laid flat, front, with the NH label at the neck"),
                          ("tee-white-front-model","Hush Tee Bone, worn, front view, with the Neverhollow script on the chest"),
                          ("tee-white-back-model","Hush Tee Bone, worn, back view")])]),
-  dict(handle="vigil-fur-zip-hoodie", title="Vigil Fur Zip Hoodie", type="Hoodies", price="185.00", sizes=SIZES,
-       desc=["Made for late nights. A black zip hoodie with a fur-trimmed hood, the Neverhollow script across the chest, distressed details on the body and sleeves, and an NH label inside the hood.",
-             "Obsidian has a black fur hood. Fawn has a brown fur hood."],
-       fit="Boxy, cropped fit with a ribbed hem and cuffs.",
-       colors=[("Obsidian", [("hoodie-black-flat","Vigil Fur Zip Hoodie Obsidian laid flat, front, with the NH label inside the hood"),
-                             ("hoodie-black-front-model","Vigil Fur Zip Hoodie Obsidian, worn zipped with the black fur hood up, front view"),
-                             ("hoodie-black-angle-model","Vigil Fur Zip Hoodie Obsidian, worn zipped with the hood up, seen from above at an angle")]),
-               ("Fawn", [("hoodie-brown-flat","Vigil Fur Zip Hoodie Fawn laid flat, front, with the NH label inside the hood"),
-                         ("hoodie-brown-front-model","Vigil Fur Zip Hoodie Fawn, worn zipped with the brown fur hood up, front view"),
-                         ("hoodie-brown-open-model","Vigil Fur Zip Hoodie Fawn, worn unzipped over a black top, seen from above at an angle")])]),
+  dict(handle="vigil-fur-hoodie", title="Vigil Fur Hoodie", type="Hoodies", price="185.00", sizes=SIZES,
+       desc=["Made for late nights. A washed black pullover hoodie with a fur-trimmed hood, the Neverhollow script across the chest, thorn vines across the shoulders and down both sleeves, and a front pouch pocket."],
+       fit="Relaxed fit with dropped shoulders, ribbed cuffs and a ribbed hem.",
+       colors=[("Obsidian", [(MEDIA+"vigil-thorn-flat.jpg","Vigil Fur Hoodie in Obsidian laid flat, front, with the Neverhollow script across the chest and thorn vines down both sleeves"),
+                             (MEDIA+"vigil-thorn-front.jpg","Two models wearing the Vigil Fur Hoodie in Obsidian with the fur hood up, front view"),
+                             (MEDIA+"vigil-thorn-back.jpg","Two models wearing the Vigil Fur Hoodie in Obsidian, back view, with thorn vines over the shoulders and down the sleeves")])]),
   dict(handle="drift-track-pants", title="Drift Track Pants", type="Bottoms", price="120.00", sizes=SIZES,
        desc=["Wide, easy and made to move. Track pants with side stripes, an elastic waist, a back patch pocket and the Neverhollow script on the front.",
              "Bone is white with black stripes. Obsidian is black with white stripes."],
@@ -73,10 +71,10 @@ for p in P:
             if i==0: r.update({"Option1 name":"Color","Option2 name":"Size"})
             r.update({"Option1 value":c,"Option2 value":s,"Price":p["price"],"Charge tax":"TRUE",
                       "Inventory tracker":"shopify","Inventory quantity":"150","Continue selling when out of stock":"DENY",
-                      "Requires shipping":"TRUE","Fulfillment service":"manual","Variant image URL":BASE+imgs[0][0]+".jpg"})
+                      "Requires shipping":"TRUE","Fulfillment service":"manual","Variant image URL":url(imgs[0][0])})
         if i<len(images):
             f,alt=images[i]
-            r.update({"Product image URL":BASE+f+".jpg","Image position":str(i+1),"Image alt text":alt})
+            r.update({"Product image URL":url(f),"Image position":str(i+1),"Image alt text":alt})
         rows.append(r)
 with open("neverhollow-products.csv","w",newline="",encoding="utf-8") as fh:
     w=csv.DictWriter(fh, fieldnames=H); w.writeheader(); w.writerows(rows)

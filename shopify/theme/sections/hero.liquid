@@ -1,5 +1,5 @@
 {%- comment -%}
-  The cover: the two-model cut-out standing on the page colour, legs fading into it, with the
+  The cover: two models on a background matched to the page colour, legs fading into it, with the
   brand name set in the site's type on the faded part so it always reads.
 {%- endcomment -%}
 <section class="hero" aria-label="Introduction" data-hero>
@@ -9,7 +9,7 @@
         {%- assign hero_alt = section.settings.image.alt | default: section.settings.image_alt -%}
         {{ section.settings.image | image_url: width: 2000 | image_tag: widths: '600, 900, 1200, 1600, 2000', sizes: '(min-width: 1024px) 60vw, 100vw', loading: 'eager', fetchpriority: 'high', alt: hero_alt, class: 'hero-img' }}
       {%- else -%}
-        <img class="hero-img" src="{{ 'nh-cover.webp' | asset_url }}" alt="{{ section.settings.image_alt | escape }}" width="1024" height="1536" fetchpriority="high">
+        <img class="hero-img" src="{{ 'nh-cover-thorn.webp' | asset_url }}" alt="{{ section.settings.image_alt | escape }}" width="941" height="1672" fetchpriority="high">
       {%- endif -%}
     </div>
   </div>
@@ -34,8 +34,8 @@
   "name": "Cover",
   "class": "section-hero",
   "settings": [
-    { "type": "image_picker", "id": "image", "label": "Cover photo", "info": "A transparent PNG or WebP cut-out works best. Leave empty for the NEVERHOLLOW two-model cover." },
-    { "type": "text", "id": "image_alt", "label": "Cover description (for screen readers)", "default": "Two models in black Neverhollow zip hoodies, one with a brown fur hood and one with a black fur hood, with wide black sweatpants" },
+    { "type": "image_picker", "id": "image", "label": "Cover photo", "info": "A photo on a white or transparent background works best. Leave empty for the NEVERHOLLOW two-model cover." },
+    { "type": "text", "id": "image_alt", "label": "Cover description (for screen readers)", "default": "Two models in washed black Neverhollow fur hood hoodies with thorn vines down the sleeves and wide black jeans, one seated on a white block" },
     { "type": "text", "id": "heading", "label": "Headline", "default": "NEVERHOLLOW" },
     { "type": "text", "id": "tagline", "label": "Supporting line", "default": "An identity without explanation." },
     { "type": "text", "id": "status", "label": "Release line", "default": "DROP 001 — OUT NOW" },
