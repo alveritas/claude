@@ -32,7 +32,7 @@
     <a class="text-link caps" href="{{ collection.url }}">View all</a>
   </div>
   {%- if n > 0 -%}
-    <div class="grid featured-grid{% if three %} grid--3{% endif %}{% if feature %} grid--feature{% endif %}">
+    <div class="grid featured-grid{% if three %} grid--3{% endif %}{% if n == 2 %} grid--2{% endif %}{% if feature %} grid--feature{% endif %}">
       {%- for product in collection.products limit: limit -%}
         {%- liquid
           assign big = false
@@ -48,6 +48,8 @@
             assign card_sizes = '(min-width: 1024px) 50vw, 100vw'
           elsif three
             assign card_sizes = '(min-width: 1024px) 33vw, 50vw'
+          elsif n == 2
+            assign card_sizes = '(min-width: 1024px) 50vw, 50vw'
           else
             assign card_sizes = '(min-width: 1024px) 25vw, 50vw'
           endif

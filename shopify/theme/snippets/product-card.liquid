@@ -46,9 +46,25 @@
     {%- else -%}
       {{ 'product-apparel-1' | placeholder_svg_tag: 'placeholder' }}
     {%- endif -%}
+    {%- liquid
+      assign po_tag = false
+      if product.available and settings.preorder_enabled and settings.preorder_tag != blank and product.tags contains settings.preorder_tag
+        assign po_tag = true
+        if settings.preorder_close != blank
+          assign po_today = 'now' | date: '%Y%m%d' | plus: 0
+          assign po_last = settings.preorder_close | remove: '-' | plus: 0
+          if po_today > po_last
+            assign po_tag = false
+          endif
+        endif
+      endif
+    -%}
     {%- unless product.available -%}
       <span class="tag">Sold out</span>
     {%- endunless -%}
+    {%- if po_tag -%}
+      <span class="tag">Pre-order</span>
+    {%- endif -%}
   </a>
   <div class="card-body">
     <h3 class="card-title"><a href="{{ product.url }}" data-card-link>{{ product.title }}</a></h3>

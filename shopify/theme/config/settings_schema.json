@@ -66,5 +66,51 @@
         "default": "All sales are final — no returns or exchanges. Damaged or incorrect items are replaced or refunded."
       }
     ]
+  },
+  {
+    "name": "Pre-orders",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Pieces with the product tag below are sold as pre-orders: the button says Pre-order, the ship-by date shows on the product page and in the bag, and every order line records the ship-by date. While pre-orders are on, any “out now” line in the announcement bar, ticker or cover is swapped for the pre-order line."
+      },
+      {
+        "type": "checkbox",
+        "id": "preorder_enabled",
+        "label": "Sell tagged pieces as pre-orders",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "preorder_tag",
+        "label": "Product tag",
+        "default": "pre-order"
+      },
+      {
+        "type": "text",
+        "id": "preorder_ship",
+        "label": "Ships by (YYYY-MM-DD)",
+        "default": "2027-02-28"
+      },
+      {
+        "type": "text",
+        "id": "preorder_close",
+        "label": "Last day to pre-order (YYYY-MM-DD)",
+        "default": "2026-11-05",
+        "info": "The day after this, the Pre-order button turns off by itself. Leave empty to keep pre-orders open."
+      },
+      {
+        "type": "text",
+        "id": "preorder_line_open",
+        "label": "Line while pre-orders are open",
+        "default": "Drop 001 — pre-orders open"
+      },
+      {
+        "type": "text",
+        "id": "preorder_line_closed",
+        "label": "Line after pre-orders close",
+        "default": "Drop 001 — pre-orders closed"
+      }
+    ]
   }
 ]

@@ -1,3 +1,4 @@
+{%- assign live_types = collections.all.products | map: 'type' | uniq | sort -%}
 <footer class="site-footer">
   <div class="shell footer-grid">
     <div class="footer-brand">
@@ -18,7 +19,7 @@
       <p class="caps muted footer-label">Shop</p>
       <ul>
         <li><a href="{{ routes.all_products_collection_url }}">All products</a></li>
-        {%- for type in shop.types -%}
+        {%- for type in live_types -%}
           {%- if type != blank -%}<li><a href="{{ type | url_for_type }}">{{ type }}</a></li>{%- endif -%}
         {%- endfor -%}
         <li><a href="{{ routes.collections_url }}">Collections</a></li>

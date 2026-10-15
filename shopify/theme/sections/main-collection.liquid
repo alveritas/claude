@@ -1,3 +1,4 @@
+{%- assign live_types = collections.all.products | map: 'type' | uniq | sort -%}
 {%- liquid
   assign sort_by = collection.sort_by | default: collection.default_sort_by
   assign all_url = routes.all_products_collection_url
@@ -11,7 +12,7 @@
 
   <nav class="tabs" aria-label="Categories">
     <a class="tab{% if collection.handle == 'all' %} is-active{% endif %}" href="{{ all_url }}">All</a>
-    {%- for type in shop.types -%}
+    {%- for type in live_types -%}
       {%- if type != blank -%}
         <a class="tab{% if collection.title == type and collection.handle == 'types' %} is-active{% endif %}" href="{{ type | url_for_type }}">{{ type }}</a>
       {%- endif -%}
@@ -24,7 +25,7 @@
       <label for="sort-by" class="muted small">Sort</label>
       <select id="sort-by" name="sort_by" class="select" data-autosubmit>
         {%- for option in collection.sort_options -%}
-          {%- if option.value == 'relevance' -%}{%- continue -%}{%- endif -%}
+          {%- if option.value contains 'relevan' or option.name == 'Most relevant' -%}{%- continue -%}{%- endif -%}
           <option value="{{ option.value }}"{% if option.value == sort_by %} selected{% endif %}>{{ option.name }}</option>
         {%- endfor -%}
       </select>

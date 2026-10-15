@@ -1,16 +1,49 @@
 {%- liquid
   assign messages = section.blocks | where: 'type', 'message'
 -%}
+{%- liquid
+  # While pre-orders are on, an "out now" line is swapped for the pre-order line (Theme settings → Pre-orders).
+  assign po_on = false
+  assign po_line = ''
+  assign po_ship = ''
+  if settings.preorder_enabled
+    assign po_on = true
+    assign po_line = settings.preorder_line_open
+    if settings.preorder_ship != blank
+      assign po_ship = settings.preorder_ship | append: 'T12:00:00' | date: '%B %-d, %Y'
+    endif
+    if settings.preorder_close != blank
+      assign po_today = 'now' | date: '%Y%m%d' | plus: 0
+      assign po_last = settings.preorder_close | remove: '-' | plus: 0
+      if po_today > po_last
+        assign po_line = settings.preorder_line_closed
+        assign po_ship = ''
+      endif
+    endif
+  endif
+-%}
 {%- if messages.size > 0 -%}
   <div class="announcement" data-announcement role="region" aria-label="Announcement">
     {%- for block in messages -%}
+      {%- liquid
+        assign t = block.settings.text
+        assign t_down = t | downcase
+        assign swapped = false
+        if po_on and t_down contains 'out now' and po_line != blank
+          assign t = po_line
+          assign swapped = true
+        endif
+      -%}
       <p class="ann-msg{% if forloop.first %} is-active{% endif %}" {{ block.shopify_attributes }}>
         {%- if block.settings.link != blank -%}
-          <a href="{{ block.settings.link }}">{{ block.settings.text | escape }}</a>
+          <a href="{{ block.settings.link }}">{{ t | escape }}</a>
         {%- else -%}
-          {{ block.settings.text | escape }}
+          {{ t | escape }}
         {%- endif -%}
       </p>
+      {%- if swapped and po_ship != blank -%}
+        <p class="ann-msg">Ships by {{ po_ship }}</p>
+      {%- endif -%}
     {%- endfor -%}
   </div>
 {%- endif -%}

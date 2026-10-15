@@ -144,6 +144,11 @@
     const input = $("[data-variant-input]", root);
     const fieldsets = $$("[data-option]", root);
     const colorIdx = meta.colorIndex;
+    // Pre-order pieces say "Pre-order"; after the last pre-order day the button stays off.
+    const ADD = meta.addLabel || "Add to bag";
+    const AVAIL = meta.availText || "Available";
+    const CLOSED = Boolean(meta.closed);
+    const CLOSED_TEXT = "Pre-orders closed";
     const variants = product.variants;
     const optionsOf = (v) => [v.option1, v.option2, v.option3].slice(0, product.options.length);
     const initial = variants.find((v) => String(v.id) === input.value) || variants[0];
@@ -254,11 +259,11 @@
       const priceEl = $("[data-price]", root);
       if (missing().length) {
         // Nothing to buy until every choice is made; the button explains what's missing.
-        if (addBtn) addBtn.disabled = false;
-        if (addLabel) addLabel.textContent = "Add to bag";
+        if (addBtn) addBtn.disabled = CLOSED;
+        if (addLabel) addLabel.textContent = CLOSED ? CLOSED_TEXT : ADD;
         if (dyn) dyn.hidden = true;
         if (restock) restock.hidden = true;
-        if (availability) availability.textContent = "Available";
+        if (availability) availability.textContent = CLOSED ? CLOSED_TEXT : AVAIL;
         if (changed === colorIdx || changed === "init") filterGallery(selected[colorIdx]);
         return;
       }
@@ -269,12 +274,13 @@
       }
       input.value = v.id;
       if (priceEl) priceEl.textContent = money(v.price);
-      if (availability) availability.textContent = v.available ? "Available" : "Sold out";
-      if (addBtn) addBtn.disabled = !v.available;
-      if (addLabel) addLabel.textContent = v.available ? "Add to bag" : "Sold out";
-      if (dyn) dyn.hidden = !v.available;
+      const buyable = v.available && !CLOSED;
+      if (availability) availability.textContent = CLOSED ? CLOSED_TEXT : v.available ? AVAIL : "Sold out";
+      if (addBtn) addBtn.disabled = !buyable;
+      if (addLabel) addLabel.textContent = CLOSED ? CLOSED_TEXT : v.available ? ADD : "Sold out";
+      if (dyn) dyn.hidden = !buyable;
       if (restock) {
-        restock.hidden = v.available;
+        restock.hidden = v.available || CLOSED;
         const opt = $("[data-restock-option]", restock);
         const lab = $("[data-restock-label]", restock);
         if (opt) opt.value = v.title;
@@ -330,13 +336,13 @@
           if (data.sections && data.sections["cart-drawer"]) renderDrawer(data.sections["cart-drawer"], true);
           else await refreshDrawer(true);
           const label = $("[data-add-label]", root);
-          if (label) { label.textContent = "Added to bag"; setTimeout(() => (label.textContent = "Add to bag"), 1800); }
+          if (label) { label.textContent = "Added to bag"; setTimeout(() => (label.textContent = ADD), 1800); }
         } catch (ex) {
           if (err) { err.textContent = ex.message; err.hidden = false; }
         } finally {
           addBtn.removeAttribute("aria-busy");
           const v = findVariant(selected);
-          addBtn.disabled = Boolean(v) && !v.available;
+          addBtn.disabled = CLOSED || (Boolean(v) && !v.available);
         }
       });
     }

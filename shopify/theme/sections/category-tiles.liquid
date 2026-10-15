@@ -3,10 +3,27 @@
   of a piece in that category.
 {%- endcomment -%}
 {%- liquid
-  assign tiles = section.blocks
-  assign count = tiles.size
-  if count == 0
-    assign count = shop.types.size
+  # Only categories with a piece on sale get a tile, so no tile opens an empty page.
+  assign live_types = collections.all.products | map: 'type' | uniq | sort
+  assign count = 0
+  if section.blocks.size > 0
+    for block in section.blocks
+      if live_types contains block.settings.title or block.settings.link != blank
+        assign count = count | plus: 1
+      endif
+    endfor
+  else
+    for t in live_types
+      if t != blank
+        assign count = count | plus: 1
+      endif
+    endfor
+  endif
+  assign grid_class = 'grid--3'
+  if count >= 4
+    assign grid_class = 'grid--4'
+  elsif count == 2
+    assign grid_class = 'grid--2'
   endif
 -%}
 <section class="shell section-pad-bottom" aria-labelledby="cats-{{ section.id }}">
@@ -14,10 +31,11 @@
     <h2 id="cats-{{ section.id }}" class="section-title">{{ section.settings.heading | escape }}</h2>
     <a class="text-link caps" href="{{ routes.all_products_collection_url }}">Shop all</a>
   </div>
-  <div class="grid cat-grid{% if count >= 4 %} grid--4{% else %} grid--3{% endif %}">
+  <div class="grid cat-grid {{ grid_class }}">
     {%- if section.blocks.size > 0 -%}
       {%- for block in section.blocks -%}
         {%- assign t = block.settings.title -%}
+        {%- unless live_types contains t or block.settings.link != blank -%}{%- continue -%}{%- endunless -%}
         {%- assign link = block.settings.link | default: '' -%}
         {%- if link == blank -%}{%- assign link = t | url_for_type -%}{%- endif -%}
         {%- assign img = block.settings.image -%}
@@ -44,7 +62,7 @@
         </a>
       {%- endfor -%}
     {%- else -%}
-      {%- for t in shop.types -%}
+      {%- for t in live_types -%}
         {%- if t != blank -%}
           {%- assign img = nil -%}
           {%- for p in collections.all.products -%}

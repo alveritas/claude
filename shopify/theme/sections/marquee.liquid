@@ -1,4 +1,40 @@
-{%- assign items = section.settings.text | split: '|' -%}
+{%- liquid
+  # While pre-orders are on, an "out now" line is swapped for the pre-order line (Theme settings → Pre-orders).
+  assign po_on = false
+  assign po_line = ''
+  assign po_ship = ''
+  if settings.preorder_enabled
+    assign po_on = true
+    assign po_line = settings.preorder_line_open
+    if settings.preorder_ship != blank
+      assign po_ship = settings.preorder_ship | append: 'T12:00:00' | date: '%B %-d, %Y'
+    endif
+    if settings.preorder_close != blank
+      assign po_today = 'now' | date: '%Y%m%d' | plus: 0
+      assign po_last = settings.preorder_close | remove: '-' | plus: 0
+      if po_today > po_last
+        assign po_line = settings.preorder_line_closed
+        assign po_ship = ''
+      endif
+    endif
+  endif
+-%}
+{%- liquid
+  assign raw = section.settings.text | split: '|'
+  assign joined = ''
+  for t in raw
+    assign tt = t | strip
+    assign t_down = tt | downcase
+    if po_on and t_down contains 'out now' and po_line != blank
+      assign tt = po_line
+      if po_ship != blank
+        assign tt = tt | append: '|Ships by ' | append: po_ship
+      endif
+    endif
+    assign joined = joined | append: tt | append: '|'
+  endfor
+  assign items = joined | split: '|'
+-%}
 {%- if items.size > 0 -%}
   <div class="marquee">
     <p class="sr-only">{% for t in items %}{{ t | strip | escape }}. {% endfor %}</p>

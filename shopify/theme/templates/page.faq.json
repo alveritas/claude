@@ -10,7 +10,7 @@
           "type": "question",
           "settings": {
             "question": "When will my order ship?",
-            "answer": "<p>As soon as your order ships, you get an email with the carrier and a tracking link.</p>"
+            "answer": "<p>Pre-order pieces ship by [ship date]. As soon as your order ships, you get an email with the carrier and a tracking link.</p>"
           }
         },
         "q2": {
@@ -31,7 +31,7 @@
           "type": "question",
           "settings": {
             "question": "Can I return or exchange something?",
-            "answer": "<p>All sales are final — no returns or exchanges. Damaged or incorrect items are replaced or refunded.</p>"
+            "answer": "<p>All sales are final once your order ships — no returns or exchanges. Damaged or incorrect items are replaced or refunded. A pre-order is refunded in full if the production run doesn’t go ahead, or if you’d rather not wait when it can’t ship by the date shown.</p>"
           }
         },
         "q5": {
@@ -61,9 +61,17 @@
             "question": "How do I contact you?",
             "answer": "<p>Email us, or use the Contact page. Include your order number if you have one.</p>"
           }
+        },
+        "preorder": {
+          "type": "question",
+          "settings": {
+            "question": "How do pre-orders work?",
+            "answer": "<p>Drop 001 is made in one production run. Pre-orders are open until [last pre-order day], and you pay when you order. Your piece ships by [ship date], and you get an email with tracking as soon as it does.</p><p>If the run doesn’t go ahead, you get a full refund. If your order is going to ship later than [ship date], we’ll email you before then and you can choose a full refund instead.</p>"
+          }
         }
       },
       "block_order": [
+        "preorder",
         "q1",
         "q2",
         "q3",

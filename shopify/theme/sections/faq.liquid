@@ -1,10 +1,21 @@
+{%- liquid
+  # Answers can say [ship date] and [last pre-order day]; they follow Theme settings → Pre-orders.
+  assign po_ship = ''
+  assign po_close_text = ''
+  if settings.preorder_ship != blank
+    assign po_ship = settings.preorder_ship | append: 'T12:00:00' | date: '%B %-d, %Y'
+  endif
+  if settings.preorder_close != blank
+    assign po_close_text = settings.preorder_close | append: 'T12:00:00' | date: '%B %-d, %Y'
+  endif
+-%}
 <section class="shell page-pad narrow">
   <h1 class="page-title page-title-gap">{{ section.settings.heading | escape }}</h1>
   <div class="accordions">
     {%- for block in section.blocks -%}
       <details class="acc" {{ block.shopify_attributes }}>
         <summary>{{ block.settings.question | escape }} {% render 'icon', name: 'plus', size: 14 %}</summary>
-        <div class="acc-body rte">{{ block.settings.answer }}</div>
+        <div class="acc-body rte">{{ block.settings.answer | replace: '[ship date]', po_ship | replace: '[last pre-order day]', po_close_text }}</div>
       </details>
     {%- endfor -%}
   </div>

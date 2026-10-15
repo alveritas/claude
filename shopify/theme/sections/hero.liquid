@@ -2,6 +2,27 @@
   The cover: two models on a background matched to the page colour, legs fading into it. The words
   sit beside the photo on larger screens and under it on phones, never on top of it.
 {%- endcomment -%}
+{%- liquid
+  # While pre-orders are on, an "out now" line is swapped for the pre-order line (Theme settings → Pre-orders).
+  assign po_on = false
+  assign po_line = ''
+  assign po_ship = ''
+  if settings.preorder_enabled
+    assign po_on = true
+    assign po_line = settings.preorder_line_open
+    if settings.preorder_ship != blank
+      assign po_ship = settings.preorder_ship | append: 'T12:00:00' | date: '%B %-d, %Y'
+    endif
+    if settings.preorder_close != blank
+      assign po_today = 'now' | date: '%Y%m%d' | plus: 0
+      assign po_last = settings.preorder_close | remove: '-' | plus: 0
+      if po_today > po_last
+        assign po_line = settings.preorder_line_closed
+        assign po_ship = ''
+      endif
+    endif
+  endif
+-%}
 <section class="hero" aria-label="Introduction" data-hero>
   <div class="hero-parallax" data-parallax>
     <div class="hero-frame">
@@ -16,7 +37,14 @@
   <div class="hero-shade" aria-hidden="true"></div>
   <div class="hero-content">
     <div class="hero-copy">
-      {%- if section.settings.status != blank -%}<p class="caps muted">{{ section.settings.status | escape }}</p>{%- endif -%}
+      {%- liquid
+        assign status = section.settings.status
+        assign status_down = status | downcase
+        if po_on and status_down contains 'out now' and po_line != blank
+          assign status = po_line
+        endif
+      -%}
+      {%- if status != blank -%}<p class="caps muted">{{ status | escape }}</p>{%- endif -%}
       <h1 class="hero-title">{{ section.settings.heading | escape }}</h1>
       <p class="hero-tagline">{{ section.settings.tagline | escape }}</p>
       <div class="hero-buttons">

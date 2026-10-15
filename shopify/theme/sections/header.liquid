@@ -1,3 +1,4 @@
+{%- assign live_types = collections.all.products | map: 'type' | uniq | sort -%}
 {%- liquid
   assign menu = linklists[section.settings.menu]
 -%}
@@ -15,7 +16,7 @@
             <div class="shell mega-inner">
               <ul class="mega-list">
                 <li><a href="{{ routes.all_products_collection_url }}">All products</a></li>
-                {%- for type in shop.types -%}
+                {%- for type in live_types -%}
                   {%- if type != blank -%}
                     <li><a href="{{ type | url_for_type }}">{{ type }}</a></li>
                   {%- endif -%}
@@ -84,7 +85,7 @@
     </div>
     <ul class="mobile-links">
       <li><a href="{{ routes.all_products_collection_url }}">Shop all</a></li>
-      {%- for type in shop.types -%}
+      {%- for type in live_types -%}
         {%- if type != blank -%}
           <li class="sub"><a href="{{ type | url_for_type }}">{{ type }}</a></li>
         {%- endif -%}

@@ -4,9 +4,20 @@
     <div class="sum-row muted"><dt>Shipping</dt><dd>Added at checkout</dd></div>
   </dl>
   {%- if settings.shipping_summary != blank -%}<p class="muted micro">{{ settings.shipping_summary | escape }}</p>{%- endif -%}
+  {%- assign po_line = '' -%}
+  {%- for item in cart.items -%}
+    {%- if item.properties['Pre-order'] != blank -%}{%- assign po_line = item.properties['Pre-order'] -%}{%- endif -%}
+  {%- endfor -%}
+  {%- if po_line != blank -%}
+    <p class="note micro">Your bag has pre-order pieces. They {{ po_line | replace: 'Ships by', 'ship by' }}. If the run doesn’t go ahead, or it can’t ship by then, you can have a full refund.</p>
+  {%- endif -%}
   <form action="{{ routes.cart_url }}" method="post" class="checkout-form">
     <button type="submit" name="checkout" class="btn btn-solid btn-block">Checkout</button>
   </form>
   <p class="muted micro center">{% render 'icon', name: 'lock', size: 12 %} Secure checkout. Card details never touch this site.</p>
-  {%- if settings.returns_note != blank -%}<p class="micro">{{ settings.returns_note | escape }}</p>{%- endif -%}
+  {%- if settings.returns_note != blank -%}
+    {%- assign returns_line = settings.returns_note -%}
+    {%- if po_line != blank -%}{%- assign returns_line = settings.returns_note | replace: 'All sales are final —', 'All sales are final once your order ships —' -%}{%- endif -%}
+    <p class="micro">{{ returns_line | escape }}</p>
+  {%- endif -%}
 </div>
