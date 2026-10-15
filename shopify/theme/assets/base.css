@@ -217,25 +217,36 @@ body.is-scrolled .site-top { top: 0; }
 .search-input { flex: 1; border: 0; border-bottom: 1px solid var(--bone); background: transparent; font-size: 1.25rem; font-weight: 300; padding: 10px 0; outline: none; }
 body.is-locked { overflow: hidden; }
 
-/* ── Cover ── */
-.hero { position: relative; height: 100svh; min-height: 620px; overflow: hidden; background: var(--ink); }
-.hero-parallax { position: absolute; inset: 0; transform: translate3d(0, calc(var(--hero-shift, 0) * 1px), 0); will-change: transform; }
-.hero-frame { position: absolute; left: 0; right: 0; top: calc(var(--top-h) + 8px); bottom: -14svh; opacity: 0.01; animation: hero-in 1.3s var(--ease) forwards; }
-@media (min-width: 64rem) { .hero-frame { bottom: -18svh; } }
-.hero-img { width: 100%; height: 100%; object-fit: contain; object-position: 50% 0%; transform: scale(1.08); animation: settle 2.6s var(--ease) forwards; }
+/* ── Cover ──
+   The words never sit on the photo, so the headline doesn't compete with the script printed on the
+   clothes. Phones and tablets: photo on top, words underneath. Larger screens: words left, photo right. */
+.hero { position: relative; display: flex; flex-direction: column; padding-top: var(--top-h); overflow: hidden; background: var(--ink); }
+.hero-parallax { position: relative; aspect-ratio: 4 / 5; }
+@media (min-width: 40rem) { .hero-parallax { aspect-ratio: auto; height: clamp(340px, calc(100svh - var(--top-h) - 300px), 620px); } }
+.hero-frame { position: absolute; inset: 8px 0 0; opacity: 0.01; animation: hero-in 1.3s var(--ease) forwards; -webkit-mask-image: linear-gradient(to bottom, #000 74%, transparent 100%); mask-image: linear-gradient(to bottom, #000 74%, transparent 100%); }
+.hero-img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0%; transform: scale(1.04); transform-origin: 50% 0; animation: settle 2.6s var(--ease) forwards; }
+@media (min-width: 40rem) { .hero-img { object-fit: contain; } }
 @keyframes hero-in { to { opacity: 1; } }
 @keyframes settle { to { transform: scale(1); } }
-.hero-shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to bottom, transparent 0%, transparent 42%, color-mix(in srgb, var(--ink) 62%, transparent) 62%, color-mix(in srgb, var(--ink) 90%, transparent) 80%, var(--ink) 100%); }
-.hero-content { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; padding: 0 16px max(9vh, 72px); text-align: center; }
-.hero-copy { display: flex; flex-direction: column; align-items: center; gap: 16px; opacity: 0; animation: fade-up 1.2s var(--ease) 0.8s forwards; }
+.hero-shade { display: none; }
+.hero-content { position: relative; display: flex; flex-direction: column; align-items: center; padding: 4px 16px 44px; text-align: center; }
+.hero-copy { display: flex; flex-direction: column; align-items: center; gap: 14px; opacity: 0; animation: fade-up 1.2s var(--ease) 0.6s forwards; }
 @keyframes fade-up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-.hero-title { font-size: clamp(1.75rem, 7.6vw, 5.25rem); font-weight: 400; line-height: 1; letter-spacing: 0.2em; margin-right: -0.2em; text-shadow: 0 0 28px var(--ink), 0 0 10px var(--ink); }
-@media (min-width: 48rem) { .hero-title { letter-spacing: 0.3em; margin-right: -0.3em; } }
+.hero-title { font-size: clamp(1.625rem, 7vw, 3.5rem); font-weight: 400; line-height: 1; letter-spacing: 0.2em; margin-right: -0.2em; }
 .hero-tagline { font-size: 1rem; font-weight: 300; letter-spacing: 0.02em; }
 @media (min-width: 48rem) { .hero-tagline { font-size: 1.125rem; } }
-.hero-buttons { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+.hero-buttons { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
 .hero-buttons .btn { min-width: 230px; }
 @media (min-width: 40rem) { .hero-buttons { flex-direction: row; } }
+@media (min-width: 64rem) {
+  .hero { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); align-items: center; height: 100svh; min-height: 640px; }
+  .hero-parallax { grid-column: 2; grid-row: 1; align-self: stretch; height: auto; transform: translate3d(0, calc(var(--hero-shift, 0) * 1px), 0); will-change: transform; }
+  .hero-frame { inset: 12px 0 -8svh; -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent 100%); mask-image: linear-gradient(to bottom, #000 80%, transparent 100%); }
+  .hero-content { grid-column: 1; grid-row: 1; align-items: flex-start; text-align: left; padding: 0 24px 4svh max(var(--gutter), calc((100vw - 1536px) / 2 + var(--gutter))); }
+  .hero-copy { align-items: flex-start; gap: 20px; }
+  .hero-title { font-size: clamp(2.5rem, 3.6vw, 4rem); letter-spacing: 0.24em; margin-right: 0; }
+  .hero-buttons { margin-top: 16px; }
+}
 
 /* ── Ticker ── */
 .marquee { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); overflow: hidden; padding: 14px 0; }
