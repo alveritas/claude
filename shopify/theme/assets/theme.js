@@ -432,6 +432,79 @@
     }));
   });
 
+  /* ── Motion: panels open like a roller shutter as they come into view; headings rise ── */
+  // A fully clipped panel never registers as on screen, so we watch its container and open the panel
+  // when the container scrolls into view.
+  const watched = new Map();
+  const revealer = !reduceMotion && "IntersectionObserver" in window
+    ? new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          (watched.get(e.target) || []).forEach((el) => el.classList.add("is-in"));
+          watched.delete(e.target); revealer.unobserve(e.target);
+        });
+      }, { rootMargin: "0px 0px -6% 0px", threshold: 0.08 })
+    : null;
+  const revealAll = (root = document) => {
+    $$("[data-reveal]:not(.is-in), [data-rise]:not(.is-in)", root).forEach((el) => {
+      if (!revealer) { el.classList.add("is-in"); return; }
+      const box = el.hasAttribute("data-reveal") ? el.parentElement : el;
+      if (!watched.has(box)) { watched.set(box, []); revealer.observe(box); }
+      watched.get(box).push(el);
+    });
+  };
+  revealAll();
+  window.NH = Object.assign(window.NH || {}, { reveal: revealAll });
+
+  /* ── Cover photos: one per piece, changing every few seconds ── */
+  $$("[data-hero-slides]").forEach((box) => {
+    const slides = $$("[data-hero-slide]", box);
+    const ticks = $$("[data-hero-tick]", box);
+    if (slides.length < 2) { ticks.forEach((t) => (t.hidden = true)); return; }
+    const MS = 6000;
+    box.style.setProperty("--hero-ms", `${MS}ms`);
+    let i = 0, timer = null, left = MS, started = 0, paused = false;
+    const schedule = (ms) => {
+      clearTimeout(timer);
+      left = ms; started = performance.now();
+      if (!paused && !reduceMotion) timer = setTimeout(() => show(i + 1), ms);
+    };
+    const setSlide = (n, on) => {
+      const sl = slides[n];
+      sl.classList.toggle("is-active", on);
+      if (on) sl.removeAttribute("aria-hidden"); else sl.setAttribute("aria-hidden", "true");
+      $$("a", sl).forEach((a) => (on ? a.removeAttribute("tabindex") : a.setAttribute("tabindex", "-1")));
+      if (on) { const img = $(".hero-img", sl); if (img) { img.style.animation = "none"; void img.offsetWidth; img.style.animation = ""; } }
+      ticks[n].removeAttribute("aria-current");
+      if (on) { void ticks[n].offsetWidth; ticks[n].setAttribute("aria-current", "true"); }
+    };
+    const show = (n) => {
+      setSlide(i, false);
+      i = (n + slides.length) % slides.length;
+      setSlide(i, true);
+      schedule(MS);
+    };
+    const pause = () => {
+      if (paused) return;
+      paused = true; clearTimeout(timer);
+      left = Math.max(300, left - (performance.now() - started));
+      box.classList.add("is-paused");
+    };
+    const resume = () => {
+      if (!paused) return;
+      paused = false; box.classList.remove("is-paused");
+      schedule(left);
+    };
+    ticks.forEach((t, n) => t.addEventListener("click", () => { paused = false; box.classList.remove("is-paused"); show(n); }));
+    box.addEventListener("mouseenter", pause);
+    box.addEventListener("mouseleave", resume);
+    box.addEventListener("focusin", pause);
+    box.addEventListener("focusout", (e) => { if (!box.contains(e.relatedTarget)) resume(); });
+    document.addEventListener("visibilitychange", () => (document.hidden ? pause() : resume()));
+    if (reduceMotion) box.classList.add("is-paused");
+    schedule(MS);
+  });
+
   /* ── Related products ── */
   $$("[data-recos]").forEach(async (el) => {
     if (el.children.length) return;
@@ -441,7 +514,7 @@
       const tmp = document.createElement("div");
       tmp.innerHTML = await res.text();
       const fresh = $("[data-recos]", tmp);
-      if (fresh && fresh.children.length) el.innerHTML = fresh.innerHTML;
+      if (fresh && fresh.children.length) { el.innerHTML = fresh.innerHTML; revealAll(el); }
     } catch { /* no suggestions: the section stays empty */ }
   });
 

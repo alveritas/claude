@@ -5,7 +5,7 @@
 -%}
 <section class="shell page-pad" data-collection>
   <div class="collection-head">
-    <h1 class="page-title">{% if collection.handle == 'all' %}All products{% else %}{{ collection.title }}{% endif %}</h1>
+    <h1 class="page-title" data-rise><span>{% if collection.handle == 'all' %}All products{% else %}{{ collection.title }}{% endif %}</span></h1>
     <p class="muted">{{ collection.products_count }} {% if collection.products_count == 1 %}piece{% else %}pieces{% endif %}</p>
   </div>
   {%- if collection.description != blank -%}<div class="muted rte collection-desc">{{ collection.description }}</div>{%- endif -%}
@@ -45,7 +45,7 @@
         -%}
       <div class="grid {{ cols }} product-grid-list joints">
         {%- for product in collection.products -%}
-          <div class="grid-cell">{% render 'product-card', product: product, eager: forloop.first %}</div>
+          <div class="grid-cell">{% render 'product-card', product: product, eager: forloop.first, index: forloop.index0 %}</div>
         {%- endfor -%}
       </div>
     {%- else -%}

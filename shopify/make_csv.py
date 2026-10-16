@@ -5,6 +5,13 @@ url = lambda f: f if f.startswith("http") else BASE + f + ".jpg"
 SIZES = ["XS", "S", "M", "L", "XL", "XXL"]
 WAISTS = ["28", "30", "32", "34", "36", "38"]
 P = [
+  dict(handle="feral-zip-hoodie", title="Feral Zip Hoodie", type="Hoodies", price="185.00", sizes=SIZES, size_name="Size",
+       qty={"XS": 4, "S": 8, "M": 12, "L": 12, "XL": 9, "XXL": 5},
+       desc=["A washed black zip hoodie with the Neverhollow script across the chest, gothic graphics down both sleeves, and a hood lined in black and white leopard pile with frayed edges."],
+       fit="Relaxed fit with dropped shoulders, ribbed cuffs and a ribbed hem.",
+       colors=[("Obsidian", [(MEDIA+"feral-flat.jpg","Feral Zip Hoodie in Obsidian laid flat, with the Neverhollow script across the chest, gothic sleeve graphics and a leopard-lined hood"),
+                             (MEDIA+"feral-worn.jpg","A model in the Feral Zip Hoodie with the hood up, leaning on a concrete pillar"),
+                             (MEDIA+"feral-seated.jpg","A model in the Feral Zip Hoodie sitting on a concrete ledge with the hood up")])]),
   dict(handle="spine-long-sleeve", title="Spine Long Sleeve", type="Tops", price="95.00", sizes=SIZES, size_name="Size",
        qty={"XS": 2, "S": 4, "M": 6, "L": 6, "XL": 4, "XXL": 3},
        desc=["A long sleeve tee with the Neverhollow script running vertically down the front.",

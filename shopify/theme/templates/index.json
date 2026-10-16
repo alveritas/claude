@@ -58,7 +58,8 @@
     },
     "spotlight": {
       "type": "spotlight",
-      "settings": {}
+      "settings": {},
+      "disabled": true
     },
     "newsletter": {
       "type": "newsletter",

@@ -1,18 +1,18 @@
 <section class="editorial" aria-labelledby="editorial-{{ section.id }}">
   <div class="shell editorial-copy">
-    <h2 id="editorial-{{ section.id }}" class="statement editorial-title">{{ section.settings.heading | escape }}</h2>
+    <h2 id="editorial-{{ section.id }}" class="statement editorial-title" data-rise><span>{{ section.settings.heading | escape }}</span></h2>
     <div class="editorial-row">
       <p class="muted editorial-body">{{ section.settings.body | escape }}</p>
       <a href="{{ section.settings.link | default: '/pages/about' }}" class="btn btn-line">{{ section.settings.button | escape }}</a>
     </div>
   </div>
   <div class="editorial-figures" aria-hidden="true">
-    {%- assign defaults = 'ed-spine-front.webp,ed-relic-side.webp,ed-spine-back.webp,ed-relic-back.webp' | split: ',' -%}
+    {%- assign defaults = 'ed-feral-seated.webp,ed-relic-side.webp,ed-spine-back.webp,ed-relic-back.webp' | split: ',' -%}
     {%- for i in (1..4) -%}
       {%- assign key = 'image_' | append: i -%}
       {%- assign img = section.settings[key] -%}
       {%- assign idx = i | minus: 1 -%}
-      <div class="editorial-fig">
+      <div class="editorial-fig" data-reveal style="--d: {{ idx | times: 0.1 }}s">
         {%- if img != blank -%}
           {{ img | image_url: width: 900 | image_tag: widths: '450, 600, 900', sizes: '(min-width: 1024px) 25vw, 50vw', loading: 'lazy', alt: '', class: 'editorial-img' }}
         {%- else -%}
@@ -32,7 +32,7 @@
     { "type": "textarea", "id": "body", "label": "Text", "default": "NEVERHOLLOW is an independent clothing label built around silhouette, detail, and restraint. We believe the strongest pieces don’t need to compete for attention." },
     { "type": "text", "id": "button", "label": "Button", "default": "Discover Neverhollow" },
     { "type": "url", "id": "link", "label": "Button link", "info": "Leave empty for the About page." },
-    { "type": "header", "content": "Figures", "info": "Tall photos work best. Leave empty to use the Spine and Relic photos." },
+    { "type": "header", "content": "Figures", "info": "Tall photos work best. Leave empty to use the Feral, Relic and Spine photos." },
     { "type": "image_picker", "id": "image_1", "label": "Figure 1" },
     { "type": "image_picker", "id": "image_2", "label": "Figure 2" },
     { "type": "image_picker", "id": "image_3", "label": "Figure 3" },

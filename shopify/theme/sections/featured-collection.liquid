@@ -26,8 +26,8 @@
 <section class="shell section-pad" aria-labelledby="featured-{{ section.id }}">
   <div class="section-head">
     <div>
-      <h2 id="featured-{{ section.id }}" class="section-title">{{ section.settings.heading | escape }}</h2>
-      {%- if section.settings.subheading != blank -%}<p class="muted small">{{ section.settings.subheading | escape }}</p>{%- endif -%}
+      <h2 id="featured-{{ section.id }}" class="section-title" data-rise><span>{{ section.settings.heading | escape }}</span></h2>
+      <p class="muted small">{% if section.settings.subheading != blank %}{{ section.settings.subheading | escape }}{% else %}{{ n }} {% if n == 1 %}piece{% else %}pieces{% endif %}{% if settings.preorder_enabled %}, made to order{% endif %}{% endif %}</p>
     </div>
     <a class="text-link caps" href="{{ collection.url }}">View all</a>
   </div>
@@ -59,7 +59,7 @@
           endif
         -%}
         <div class="grid-cell {{ cls }}">
-          {% render 'product-card', product: product, feature: big, sizes: card_sizes, eager: eager %}
+          {% render 'product-card', product: product, feature: big, sizes: card_sizes, eager: eager, index: forloop.index0 %}
         </div>
       {%- endfor -%}
     </div>

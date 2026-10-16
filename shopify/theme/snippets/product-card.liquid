@@ -1,7 +1,8 @@
 {%- comment -%}
   One card per piece. Colours are dots under it: pointing at one shows that colour's photo,
   and the link opens the piece in that colour.
-  Accepts: product, feature (large first tile), sizes, eager (load the first photo straight away).
+  Accepts: product, feature (large first tile), sizes, eager (load the first photo straight away),
+  index (position in the grid, staggers the reveal).
 {%- endcomment -%}
 {%- liquid
   assign sizes = sizes | default: '(min-width: 1024px) 25vw, 50vw'
@@ -37,7 +38,7 @@
   endfor
 -%}
 <article class="card{% if feature %} card--feature{% endif %}" data-card>
-  <a class="card-frame frame" href="{{ product.url }}" data-card-link tabindex="-1" aria-hidden="true">
+  <a class="card-frame frame" href="{{ product.url }}" data-card-link tabindex="-1" aria-hidden="true" data-reveal{% if index %} style="--d: {{ index | modulo: 4 | times: 0.09 }}s"{% endif %}>
     {%- if first_media -%}
       {{ first_media.preview_image | image_url: width: 1400 | image_tag: widths: '360, 540, 720, 900, 1200, 1400', sizes: sizes, loading: loading, alt: first_media.alt, class: 'card-img card-img--main' }}
       {%- if second_media -%}
