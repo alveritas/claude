@@ -287,7 +287,7 @@
         if (lab) lab.textContent = v.title;
       }
       const stickyMeta = $("[data-sticky-meta]", root);
-      if (stickyMeta) stickyMeta.textContent = meta.singleDefault ? money(v.price) : `${money(v.price)} · ${v.title}`;
+      if (stickyMeta) stickyMeta.textContent = meta.singleDefault ? money(v.price) : `${money(v.price)}, ${v.title}`;
       const url = new URL(window.location.href);
       url.searchParams.set("variant", v.id);
       history.replaceState(history.state, "", url.toString());

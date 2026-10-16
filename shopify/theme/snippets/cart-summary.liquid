@@ -17,7 +17,7 @@
   <p class="muted micro center">{% render 'icon', name: 'lock', size: 12 %} Secure checkout. Card details never touch this site.</p>
   {%- if settings.returns_note != blank -%}
     {%- assign returns_line = settings.returns_note -%}
-    {%- if po_line != blank -%}{%- assign returns_line = settings.returns_note | replace: 'All sales are final —', 'All sales are final once your order ships —' -%}{%- endif -%}
+    {%- if po_line != blank -%}{%- assign returns_line = settings.returns_note | replace: 'All sales are final.', 'All sales are final once your order ships.' | replace: 'All sales are final —', 'All sales are final once your order ships —' -%}{%- endif -%}
     <p class="micro">{{ returns_line | escape }}</p>
   {%- endif -%}
 </div>

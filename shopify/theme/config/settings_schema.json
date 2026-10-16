@@ -51,19 +51,19 @@
         "type": "text",
         "id": "shipping_summary",
         "label": "Shipping",
-        "default": "Ships worldwide: United States $8 (free over $200) · Everywhere else $35."
+        "default": "Ships worldwide. United States $8, free over $200. Everywhere else $35."
       },
       {
         "type": "text",
         "id": "processing_time",
         "label": "Processing time",
-        "info": "For example: Ships within 2–4 business days. Leave empty until you're sure."
+        "info": "For example: Ships within 2 to 4 business days. Leave empty until you're sure."
       },
       {
         "type": "text",
         "id": "returns_note",
         "label": "Returns",
-        "default": "All sales are final — no returns or exchanges. Damaged or incorrect items are replaced or refunded."
+        "default": "All sales are final. No returns or exchanges. Damaged or incorrect items are replaced or refunded."
       }
     ]
   },
@@ -103,13 +103,13 @@
         "type": "text",
         "id": "preorder_line_open",
         "label": "Line while pre-orders are open",
-        "default": "Drop 001 — pre-orders open"
+        "default": "Drop 001 pre-orders are open"
       },
       {
         "type": "text",
         "id": "preorder_line_closed",
         "label": "Line after pre-orders close",
-        "default": "Drop 001 — pre-orders closed"
+        "default": "Drop 001 pre-orders have closed"
       }
     ]
   }

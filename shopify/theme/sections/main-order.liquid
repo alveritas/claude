@@ -1,7 +1,7 @@
 <section class="shell page-pad">
   <a class="text-link muted small" href="{{ routes.account_url }}">Back to account</a>
   <h1 class="page-title page-title-gap">Order {{ order.name }}</h1>
-  <p class="muted small">Placed {{ order.created_at | date: '%B %-d, %Y' }} · {{ order.financial_status_label }} · {{ order.fulfillment_status_label }}</p>
+  <p class="muted small">Placed {{ order.created_at | date: '%B %-d, %Y' }}. {{ order.financial_status_label }}, {{ order.fulfillment_status_label }}</p>
   <ul class="orders">
     {%- for item in order.line_items -%}
       <li class="order-row">

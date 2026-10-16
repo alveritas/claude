@@ -6,7 +6,7 @@
 <section class="shell page-pad" data-collection>
   <div class="collection-head">
     <h1 class="page-title">{% if collection.handle == 'all' %}All products{% else %}{{ collection.title }}{% endif %}</h1>
-    <p class="muted small">{{ collection.products_count }} {% if collection.products_count == 1 %}piece{% else %}pieces{% endif %}</p>
+    <p class="muted">{{ collection.products_count }} {% if collection.products_count == 1 %}piece{% else %}pieces{% endif %}</p>
   </div>
   {%- if collection.description != blank -%}<div class="muted rte collection-desc">{{ collection.description }}</div>{%- endif -%}
 
@@ -35,7 +35,15 @@
 
   {%- paginate collection.products by 24 -%}
     {%- if collection.products.size > 0 -%}
-      <div class="grid grid--4 product-grid-list">
+      {%- liquid
+          assign cols = 'grid--4'
+          if collection.products_count <= 2
+            assign cols = 'grid--2'
+          elsif collection.products_count == 3
+            assign cols = 'grid--3'
+          endif
+        -%}
+      <div class="grid {{ cols }} product-grid-list joints">
         {%- for product in collection.products -%}
           <div class="grid-cell">{% render 'product-card', product: product, eager: forloop.first %}</div>
         {%- endfor -%}

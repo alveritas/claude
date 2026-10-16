@@ -1,22 +1,25 @@
 {%- assign live_types = collections.all.products | map: 'type' | uniq | sort -%}
 <footer class="site-footer">
+  <div class="shell footer-mark">
+    <a href="{{ routes.root_url }}" class="footer-logo" aria-label="{{ shop.name }} home">
+      <span class="brand-mark brand-wordmark" role="img" aria-label="{{ shop.name }}"></span>
+    </a>
+  </div>
   <div class="shell footer-grid">
     <div class="footer-brand">
-      <a href="{{ routes.root_url }}" class="footer-logo" aria-label="{{ shop.name }} home">
-        <span class="brand-mark brand-wordmark" role="img" aria-label="{{ shop.name }}"></span>
-      </a>
       {%- comment -%} The homepage has its own sign-up section, so the footer doesn't repeat it there. {%- endcomment -%}
       {%- unless request.page_type == 'index' -%}
-        <p class="section-title footer-heading">{{ section.settings.signup_heading }}</p>
+        <p class="footer-heading">{{ section.settings.signup_heading }}</p>
         <p class="muted small">{{ section.settings.signup_text }}</p>
         {% render 'newsletter-form', form_id: 'newsletter-footer', compact: true %}
       {%- else -%}
-        <p class="muted small footer-heading">Independent unisex streetwear. Drop 001 is out now.</p>
+        <p class="footer-heading">Independent unisex streetwear</p>
+        <p class="muted small">Made in small runs. Sold first to the people on the list.</p>
       {%- endunless -%}
     </div>
 
     <div class="footer-col">
-      <p class="caps muted footer-label">Shop</p>
+      <p class="caps footer-label">Shop</p>
       <ul>
         <li><a href="{{ routes.all_products_collection_url }}">All products</a></li>
         {%- for type in live_types -%}
@@ -27,7 +30,7 @@
     </div>
 
     <div class="footer-col">
-      <p class="caps muted footer-label">Help</p>
+      <p class="caps footer-label">Help</p>
       <ul>
         <li><a href="/pages/contact">Contact</a></li>
         {%- if shop.shipping_policy.url != blank -%}<li><a href="{{ shop.shipping_policy.url }}">Shipping</a></li>{%- endif -%}
@@ -41,7 +44,7 @@
     </div>
 
     <div class="footer-col">
-      <p class="caps muted footer-label">Brand</p>
+      <p class="caps footer-label">Brand</p>
       <ul>
         <li><a href="/pages/about">About</a></li>
         {%- if shop.privacy_policy.url != blank -%}<li><a href="{{ shop.privacy_policy.url }}">Privacy Policy</a></li>{%- endif -%}
@@ -53,7 +56,7 @@
   </div>
 
   <div class="shell footer-bottom">
-    <p class="caps muted">&copy; {{ 'now' | date: '%Y' }} {{ shop.name | upcase }}. All rights reserved.</p>
+    <p class="caps muted">&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.</p>
     <div class="footer-pay">
       {%- if shop.enabled_payment_types.size > 0 -%}
         <span class="caps muted">Secure checkout</span>
@@ -74,7 +77,7 @@
   "class": "section-footer",
   "settings": [
     { "type": "text", "id": "signup_heading", "label": "Sign-up heading", "default": "Join the list" },
-    { "type": "text", "id": "signup_text", "label": "Sign-up text", "default": "New drops, restocks and exclusive releases." }
+    { "type": "text", "id": "signup_text", "label": "Sign-up text", "default": "One email when something new drops or comes back." }
   ]
 }
 {% endschema %}

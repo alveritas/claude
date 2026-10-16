@@ -43,8 +43,7 @@
       </nav>
 
       <a class="logo" href="{{ routes.root_url }}" aria-label="{{ shop.name }} home">
-        <span class="brand-mark brand-wordmark desktop-only" role="img" aria-label="{{ shop.name }}"></span>
-        <span class="brand-mark brand-monogram mobile-only" role="img" aria-label="{{ shop.name }}"></span>
+        <span class="brand-mark brand-wordmark" role="img" aria-label="{{ shop.name }}"></span>
       </a>
 
       <div class="header-icons">
@@ -70,7 +69,7 @@
     <form action="{{ routes.search_url }}" method="get" role="search" class="shell search-form">
       <input type="hidden" name="type" value="product">
       <label for="search-input" class="sr-only">Search</label>
-      <input id="search-input" class="search-input" type="search" name="q" placeholder="Search the collection" autocomplete="off">
+      <input id="search-input" class="search-input" type="search" name="q" placeholder="Search" autocomplete="off">
       <button type="button" class="caps" data-close>Close</button>
     </form>
   </div>
@@ -80,7 +79,7 @@
   <div class="overlay-scrim" data-close></div>
   <nav class="drawer drawer-left" role="dialog" aria-modal="true" aria-label="Menu">
     <div class="drawer-head">
-      <span class="brand-mark brand-monogram drawer-mark" role="img" aria-label="{{ shop.name }}"></span>
+      <span class="brand-mark brand-wordmark drawer-mark" role="img" aria-label="{{ shop.name }}"></span>
       <button type="button" class="icon-btn" data-close aria-label="Close menu">{% render 'icon', name: 'close' %}</button>
     </div>
     <ul class="mobile-links">

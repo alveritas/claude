@@ -32,7 +32,7 @@
     <a class="text-link caps" href="{{ collection.url }}">View all</a>
   </div>
   {%- if n > 0 -%}
-    <div class="grid featured-grid{% if three %} grid--3{% endif %}{% if n == 2 %} grid--2{% endif %}{% if feature %} grid--feature{% endif %}">
+    <div class="grid joints featured-grid{% if three %} grid--3{% endif %}{% if n == 2 %} grid--2{% endif %}{% if feature %} grid--feature{% endif %}">
       {%- for product in collection.products limit: limit -%}
         {%- liquid
           assign big = false
@@ -74,7 +74,7 @@
   "class": "section-featured",
   "settings": [
     { "type": "text", "id": "heading", "label": "Heading", "default": "DROP 001" },
-    { "type": "text", "id": "subheading", "label": "Subheading", "default": "Designed with intention. Made to be worn." },
+    { "type": "text", "id": "subheading", "label": "Subheading" },
     { "type": "collection", "id": "collection", "label": "Collection", "info": "Leave empty for the Drop 001 collection (or all products)." },
     { "type": "range", "id": "limit", "label": "Products shown", "min": 2, "max": 12, "step": 1, "default": 8 }
   ],

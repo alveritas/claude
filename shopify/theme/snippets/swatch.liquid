@@ -1,5 +1,5 @@
 {%- comment -%}
-  The dot colour for a colourway name. Brand names (Obsidian, Bone, Fawn) map to their shades;
+  The dot colour for a colourway name. Brand names (Obsidian, Bone, Ash, Fawn) map to their shades;
   anything else falls back to Shopify's own colour name handling.
 {%- endcomment -%}
 {%- assign c = color | downcase -%}
@@ -8,7 +8,8 @@
   {%- when 'bone', 'white', 'ivory', 'chalk', 'pearl', 'cream', 'ecru' -%}#ebe6dc
   {%- when 'fawn' -%}linear-gradient(135deg, #111111 0 50%, #8a6a4f 50% 100%)
   {%- when 'brown', 'mocha', 'cocoa', 'chocolate', 'espresso', 'bark' -%}#5b4232
-  {%- when 'grey', 'gray', 'ash', 'smoke', 'fog', 'mist', 'silver' -%}#9a9893
+  {%- when 'ash' -%}#3f3e3b
+  {%- when 'grey', 'gray', 'smoke', 'fog', 'mist', 'silver' -%}#9a9893
   {%- when 'charcoal', 'graphite', 'slate', 'coal' -%}#3b3b3a
   {%- when 'sand', 'oat', 'stone', 'dune', 'tan', 'camel', 'khaki', 'taupe' -%}#c9b99d
   {%- when 'navy', 'midnight', 'indigo' -%}#1f2a44

@@ -41,7 +41,7 @@
   # On pre-order pieces, "final" applies once the order ships (pre-orders can be refunded before then).
   assign returns_line = settings.returns_note
   if po
-    assign returns_line = settings.returns_note | replace: 'All sales are final —', 'All sales are final once your order ships —'
+    assign returns_line = settings.returns_note | replace: 'All sales are final.', 'All sales are final once your order ships.' | replace: 'All sales are final —', 'All sales are final once your order ships —'
   endif
   assign can_buy = current.available
   if po_closed
@@ -114,7 +114,7 @@
             <p class="preorder-title">Pre-orders closed</p>
             <p class="muted small">Pre-orders for this piece closed on {{ po_close_text }}. Join the list at the bottom of the page to hear when it’s back.</p>
           {%- else -%}
-            <p class="preorder-title">Pre-order{% if po_ship != blank %} · Ships by {{ po_ship }}{% endif %}</p>
+            <p class="preorder-title">Pre-order{% if po_ship != blank %}, ships by {{ po_ship }}{% endif %}</p>
             <p class="muted small">Made in one production run{% if po_close_text != blank %} after pre-orders close on {{ po_close_text }}{% endif %}. You pay now. If the run doesn’t go ahead, or it can’t ship by then, you can have a full refund. Photos show the design, so the finished piece may differ slightly.</p>
           {%- endif -%}
         </div>
@@ -204,18 +204,23 @@
         {%- endform -%}
       </div>
 
-      <ul class="trust" aria-label="Payment, shipping and returns">
-        <li>{% render 'icon', name: 'lock', size: 15 %}<span>Secure checkout.{% if shop.enabled_payment_types.size > 0 %} <span class="trust-pay">{% for type in shop.enabled_payment_types limit: 6 %}{{ type | payment_type_svg_tag: class: 'pay-icon pay-icon--sm' }}{% endfor %}</span>{% endif %}</span></li>
+      {%- comment -%} The work order: what you're buying into, label left, value right. {%- endcomment -%}
+      <dl class="spec">
+        {%- if po and po_closed == false -%}
+          {%- if po_ship != blank -%}<div><dt>Ships by</dt><dd>{{ po_ship }}</dd></div>{%- endif -%}
+          {%- if po_close_text != blank -%}<div><dt>Pre-order until</dt><dd>{{ po_close_text }}</dd></div>{%- endif -%}
+        {%- endif -%}
         {%- if settings.shipping_summary != blank -%}
-          <li>{% render 'icon', name: 'globe', size: 15 %}<span>{{ settings.shipping_summary | escape }}{% if settings.processing_time != blank %} {{ settings.processing_time | escape }}{% endif %}{% if shop.shipping_policy.url != blank %} <a class="text-link" href="{{ shop.shipping_policy.url }}">Shipping</a>{% endif %}</span></li>
+          <div><dt>Shipping</dt><dd>{{ settings.shipping_summary | escape }}{% if settings.processing_time != blank %} {{ settings.processing_time | escape }}{% endif %}{% if shop.shipping_policy.url != blank %} <a class="text-link" href="{{ shop.shipping_policy.url }}">Shipping policy</a>{% endif %}</dd></div>
         {%- endif -%}
         {%- if settings.returns_note != blank -%}
-          <li>{% render 'icon', name: 'return', size: 15 %}<span>{{ returns_line | escape }}{% if shop.refund_policy.url != blank %} <a class="text-link" href="{{ shop.refund_policy.url }}">Returns</a>{% endif %}</span></li>
+          <div><dt>Returns</dt><dd>{{ returns_line | escape }}{% if shop.refund_policy.url != blank %} <a class="text-link" href="{{ shop.refund_policy.url }}">Refund policy</a>{% endif %}</dd></div>
         {%- endif -%}
+        <div><dt>Payment</dt><dd>Secure checkout. Card details never reach this site.{% if shop.enabled_payment_types.size > 0 %} <span class="trust-pay">{% for type in shop.enabled_payment_types limit: 6 %}{{ type | payment_type_svg_tag: class: 'pay-icon pay-icon--sm' }}{% endfor %}</span>{% endif %}</dd></div>
         {%- if settings.contact_email != blank -%}
-          <li>{% render 'icon', name: 'mail', size: 15 %}<span>Questions before you order? <a class="text-link" href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a></span></li>
+          <div><dt>Questions</dt><dd><a class="text-link" href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a></dd></div>
         {%- endif -%}
-      </ul>
+      </dl>
 
       <div class="accordions">
         <details class="acc" open>
@@ -257,7 +262,7 @@
   <div class="sticky-buy" data-sticky-buy aria-hidden="true">
     <div class="sticky-buy-text">
       <p class="truncate">{{ product.title }}</p>
-      <p class="muted micro" data-sticky-meta>{{ current.price | money_without_trailing_zeros }}{% unless single_default %} · {{ current.title }}{% endunless %}</p>
+      <p class="muted micro" data-sticky-meta>{{ current.price | money_without_trailing_zeros }}{% unless single_default %}, {{ current.title }}{% endunless %}</p>
     </div>
     <button type="button" class="btn btn-solid" data-sticky-add tabindex="-1">{% if po_closed %}Pre-orders closed{% else %}{{ add_label }}{% endif %}</button>
   </div>
