@@ -1,5 +1,5 @@
 <section class="shell page-pad narrow">
-  <h1 class="page-title page-title-gap">{{ section.settings.heading | escape }}</h1>
+  <h1 class="page-title page-title-gap" data-rise><span>{{ section.settings.heading | escape }}</span></h1>
   <div class="rte prose">
     {{ section.settings.text }}
     {%- if settings.contact_email != blank -%}<p><a class="text-link" href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a></p>{%- endif -%}

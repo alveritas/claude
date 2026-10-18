@@ -1,7 +1,11 @@
-<section class="shell page-pad center-block">
-  <h1 class="page-title">Page not found</h1>
-  <p class="muted">The page you’re looking for has moved or no longer exists.</p>
-  <a class="btn btn-line" href="{{ routes.all_products_collection_url }}">Shop the collection</a>
+<section class="shell page-pad narrow">
+  <p class="label">Error 404</p>
+  <h1 class="page-title page-title-gap">Page not found</h1>
+  <p class="lead">The page you’re looking for has moved or no longer exists.</p>
+  <div class="actions">
+    <a class="btn btn-solid" href="{{ routes.all_products_collection_url }}">Shop the drop</a>
+    <a class="btn btn-line" href="{{ routes.root_url }}">Home</a>
+  </div>
 </section>
 {% schema %}
 { "name": "Not found", "class": "section-404", "settings": [] }

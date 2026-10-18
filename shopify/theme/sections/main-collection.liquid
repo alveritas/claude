@@ -10,19 +10,19 @@
   </div>
   {%- if collection.description != blank -%}<div class="muted rte collection-desc">{{ collection.description }}</div>{%- endif -%}
 
+  <div class="toolbar">
   <nav class="tabs" aria-label="Categories">
-    <a class="tab{% if collection.handle == 'all' %} is-active{% endif %}" href="{{ all_url }}">All</a>
+    <a class="tab{% if collection.handle == 'all' %} is-active{% endif %}" href="{{ all_url }}"{% if collection.handle == 'all' %} aria-current="page"{% endif %}>All</a>
     {%- for type in live_types -%}
       {%- if type != blank -%}
-        <a class="tab{% if collection.title == type and collection.handle == 'types' %} is-active{% endif %}" href="{{ type | url_for_type }}">{{ type }}</a>
+        {%- assign on_type = false -%}{%- if collection.title == type and collection.handle == 'types' -%}{%- assign on_type = true -%}{%- endif -%}
+        <a class="tab{% if on_type %} is-active{% endif %}" href="{{ type | url_for_type }}"{% if on_type %} aria-current="page"{% endif %}>{{ type }}</a>
       {%- endif -%}
     {%- endfor -%}
   </nav>
-
-  <div class="toolbar">
     <form class="sort" method="get">
       {%- if collection.handle == 'types' and collection.title != blank -%}<input type="hidden" name="q" value="{{ collection.title | escape }}">{%- endif -%}
-      <label for="sort-by" class="muted small">Sort</label>
+      <label for="sort-by" class="label">Sort</label>
       <select id="sort-by" name="sort_by" class="select" data-autosubmit>
         {%- for option in collection.sort_options -%}
           {%- if option.value contains 'relevan' or option.name == 'Most relevant' -%}{%- continue -%}{%- endif -%}

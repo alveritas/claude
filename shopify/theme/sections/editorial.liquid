@@ -2,7 +2,7 @@
   <div class="shell editorial-copy">
     <h2 id="editorial-{{ section.id }}" class="statement editorial-title" data-rise><span>{{ section.settings.heading | escape }}</span></h2>
     <div class="editorial-row">
-      <p class="muted editorial-body">{{ section.settings.body | escape }}</p>
+      <p class="editorial-body">{{ section.settings.body | escape }}</p>
       <a href="{{ section.settings.link | default: '/pages/about' }}" class="btn btn-line">{{ section.settings.button | escape }}</a>
     </div>
   </div>
@@ -16,7 +16,8 @@
         {%- if img != blank -%}
           {{ img | image_url: width: 900 | image_tag: widths: '450, 600, 900', sizes: '(min-width: 1024px) 25vw, 50vw', loading: 'lazy', alt: '', class: 'editorial-img' }}
         {%- else -%}
-          <img class="editorial-img" src="{{ defaults[idx] | asset_url }}" alt="" loading="lazy" width="900" height="1200">
+          {%- assign small = defaults[idx] | replace: '.webp', '-540.webp' -%}
+          <img class="editorial-img" src="{{ defaults[idx] | asset_url }}" srcset="{{ small | asset_url }} 540w, {{ defaults[idx] | asset_url }} 900w" sizes="(min-width: 1024px) 25vw, 50vw" alt="" loading="lazy" width="900" height="1200">
         {%- endif -%}
       </div>
     {%- endfor -%}

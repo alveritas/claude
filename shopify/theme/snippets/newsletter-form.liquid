@@ -21,6 +21,6 @@
         {%- if form.errors.messages['email'] contains 'taken' -%}That email is already on the list.{%- else -%}Enter a valid email address.{%- endif -%}
       </p>
     {%- endif -%}
-    <p class="nl-consent{% if compact %} nl-consent--compact{% endif %}">By joining you agree to receive emails from {{ shop.name }} about new drops and restocks. Unsubscribe at any time.</p>
+    <p class="nl-consent{% if compact %} nl-consent--compact{% endif %}">By joining you agree to receive emails from {{ settings.brand_name | default: shop.name }} about new drops and restocks. Unsubscribe at any time.</p>
   {%- endif -%}
 {%- endform -%}

@@ -1,42 +1,60 @@
 <!doctype html>
 <html lang="{{ request.locale.iso_code }}">
   <head>
+    {%- liquid
+      assign brand = settings.brand_name | default: shop.name
+      assign tpl = template | split: '.' | first
+    -%}
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <script>document.documentElement.classList.add("js");</script>
     <meta name="color-scheme" content="only light">
+    <script>
+      // Motion only runs with the theme script; if it hasn't started within 4s, show everything as is.
+      document.documentElement.classList.add("js");
+      setTimeout(function () { if (!window.NH_READY) document.documentElement.classList.remove("js"); }, 4000);
+    </script>
     <link rel="canonical" href="{{ canonical_url }}">
-    {%- if settings.favicon != blank -%}
-      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 64, height: 64 }}">
-    {%- else -%}
-      <link rel="icon" type="image/png" href="{{ 'nh-favicon.png' | asset_url }}">
+    {%- if tpl == 'search' or tpl == '404' or template contains 'customers/' or tpl == 'cart' -%}
+      <meta name="robots" content="noindex, follow">
     {%- endif -%}
-    <link rel="apple-touch-icon" href="{{ 'nh-favicon.png' | asset_url }}">
+    {%- if settings.favicon != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 96, height: 96 }}">
+    {%- else -%}
+      <link rel="icon" type="image/png" sizes="96x96" href="{{ 'nh-favicon-96.png' | asset_url }}">
+    {%- endif -%}
+    <link rel="apple-touch-icon" href="{{ 'nh-touch-icon.png' | asset_url }}">
 
     {%- capture seo_title -%}
       {%- if request.page_type == 'index' -%}
-        {{ shop.name }} | {{ settings.brand_tagline }}
+        {{ brand }} | {{ settings.brand_tagline }}
       {%- else -%}
-        {{ page_title }}{% if current_tags %} – {{ current_tags | join: ', ' }}{% endif %}{% if current_page != 1 %} – Page {{ current_page }}{% endif %} | {{ shop.name }}
+        {{ page_title }}{% if current_tags %} – {{ current_tags | join: ', ' }}{% endif %}{% if current_page != 1 %} – Page {{ current_page }}{% endif %} | {{ brand }}
       {%- endif -%}
     {%- endcapture -%}
     <title>{{ seo_title | strip }}</title>
-    {%- if page_description -%}
-      <meta name="description" content="{{ page_description | escape }}">
+    <meta name="description" content="{{ page_description | default: settings.seo_description | strip_html | escape }}">
+    {% render 'meta-tags', brand: brand %}
+
+    {%- comment -%}
+      Archivo is served from the store itself, trimmed to the widths (62–100%) and weights (400–900)
+      the site uses, so the first screen never waits on a third-party font server.
+    {%- endcomment -%}
+    <link rel="preload" href="{{ 'archivo-nh.woff2' | asset_url }}" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="{{ 'nh-logo.svg' | asset_url }}" as="image" type="image/svg+xml">
+    {%- if request.page_type == 'index' -%}
+      <link rel="preload" as="image" href="{{ 'hero-feral.webp' | asset_url }}" imagesrcset="{{ 'hero-feral-800.webp' | asset_url }} 800w, {{ 'hero-feral.webp' | asset_url }} 939w" imagesizes="(min-width: 1024px) 42vw, 100vw" fetchpriority="high">
     {%- endif -%}
-    {% render 'meta-tags' %}
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
-
     <style>
-      :root {
-        --mark-wordmark: url("{{ 'nh-logo-mask.webp' | asset_url }}");
-        --mark-monogram: url("{{ 'nh-mask.webp' | asset_url }}");
+      @font-face {
+        font-family: Archivo;
+        src: url("{{ 'archivo-nh.woff2' | asset_url }}") format("woff2");
+        font-weight: 400 900;
+        font-stretch: 62% 100%;
+        font-style: normal;
+        font-display: swap;
       }
+      :root { --mark-wordmark: url("{{ 'nh-logo.svg' | asset_url }}"); }
     </style>
     {{ 'base.css' | asset_url | stylesheet_tag }}
     <script>
@@ -66,16 +84,45 @@
 
     {% section 'footer' %}
     {% section 'cart-drawer' %}
+    <p class="sr-only" aria-live="polite" data-announcer></p>
 
     {%- if request.page_type == 'index' -%}
+      {%- liquid
+        assign same_as = ''
+        if settings.instagram_url != blank
+          assign same_as = settings.instagram_url | json
+        endif
+        if settings.tiktok_url != blank
+          if same_as != blank
+            assign same_as = same_as | append: ','
+          endif
+          assign same_as = same_as | append: settings.tiktok_url | json
+        endif
+        assign origin = request.origin
+      -%}
       <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          "name": {{ shop.name | json }},
-          "url": {{ request.origin | append: routes.root_url | json }}{% if settings.instagram_url != blank or settings.tiktok_url != blank %},
-          "sameAs": [{% if settings.instagram_url != blank %}{{ settings.instagram_url | json }}{% endif %}{% if settings.instagram_url != blank and settings.tiktok_url != blank %},{% endif %}{% if settings.tiktok_url != blank %}{{ settings.tiktok_url | json }}{% endif %}]{% endif %}
-        }
+        [
+          {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": {{ brand | json }},
+            "url": {{ origin | append: routes.root_url | json }},
+            "logo": {{ 'nh-touch-icon.png' | asset_url | prepend: 'https:' | json }}{% if settings.contact_email != blank %},
+            "email": {{ settings.contact_email | json }}{% endif %}{% if same_as != blank %},
+            "sameAs": [{{ same_as }}]{% endif %}
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": {{ brand | json }},
+            "url": {{ origin | append: routes.root_url | json }},
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": {{ origin | append: routes.search_url | append: '?type=product&q={search_term_string}' | json }},
+              "query-input": "required name=search_term_string"
+            }
+          }
+        ]
       </script>
     {%- endif -%}
   </body>

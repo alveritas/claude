@@ -1,13 +1,14 @@
-<section class="shell {% if section.settings.first %}page-pad{% else %}section-pad-sm{% endif %} narrow">
-  {%- if section.settings.heading != blank -%}
-    {%- if section.settings.first -%}
-      <h1 class="page-title page-title-gap">{{ section.settings.heading | escape }}</h1>
-    {%- else -%}
-      <h2 class="section-title rich-heading">{{ section.settings.heading | escape }}</h2>
-    {%- endif -%}
-  {%- endif -%}
-  <div class="rte prose{% if section.settings.large %} prose--lg{% endif %}">{{ section.settings.text }}</div>
-</section>
+{%- if section.settings.first -%}
+  <section class="shell page-pad rich rich--intro">
+    {%- if section.settings.heading != blank -%}<h1 class="page-title page-title-gap" data-rise><span>{{ section.settings.heading | escape }}</span></h1>{%- endif -%}
+    <div class="rte prose{% if section.settings.large %} prose--lg{% endif %}">{{ section.settings.text }}</div>
+  </section>
+{%- else -%}
+  <section class="shell rich rich--split">
+    {%- if section.settings.heading != blank -%}<h2 class="rich-heading">{{ section.settings.heading | escape }}</h2>{%- endif -%}
+    <div class="rte prose{% if section.settings.large %} prose--lg{% endif %}">{{ section.settings.text }}</div>
+  </section>
+{%- endif -%}
 {% schema %}
 {
   "name": "Text",

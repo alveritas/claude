@@ -1,63 +1,87 @@
-/* NEVERHOLLOW theme behaviour: header, panels, bag drawer, product options, gallery. */
+/* NEVERHOLLOW theme behaviour: header, panels, bag drawer, product options, gallery, motion. */
 (() => {
+  window.NH_READY = true;
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const NH = window.NH || { routes: { cart: "/cart", cartAdd: "/cart/add", cartChange: "/cart/change", root: "/" } };
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  /* ── Header: solid once scrolled, announcement rotates ── */
-  const header = $("[data-header]");
-  const onScroll = () => {
-    const y = window.scrollY;
-    document.body.classList.toggle("is-scrolled", y > 24);
-    if (header) header.classList.toggle("is-solid", y > 24);
-    if (!reduceMotion) {
-      const hero = $(".hero-parallax");
-      if (hero && y < window.innerHeight * 1.2) hero.style.setProperty("--hero-shift", String(y * 0.25));
-    }
+  const announcer = $("[data-announcer]");
+  const announce = (text) => {
+    if (!announcer) return;
+    announcer.textContent = "";
+    setTimeout(() => (announcer.textContent = text), 60);
   };
+  const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  const visible = (el) => el.offsetParent !== null || el === document.activeElement;
+
+  /* ── Header ── */
+  const header = $("[data-header]");
+  const onScroll = () => document.body.classList.toggle("is-scrolled", window.scrollY > 24);
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
+
+  // Homepage: the big script is the logo on the first screen, so the header logo appears once it scrolls away.
+  if (header && header.hasAttribute("data-home")) {
+    const mark = $(".hero-mark");
+    if (mark && "IntersectionObserver" in window) {
+      new IntersectionObserver(([e]) => header.classList.toggle("show-logo", !e.isIntersecting), {
+        rootMargin: "-80px 0px 0px 0px",
+      }).observe(mark);
+    } else {
+      header.classList.add("show-logo");
+    }
+    const logo = $("[data-header-logo]", header);
+    if (logo) logo.addEventListener("focus", () => header.classList.add("show-logo"));
+  }
 
   const msgs = $$(".ann-msg");
   if (msgs.length > 1 && !reduceMotion) {
     let i = 0;
     setInterval(() => {
+      if (document.hidden) return;
       msgs[i].classList.remove("is-active");
       i = (i + 1) % msgs.length;
       msgs[i].classList.add("is-active");
     }, 4500);
   }
 
-  // Shop menu: opens on hover or keyboard focus, closes when leaving.
+  // Shop menu: opens on hover or keyboard focus, closes when leaving or on Escape.
   $$("[data-mega]").forEach((item) => {
     let t;
-    const open = () => { clearTimeout(t); item.classList.add("is-open"); if (header) header.classList.add("is-solid"); };
-    const close = () => { t = setTimeout(() => { item.classList.remove("is-open"); onScroll(); }, 160); };
+    const open = () => { clearTimeout(t); item.classList.add("is-open"); };
+    const close = (now) => { clearTimeout(t); if (now) item.classList.remove("is-open"); else t = setTimeout(() => item.classList.remove("is-open"), 160); };
     item.addEventListener("mouseenter", open);
-    item.addEventListener("mouseleave", close);
+    item.addEventListener("mouseleave", () => close());
     item.addEventListener("focusin", open);
     item.addEventListener("focusout", (e) => { if (!item.contains(e.relatedTarget)) close(); });
+    item.addEventListener("keydown", (e) => { if (e.key === "Escape") { close(true); const l = $(".nav-link", item); if (l) l.focus(); } });
+    $$("a", item).forEach((a) => a.addEventListener("click", () => close(true)));
   });
 
   /* ── Panels: search, menu, bag ── */
   let lastFocus = null;
   const panel = (name) => $(`[data-panel="${name}"]`);
+  const openPanelEl = () => $$("[data-panel]").find((p) => !p.hidden);
+  const setExpanded = (name, on) => $$(`[data-open="${name}"]`).forEach((b) => b.setAttribute("aria-expanded", String(on)));
   const openPanel = (name) => {
     const p = panel(name);
     if (!p) return false;
-    lastFocus = document.activeElement;
-    $$("[data-panel]").forEach((x) => { if (x !== p) x.hidden = true; });
+    if (!openPanelEl()) lastFocus = document.activeElement;
+    $$("[data-panel]").forEach((x) => { if (x !== p && !x.hidden) { x.hidden = true; setExpanded(x.dataset.panel, false); } });
     p.hidden = false;
+    setExpanded(name, true);
     document.body.classList.add("is-locked");
-    const f = name === "search" ? $("#search-input", p) : $("button, a, input", p);
+    const f = name === "search" ? $("#search-input", p) : $(FOCUSABLE, $(".drawer, .search-panel", p) || p);
     if (f) setTimeout(() => f.focus(), 30);
     return true;
   };
   const closePanels = () => {
-    $$("[data-panel]").forEach((x) => (x.hidden = true));
+    const open = openPanelEl();
+    if (!open) return;
+    $$("[data-panel]").forEach((x) => { x.hidden = true; setExpanded(x.dataset.panel, false); });
     document.body.classList.remove("is-locked");
     if (lastFocus && lastFocus.focus) lastFocus.focus();
+    lastFocus = null;
   };
   document.addEventListener("click", (e) => {
     const opener = e.target.closest("[data-open]");
@@ -68,8 +92,21 @@
     }
     if (e.target.closest("[data-close]")) closePanels();
   });
+  // Keep keyboard focus inside whatever is open on top of the page.
+  const trap = (box, e) => {
+    const items = $$(FOCUSABLE, box).filter(visible);
+    if (!items.length) { e.preventDefault(); return; }
+    const first = items[0], last = items[items.length - 1];
+    if (!box.contains(document.activeElement)) { e.preventDefault(); first.focus(); return; }
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  };
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") { closePanels(); closeLightbox(); }
+    if (e.key === "Escape") { if (lb) closeLightbox(); else closePanels(); return; }
+    if (e.key !== "Tab") return;
+    if (lb) return trap(lb, e);
+    const open = openPanelEl();
+    if (open) trap(open, e);
   });
 
   /* ── Bag ── */
@@ -81,7 +118,8 @@
     const fresh = $("#cart-drawer", tmp);
     const current = $("#cart-drawer");
     if (fresh && current) {
-      fresh.hidden = !open && current.hidden;
+      const wasOpen = !current.hidden;
+      fresh.hidden = !open && !wasOpen;
       current.replaceWith(fresh);
     }
     const count = Number(($("[data-cart-count-source]") || {}).textContent || 0);
@@ -92,6 +130,7 @@
       void b.offsetWidth;
       b.classList.add("is-bump");
     });
+    $$("[data-bag-link]").forEach((a) => a.setAttribute("aria-label", `Bag, ${count} ${count === 1 ? "item" : "items"}`));
     if (open) openPanel("cart");
   };
   const refreshDrawer = async (open) => {
@@ -117,15 +156,13 @@
       const data = await res.json();
       if (!res.ok) throw new Error(data.description || "error");
       renderDrawer(data.sections && data.sections["cart-drawer"], true);
+      announce(Number(btn.dataset.lineQty) === 0 ? "Removed from bag" : "Bag updated");
     } catch {
       line.classList.remove("is-busy");
     }
   });
 
   /* ── Product page ── */
-  const section = $("[data-product-section]");
-  if (section) initProduct(section);
-
   function money(cents) {
     const fmt = NH.moneyFormat || "${{amount}}";
     const amount = (cents / 100).toFixed(2);
@@ -137,12 +174,15 @@
       .replace(/<[^>]*>/g, "");
   }
 
+  const section = $("[data-product-section]");
+  if (section) initProduct(section);
+
   function initProduct(root) {
     const product = JSON.parse($("[data-product-json]", root).textContent);
     const meta = JSON.parse($("[data-product-meta]", root).textContent);
     const form = $("#product-form");
     const input = $("[data-variant-input]", root);
-    const fieldsets = $$("[data-option]", root);
+    const groups = $$("[data-option]", root);
     const colorIdx = meta.colorIndex;
     // Pre-order pieces say "Pre-order"; after the last pre-order day the button stays off.
     const ADD = meta.addLabel || "Add to bag";
@@ -177,19 +217,26 @@
     }
 
     const track = $("[data-gallery-track]", root);
-    const slides = () => $$(".gallery-slide", track).filter((s) => !s.hidden);
+    const slides = () => (track ? $$(".gallery-slide", track).filter((s) => !s.hidden) : []);
     const count = $("[data-gallery-count]", root);
-    const thumbs = $$("[data-thumb]", root);
     const activeIndex = () => Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
     const updateCount = () => {
       const vis = slides();
       const i = Math.min(activeIndex(), vis.length - 1);
       if (count) count.textContent = `${i + 1} / ${vis.length}`;
-      const id = vis[i] && vis[i].dataset.mediaId;
-      thumbs.forEach((t) => t.setAttribute("aria-selected", String(t.dataset.thumb === id)));
+    };
+    // Larger screens show every photo: the first full width, the rest in pairs, a lone last one full width.
+    const layout = () => {
+      if (!track) return;
+      const vis = slides();
+      $$(".gallery-slide", track).forEach((s) => s.classList.remove("is-wide"));
+      if (vis[0]) vis[0].classList.add("is-wide");
+      if (vis.length > 1 && (vis.length - 1) % 2 === 1) vis[vis.length - 1].classList.add("is-wide");
+      track.setAttribute("data-laid", "");
     };
     const goTo = (i, smooth = true) => {
       const vis = slides();
+      if (!vis.length) return;
       const n = (i + vis.length) % vis.length;
       track.scrollTo({ left: n * track.clientWidth, behavior: smooth && !reduceMotion ? "smooth" : "auto" });
     };
@@ -199,11 +246,8 @@
       const next = $("[data-gallery-next]", root);
       if (prev) prev.addEventListener("click", () => goTo(activeIndex() - 1));
       if (next) next.addEventListener("click", () => goTo(activeIndex() + 1));
-      thumbs.forEach((t) => t.addEventListener("click", () => {
-        const i = slides().findIndex((s) => s.dataset.mediaId === t.dataset.thumb);
-        if (i >= 0) goTo(i);
-      }));
       track.addEventListener("keydown", (e) => {
+        if (e.target !== track) return;
         if (e.key === "ArrowRight") { e.preventDefault(); goTo(activeIndex() + 1); }
         if (e.key === "ArrowLeft") { e.preventDefault(); goTo(activeIndex() - 1); }
       });
@@ -211,19 +255,29 @@
         const z = e.target.closest("[data-zoom]");
         if (!z) return;
         const vis = slides();
-        openLightbox(vis.map((s) => $("img", s)), vis.indexOf(z.closest(".gallery-slide")));
+        openLightbox(vis.map((s) => $("img", s)).filter(Boolean), vis.indexOf(z.closest(".gallery-slide")), z);
       });
+      layout();
     }
     const filterGallery = (color) => {
       if (!track || colorIdx === null || colorIdx === undefined) return;
       const hasGroups = Object.values(groupOf).some((g) => g !== null);
       if (!hasGroups) return;
       $$(".gallery-slide", track).forEach((s) => { s.hidden = groupOf[s.dataset.mediaId] !== color; });
-      thumbs.forEach((t) => { t.hidden = groupOf[t.dataset.thumb] !== color; });
       if (!slides().length) $$(".gallery-slide", track).forEach((s) => (s.hidden = false));
+      layout();
       goTo(0, false);
       updateCount();
     };
+
+    const addBtn = $("[data-add]", root);
+    const addLabel = $("[data-add-label]", root);
+    const addPrice = $("[data-add-price]", root);
+    const restock = $("[data-restock]", root);
+    const dyn = $("[data-dynamic-checkout]", root);
+    const availability = $("[data-availability]", root);
+    const priceEl = $("[data-price]", root);
+    const err = $("[data-form-error]", root);
 
     const findVariant = (opts) => variants.find((v) => optionsOf(v).every((o, i) => o === opts[i]));
     const update = (changed) => {
@@ -234,42 +288,45 @@
             variants.find((x) => optionsOf(x)[colorIdx] === selected[colorIdx]);
         if (v) optionsOf(v).forEach((o, i) => (selected[i] = o));
       }
-      fieldsets.forEach((fs) => {
-        const i = Number(fs.dataset.option);
-        const label = $(`[data-option-value="${i}"]`, fs);
+      groups.forEach((g) => {
+        const i = Number(g.dataset.option);
+        const label = $(`[data-option-value="${i}"]`, g);
         if (label) label.textContent = selected[i] === null ? "Choose" : selected[i];
-        $$("[data-value]", fs).forEach((b) => {
-          b.setAttribute("aria-checked", String(b.dataset.value === selected[i]));
+        $$("[data-value]", g).forEach((b) => {
+          const on = b.dataset.value === selected[i];
+          b.setAttribute("aria-checked", String(on));
           if (i !== colorIdx) {
             const opts = selected.slice();
             opts[i] = b.dataset.value;
-            const match = variants.find((x) => optionsOf(x).every((o, k) => opts[k] === null || o === opts[k]) && x.available) ||
-              variants.find((x) => optionsOf(x).every((o, k) => opts[k] === null || o === opts[k]));
+            const fits = (x) => optionsOf(x).every((o, k) => opts[k] === null || o === opts[k]);
+            const match = variants.find((x) => fits(x) && x.available) || variants.find(fits);
             const unavailable = !match || !match.available;
             b.classList.toggle("is-unavailable", unavailable);
             b.setAttribute("aria-label", `${b.dataset.value}${unavailable ? ", sold out" : ""}`);
           }
         });
+        // One stop in each group for the Tab key: the chosen value, or the first one.
+        const btns = $$("[data-value]", g);
+        const current = btns.find((b) => b.getAttribute("aria-checked") === "true") || btns[0];
+        btns.forEach((b) => (b.tabIndex = b === current ? 0 : -1));
       });
-      const addBtn = $("[data-add]", root);
-      const addLabel = $("[data-add-label]", root);
-      const restock = $("[data-restock]", root);
-      const dyn = $("[data-dynamic-checkout]", root);
-      const availability = $("[data-availability]", root);
-      const priceEl = $("[data-price]", root);
       if (missing().length) {
-        // Nothing to buy until every choice is made; the button explains what's missing.
+        // Nothing to buy until every choice is made; pressing the button says what's missing.
         if (addBtn) addBtn.disabled = CLOSED;
         if (addLabel) addLabel.textContent = CLOSED ? CLOSED_TEXT : ADD;
+        if (addPrice) addPrice.hidden = CLOSED;
         if (dyn) dyn.hidden = true;
         if (restock) restock.hidden = true;
         if (availability) availability.textContent = CLOSED ? CLOSED_TEXT : AVAIL;
+        const stickyMeta = $("[data-sticky-meta]", root);
+        if (stickyMeta) stickyMeta.textContent = `${money((v || initial).price)}, choose a ${missing()[0].toLowerCase()}`;
         if (changed === colorIdx || changed === "init") filterGallery(selected[colorIdx]);
         return;
       }
       if (!v) {
         if (addBtn) addBtn.disabled = true;
         if (addLabel) addLabel.textContent = "Unavailable";
+        if (addPrice) addPrice.hidden = true;
         return;
       }
       input.value = v.id;
@@ -278,6 +335,7 @@
       if (availability) availability.textContent = CLOSED ? CLOSED_TEXT : v.available ? AVAIL : "Sold out";
       if (addBtn) addBtn.disabled = !buyable;
       if (addLabel) addLabel.textContent = CLOSED ? CLOSED_TEXT : v.available ? ADD : "Sold out";
+      if (addPrice) { addPrice.textContent = money(v.price); addPrice.hidden = !buyable; }
       if (dyn) dyn.hidden = !buyable;
       if (restock) {
         restock.hidden = v.available || CLOSED;
@@ -288,21 +346,45 @@
       }
       const stickyMeta = $("[data-sticky-meta]", root);
       if (stickyMeta) stickyMeta.textContent = meta.singleDefault ? money(v.price) : `${money(v.price)}, ${v.title}`;
-      const url = new URL(window.location.href);
-      url.searchParams.set("variant", v.id);
-      history.replaceState(history.state, "", url.toString());
+      if (changed !== "init" || chosenByLink) {
+        const url = new URL(window.location.href);
+        url.searchParams.set("variant", v.id);
+        history.replaceState(history.state, "", url.toString());
+      }
       if (changed === colorIdx || changed === "init") filterGallery(selected[colorIdx]);
     };
-    fieldsets.forEach((fs) => {
-      const i = Number(fs.dataset.option);
-      $$("[data-value]", fs).forEach((b) => b.addEventListener("click", () => {
-        selected[i] = b.dataset.value;
-        const err = $("[data-form-error]", root);
-        if (err) err.hidden = true;
-        update(i);
-      }));
+    const choose = (i, b) => {
+      selected[i] = b.dataset.value;
+      if (err) err.hidden = true;
+      update(i);
+    };
+    groups.forEach((g) => {
+      const i = Number(g.dataset.option);
+      const btns = $$("[data-value]", g);
+      btns.forEach((b, n) => {
+        b.addEventListener("click", () => choose(i, b));
+        // Arrow keys move along a radio group, as they do in native radio buttons.
+        b.addEventListener("keydown", (e) => {
+          const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+          if (!step) return;
+          e.preventDefault();
+          const to = btns[(n + step + btns.length) % btns.length];
+          to.focus();
+          choose(i, to);
+        });
+      });
     });
     update("init");
+
+    // Size guide link opens the size panel below.
+    $$("[data-open-size]", root).forEach((a) => a.addEventListener("click", (e) => {
+      const d = $("#size-fit");
+      if (!d) return;
+      e.preventDefault();
+      d.open = true;
+      d.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+      $("summary", d).focus({ preventScroll: true });
+    }));
 
     // Quantity
     const qtyInput = $("[data-qty] input", root);
@@ -311,18 +393,17 @@
     const plus = $("[data-qty-plus]", root);
     if (minus) minus.addEventListener("click", () => (qtyInput.value = clampQty(Number(qtyInput.value) - 1)));
     if (plus) plus.addEventListener("click", () => (qtyInput.value = clampQty(Number(qtyInput.value) + 1)));
+    if (qtyInput) qtyInput.addEventListener("change", () => (qtyInput.value = clampQty(Number(qtyInput.value))));
 
     // Add to bag without leaving the page; the bag opens with the piece in it.
     if (form) {
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const addBtn = $("[data-add]", root);
-        const err = $("[data-form-error]", root);
         if (!addBtn || addBtn.disabled) return;
         if (missing().length) {
-          if (err) { err.textContent = `Select a ${missing()[0].toLowerCase()} to continue.`; err.hidden = false; }
-          const fs = fieldsets.find((f) => selected[Number(f.dataset.option)] === null);
-          if (fs) { const first = $("[data-value]:not(.is-unavailable)", fs) || $("[data-value]", fs); if (first) first.focus(); }
+          if (err) { err.textContent = `Choose a ${missing()[0].toLowerCase()} first.`; err.hidden = false; }
+          const g = groups.find((x) => selected[Number(x.dataset.option)] === null);
+          if (g) { const first = $("[data-value]:not(.is-unavailable)", g) || $("[data-value]", g); if (first) first.focus(); }
           return;
         }
         addBtn.setAttribute("aria-busy", "true");
@@ -335,8 +416,8 @@
           if (!res.ok) throw new Error(data.description || data.message || "This size couldn’t be added. Try again.");
           if (data.sections && data.sections["cart-drawer"]) renderDrawer(data.sections["cart-drawer"], true);
           else await refreshDrawer(true);
-          const label = $("[data-add-label]", root);
-          if (label) { label.textContent = "Added to bag"; setTimeout(() => (label.textContent = ADD), 1800); }
+          announce(`${product.title} added to bag`);
+          if (addLabel) { addLabel.textContent = "Added to bag"; setTimeout(() => (addLabel.textContent = ADD), 1800); }
         } catch (ex) {
           if (err) { err.textContent = ex.message; err.hidden = false; }
         } finally {
@@ -347,34 +428,47 @@
       });
     }
 
-    // Phones: a buy bar while the real buttons are off screen.
+    // Phones: a buy bar while the real button is off screen.
     const sticky = $("[data-sticky-buy]", root);
-    const addBtn = $("[data-add]", root);
-    if (sticky && addBtn && "IntersectionObserver" in window) {
-      new IntersectionObserver(([entry]) => {
-        const show = !entry.isIntersecting && entry.boundingClientRect.top < 0;
+    if (sticky && addBtn) {
+      const stickyAdd = $("[data-sticky-add]", sticky);
+      // Checked on scroll rather than by watching the button, so a fast fling past it still shows the bar.
+      let shown = null, queued = false;
+      const check = () => {
+        queued = false;
+        const show = addBtn.getBoundingClientRect().bottom < 0;
+        if (show === shown) return;
+        shown = show;
         sticky.classList.toggle("is-visible", show);
         sticky.setAttribute("aria-hidden", String(!show));
-        $("[data-sticky-add]", sticky).tabIndex = show ? 0 : -1;
-      }).observe(addBtn);
-      $("[data-sticky-add]", sticky).addEventListener("click", () => {
+        if (stickyAdd) stickyAdd.tabIndex = show ? 0 : -1;
+      };
+      window.addEventListener("scroll", () => { if (!queued) { queued = true; requestAnimationFrame(check); } }, { passive: true });
+      window.addEventListener("resize", check);
+      check();
+      if (stickyAdd) stickyAdd.addEventListener("click", () => {
         if (!addBtn.disabled && !missing().length) form.requestSubmit ? form.requestSubmit() : form.submit();
-        else form.scrollIntoView({ behavior: "smooth", block: "center" });
+        else {
+          form.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+          if (missing().length && err) { err.textContent = `Choose a ${missing()[0].toLowerCase()} first.`; err.hidden = false; }
+        }
       });
     }
   }
 
   /* ── Full-screen photos ── */
   let lb = null;
-  function openLightbox(imgs, start) {
+  let lbReturn = null;
+  function openLightbox(imgs, start, from) {
     if (!imgs.length) return;
     let i = Math.max(0, start);
+    lbReturn = from || document.activeElement;
     lb = document.createElement("div");
     lb.className = "lightbox";
     lb.setAttribute("role", "dialog");
     lb.setAttribute("aria-modal", "true");
     lb.setAttribute("aria-label", "Photo viewer");
-    lb.innerHTML = `<img alt=""><button type="button" class="icon-btn lightbox-close" aria-label="Close">✕</button>${imgs.length > 1 ? '<button type="button" class="icon-btn lightbox-prev" aria-label="Previous photo">‹</button><button type="button" class="icon-btn lightbox-next" aria-label="Next photo">›</button>' : ""}<p class="lightbox-count muted small"></p>`;
+    lb.innerHTML = `<img alt=""><button type="button" class="icon-btn lightbox-close" aria-label="Close">✕</button>${imgs.length > 1 ? '<button type="button" class="icon-btn lightbox-prev" aria-label="Previous photo">‹</button><button type="button" class="icon-btn lightbox-next" aria-label="Next photo">›</button>' : ""}<p class="lightbox-count" aria-live="polite"></p>`;
     const img = $("img", lb);
     const show = () => {
       const src = imgs[i];
@@ -389,6 +483,7 @@
       if (e.target.closest(".lightbox-prev")) { i = (i - 1 + imgs.length) % imgs.length; return show(); }
       if (e.target.closest(".lightbox-next")) { i = (i + 1) % imgs.length; return show(); }
       if (e.target === img) img.classList.toggle("is-zoomed");
+      else if (e.target === lb) closeLightbox();
     });
     lb.addEventListener("keydown", (e) => {
       if (e.key === "ArrowRight") { i = (i + 1) % imgs.length; show(); }
@@ -403,25 +498,10 @@
     if (!lb) return;
     lb.remove();
     lb = null;
-    document.body.classList.remove("is-locked");
+    if (!openPanelEl()) document.body.classList.remove("is-locked");
+    if (lbReturn && lbReturn.focus) lbReturn.focus();
+    lbReturn = null;
   }
-
-  /* ── Product cards: colour dots preview their photo ── */
-  const previewSwatch = (dot) => {
-    const card = dot.closest("[data-card]");
-    if (!card) return;
-    const img = $(".card-img--main", card);
-    if (img && dot.dataset.src) {
-      img.src = dot.dataset.src;
-      if (dot.dataset.srcset) img.srcset = dot.dataset.srcset;
-    }
-    $$("[data-card-link]", card).forEach((a) => (a.href = dot.href));
-    $$("[data-swatch]", card).forEach((d) => (d === dot ? d.setAttribute("aria-current", "true") : d.removeAttribute("aria-current")));
-    const label = $("[data-card-color]", card);
-    if (label) label.textContent = dot.dataset.name;
-  };
-  document.addEventListener("mouseover", (e) => { const d = e.target.closest("[data-swatch]"); if (d) previewSwatch(d); });
-  document.addEventListener("focusin", (e) => { const d = e.target.closest("[data-swatch]"); if (d) previewSwatch(d); });
 
   /* ── Spotlight views ── */
   $$("[data-spotlight]").forEach((s) => {
@@ -456,18 +536,19 @@
   revealAll();
   window.NH = Object.assign(window.NH || {}, { reveal: revealAll });
 
-  /* ── Cover photos: one per piece, changing every few seconds ── */
+  /* ── Cover photos: one per piece, changing every few seconds; the button stops them ── */
   $$("[data-hero-slides]").forEach((box) => {
     const slides = $$("[data-hero-slide]", box);
     const ticks = $$("[data-hero-tick]", box);
-    if (slides.length < 2) { ticks.forEach((t) => (t.hidden = true)); return; }
+    const toggle = $("[data-hero-toggle]", box);
+    if (slides.length < 2) { ticks.forEach((t) => (t.hidden = true)); if (toggle) toggle.hidden = true; return; }
     const MS = 6000;
     box.style.setProperty("--hero-ms", `${MS}ms`);
-    let i = 0, timer = null, left = MS, started = 0, paused = false;
+    let i = 0, timer = null, left = MS, started = 0, held = false, stopped = reduceMotion;
     const schedule = (ms) => {
       clearTimeout(timer);
       left = ms; started = performance.now();
-      if (!paused && !reduceMotion) timer = setTimeout(() => show(i + 1), ms);
+      if (!held && !stopped) timer = setTimeout(() => show(i + 1), ms);
     };
     const setSlide = (n, on) => {
       const sl = slides[n];
@@ -484,24 +565,34 @@
       setSlide(i, true);
       schedule(MS);
     };
-    const pause = () => {
-      if (paused) return;
-      paused = true; clearTimeout(timer);
+    const paint = () => box.classList.toggle("is-paused", held || stopped);
+    // Hover, focus or a hidden tab hold the timer; it carries on from where it was.
+    const hold = () => {
+      if (held) return;
+      held = true; clearTimeout(timer);
       left = Math.max(300, left - (performance.now() - started));
-      box.classList.add("is-paused");
+      paint();
     };
-    const resume = () => {
-      if (!paused) return;
-      paused = false; box.classList.remove("is-paused");
-      schedule(left);
+    const release = () => {
+      if (!held) return;
+      held = false; paint();
+      if (!stopped) schedule(left);
     };
-    ticks.forEach((t, n) => t.addEventListener("click", () => { paused = false; box.classList.remove("is-paused"); show(n); }));
-    box.addEventListener("mouseenter", pause);
-    box.addEventListener("mouseleave", resume);
-    box.addEventListener("focusin", pause);
-    box.addEventListener("focusout", (e) => { if (!box.contains(e.relatedTarget)) resume(); });
-    document.addEventListener("visibilitychange", () => (document.hidden ? pause() : resume()));
-    if (reduceMotion) box.classList.add("is-paused");
+    ticks.forEach((t, n) => t.addEventListener("click", () => show(n)));
+    if (toggle) toggle.addEventListener("click", () => {
+      stopped = !stopped;
+      box.classList.toggle("is-stopped", stopped);
+      toggle.setAttribute("aria-label", stopped ? "Play the photos" : "Pause the photos");
+      paint();
+      if (!stopped) { held = false; paint(); schedule(left); } else clearTimeout(timer);
+    });
+    box.addEventListener("mouseenter", hold);
+    box.addEventListener("mouseleave", release);
+    box.addEventListener("focusin", hold);
+    box.addEventListener("focusout", (e) => { if (!box.contains(e.relatedTarget)) release(); });
+    document.addEventListener("visibilitychange", () => (document.hidden ? hold() : release()));
+    if (stopped) box.classList.add("is-stopped");
+    paint();
     schedule(MS);
   });
 

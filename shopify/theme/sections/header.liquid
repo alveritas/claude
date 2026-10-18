@@ -1,17 +1,22 @@
-{%- assign live_types = collections.all.products | map: 'type' | uniq | sort -%}
 {%- liquid
+  assign brand = settings.brand_name | default: shop.name
+  assign live_types = collections.all.products | map: 'type' | uniq | sort
   assign menu = linklists[section.settings.menu]
+  assign on_shop = false
+  if request.page_type == 'collection' or request.page_type == 'product'
+    assign on_shop = true
+  endif
 -%}
-<div class="site-top" data-header {% if request.page_type == 'index' %}data-overlay="true"{% endif %}>
+<div class="site-top" data-header{% if request.page_type == 'index' %} data-home{% endif %}>
   <header class="site-header">
     <div class="shell header-row">
-      <button type="button" class="icon-btn mobile-only" data-open="menu" aria-label="Open menu" aria-controls="mobile-menu">
+      <button type="button" class="icon-btn mobile-only" data-open="menu" aria-label="Open menu" aria-controls="mobile-menu" aria-expanded="false">
         {% render 'icon', name: 'menu' %}
       </button>
 
       <nav class="header-nav desktop-only" aria-label="Main">
         <div class="nav-item has-mega" data-mega>
-          <a class="nav-link{% if request.page_type == 'collection' or request.page_type == 'product' %} is-active{% endif %}" href="{{ routes.all_products_collection_url }}" aria-haspopup="true">Shop</a>
+          <a class="nav-link{% if on_shop %} is-active{% endif %}" href="{{ routes.all_products_collection_url }}"{% if on_shop %} aria-current="true"{% endif %}>Shop</a>
           <div class="mega" data-mega-panel>
             <div class="shell mega-inner">
               <ul class="mega-list">
@@ -22,55 +27,62 @@
                   {%- endif -%}
                 {%- endfor -%}
               </ul>
-              {%- assign promo = collections.all.products.first -%}
-              {%- if promo and promo.featured_media -%}
-                <a class="mega-feature" href="{{ promo.url }}">
-                  <span class="frame mega-img">{{ promo.featured_media.preview_image | image_url: width: 600 | image_tag: loading: 'lazy', sizes: '220px', widths: '300, 450, 600', alt: '' }}</span>
-                  <span class="card-title">{{ promo.title }}</span>
-                </a>
-              {%- endif -%}
+              <ul class="mega-products">
+                {%- for p in collections.all.products limit: 3 -%}
+                  {%- if p.featured_media -%}
+                    <li>
+                      <a class="mega-feature" href="{{ p.url }}">
+                        <span class="frame mega-img">{{ p.featured_media.preview_image | image_url: width: 480 | image_tag: loading: 'lazy', sizes: '180px', widths: '240, 360, 480', alt: '' }}</span>
+                        <span class="mega-name">{{ p.title }}</span>
+                        <span class="mega-price">{{ p.price | money_without_trailing_zeros }}</span>
+                      </a>
+                    </li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
             </div>
           </div>
         </div>
         {%- if menu.links.size > 0 -%}
           {%- for link in menu.links -%}
-            <a class="nav-link{% if link.active %} is-active{% endif %}" href="{{ link.url }}">{{ link.title }}</a>
+            <a class="nav-link{% if link.active %} is-active{% endif %}" href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title }}</a>
           {%- endfor -%}
         {%- else -%}
-          <a class="nav-link{% if request.page_type == 'list-collections' %} is-active{% endif %}" href="{{ routes.collections_url }}">Collections</a>
-          <a class="nav-link" href="/pages/about">About</a>
+          <a class="nav-link{% if page.handle == 'about' %} is-active{% endif %}" href="/pages/about"{% if page.handle == 'about' %} aria-current="page"{% endif %}>About</a>
+          <a class="nav-link{% if page.handle == 'faq' %} is-active{% endif %}" href="/pages/faq"{% if page.handle == 'faq' %} aria-current="page"{% endif %}>FAQ</a>
         {%- endif -%}
       </nav>
 
-      <a class="logo" href="{{ routes.root_url }}" aria-label="{{ shop.name }} home">
-        <span class="brand-mark brand-wordmark" role="img" aria-label="{{ shop.name }}"></span>
+      <a class="logo" href="{{ routes.root_url }}" aria-label="{{ brand | escape }}, home" data-header-logo>
+        <span class="brand-mark brand-wordmark" aria-hidden="true"></span>
       </a>
 
       <div class="header-icons">
-        <button type="button" class="icon-btn" data-open="search" aria-label="Search" aria-controls="search-panel">
+        <button type="button" class="icon-btn" data-open="search" aria-label="Search" aria-controls="search-panel" aria-expanded="false">
           {% render 'icon', name: 'search' %}
         </button>
         {%- if shop.customer_accounts_enabled -%}
           <a class="icon-btn desktop-only" href="{{ routes.account_url }}" aria-label="Account">{% render 'icon', name: 'user' %}</a>
         {%- endif -%}
-        <a class="icon-btn bag-btn" href="{{ routes.cart_url }}" data-open="cart" aria-label="Bag, {{ cart.item_count }} items">
+        <a class="icon-btn bag-btn" href="{{ routes.cart_url }}" data-open="cart" aria-controls="cart-drawer" aria-expanded="false" aria-label="Bag, {{ cart.item_count }} {% if cart.item_count == 1 %}item{% else %}items{% endif %}" data-bag-link>
           {% render 'icon', name: 'bag' %}
-          <span class="badge" data-cart-count {% if cart.item_count == 0 %}hidden{% endif %}>{{ cart.item_count }}</span>
+          <span class="badge" data-cart-count aria-hidden="true" {% if cart.item_count == 0 %}hidden{% endif %}>{{ cart.item_count }}</span>
         </a>
       </div>
     </div>
   </header>
 </div>
-<div class="top-spacer{% if request.page_type == 'index' %} top-spacer--overlay{% endif %}" aria-hidden="true"></div>
+<div class="top-spacer" aria-hidden="true"></div>
 
 <div class="overlay" id="search-panel" data-panel="search" hidden>
   <div class="overlay-scrim" data-close></div>
   <div class="search-panel" role="dialog" aria-modal="true" aria-label="Search">
     <form action="{{ routes.search_url }}" method="get" role="search" class="shell search-form">
       <input type="hidden" name="type" value="product">
-      <label for="search-input" class="sr-only">Search</label>
+      <label for="search-input" class="sr-only">Search the store</label>
+      {% render 'icon', name: 'search', size: 24 %}
       <input id="search-input" class="search-input" type="search" name="q" placeholder="Search" autocomplete="off">
-      <button type="button" class="caps" data-close>Close</button>
+      <button type="button" class="btn btn-line btn-sm" data-close>Close</button>
     </form>
   </div>
 </div>
@@ -79,7 +91,7 @@
   <div class="overlay-scrim" data-close></div>
   <nav class="drawer drawer-left" role="dialog" aria-modal="true" aria-label="Menu">
     <div class="drawer-head">
-      <span class="brand-mark brand-wordmark drawer-mark" role="img" aria-label="{{ shop.name }}"></span>
+      <span class="brand-mark brand-wordmark drawer-mark" aria-hidden="true"></span>
       <button type="button" class="icon-btn" data-close aria-label="Close menu">{% render 'icon', name: 'close' %}</button>
     </div>
     <ul class="mobile-links">
@@ -94,13 +106,15 @@
           <li><a href="{{ link.url }}">{{ link.title }}</a></li>
         {%- endfor -%}
       {%- else -%}
-        <li><a href="{{ routes.collections_url }}">Collections</a></li>
         <li><a href="/pages/about">About</a></li>
-      {%- endif -%}
-      {%- if shop.customer_accounts_enabled -%}
-        <li><a href="{{ routes.account_url }}">Account</a></li>
+        <li><a href="/pages/faq">FAQ</a></li>
+        <li><a href="/pages/contact">Contact</a></li>
       {%- endif -%}
     </ul>
+    <div class="drawer-foot drawer-foot--menu">
+      {%- if shop.customer_accounts_enabled -%}<a class="text-link" href="{{ routes.account_url }}">Account</a>{%- endif -%}
+      {%- if settings.contact_email != blank -%}<a class="muted small" href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a>{%- endif -%}
+    </div>
   </nav>
 </div>
 
@@ -113,7 +127,7 @@
       "type": "link_list",
       "id": "menu",
       "label": "Extra menu links",
-      "info": "Shown after Shop. Leave empty to show Collections and About."
+      "info": "Shown after Shop. Leave empty to show About and FAQ."
     }
   ]
 }

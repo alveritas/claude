@@ -13,28 +13,28 @@
       "type": "rich-text",
       "settings": {
         "heading": "The Brand",
-        "text": "<p>An independent, unisex label. Dark, oversized pieces with branding kept to a line of script or a small monogram — present when you look for it, quiet when you don’t.</p>"
+        "text": "<p>An independent, unisex label. Washed black and bone pieces, cut loose and worn long, with the Neverhollow script written large: down a leg, across a chest, along a sleeve.</p>"
       }
     },
     "approach": {
       "type": "rich-text",
       "settings": {
         "heading": "Our Approach",
-        "text": "<p>Each piece starts with its silhouette. Proportion comes first, then the details that only show up close: a label, a cuff, the way a line of script follows a sleeve.</p>"
+        "text": "<p>Each piece starts with its silhouette. Proportion comes first, then the details you find up close: frayed edges, a leopard-lined hood, the way the script follows a seam.</p>"
       }
     },
     "philosophy": {
       "type": "rich-text",
       "settings": {
         "heading": "Design Philosophy",
-        "text": "<p>Restraint over volume. A small palette of black, charcoal and silver-gray, so that shape and detail carry the design rather than color or logos.</p>"
+        "text": "<p>Black, white and washed grey, so shape and script carry the design rather than colour.</p>"
       }
     },
     "future": {
       "type": "rich-text",
       "settings": {
         "heading": "What’s Next",
-        "text": "<p>Drop 001 is out now. New releases and restocks are announced to the mailing list first.</p>"
+        "text": "<p>Drop 001 is made to order in one production run. New releases and restocks go to the mailing list first.</p>"
       }
     }
   },

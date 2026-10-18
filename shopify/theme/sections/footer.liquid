@@ -1,11 +1,9 @@
-{%- assign live_types = collections.all.products | map: 'type' | uniq | sort -%}
+{%- liquid
+  assign brand = settings.brand_name | default: shop.name
+  assign live_types = collections.all.products | map: 'type' | uniq | sort
+-%}
 <footer class="site-footer">
-  <div class="shell footer-mark">
-    <a href="{{ routes.root_url }}" class="footer-logo" aria-label="{{ shop.name }} home">
-      <span class="brand-mark brand-wordmark" role="img" aria-label="{{ shop.name }}"></span>
-    </a>
-  </div>
-  <div class="shell footer-grid">
+  <div class="shell footer-top">
     <div class="footer-brand">
       {%- comment -%} The homepage has its own sign-up section, so the footer doesn't repeat it there. {%- endcomment -%}
       {%- unless request.page_type == 'index' -%}
@@ -18,56 +16,56 @@
       {%- endunless -%}
     </div>
 
-    <div class="footer-col">
-      <p class="caps footer-label">Shop</p>
-      <ul>
-        <li><a href="{{ routes.all_products_collection_url }}">All products</a></li>
-        {%- for type in live_types -%}
-          {%- if type != blank -%}<li><a href="{{ type | url_for_type }}">{{ type }}</a></li>{%- endif -%}
-        {%- endfor -%}
-        <li><a href="{{ routes.collections_url }}">Collections</a></li>
-      </ul>
-    </div>
+    <nav class="footer-cols" aria-label="Footer">
+      <div class="footer-col">
+        <p class="label footer-label">Shop</p>
+        <ul>
+          <li><a href="{{ routes.all_products_collection_url }}">All products</a></li>
+          {%- for type in live_types -%}
+            {%- if type != blank -%}<li><a href="{{ type | url_for_type }}">{{ type }}</a></li>{%- endif -%}
+          {%- endfor -%}
+        </ul>
+      </div>
 
-    <div class="footer-col">
-      <p class="caps footer-label">Help</p>
-      <ul>
-        <li><a href="/pages/contact">Contact</a></li>
-        {%- if shop.shipping_policy.url != blank -%}<li><a href="{{ shop.shipping_policy.url }}">Shipping</a></li>{%- endif -%}
-        {%- if shop.refund_policy.url != blank -%}<li><a href="{{ shop.refund_policy.url }}">Returns</a></li>{%- endif -%}
-        <li><a href="/pages/faq">FAQ</a></li>
-        {%- if shop.customer_accounts_enabled -%}<li><a href="{{ routes.account_url }}">Account</a></li>{%- endif -%}
-      </ul>
-      {%- if settings.contact_email != blank -%}
-        <p class="footer-email"><a class="muted" href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a></p>
-      {%- endif -%}
-    </div>
+      <div class="footer-col">
+        <p class="label footer-label">Help</p>
+        <ul>
+          <li><a href="/pages/faq">FAQ</a></li>
+          {%- if shop.shipping_policy.url != blank -%}<li><a href="{{ shop.shipping_policy.url }}">Shipping</a></li>{%- endif -%}
+          {%- if shop.refund_policy.url != blank -%}<li><a href="{{ shop.refund_policy.url }}">Returns</a></li>{%- endif -%}
+          <li><a href="/pages/contact">Contact</a></li>
+          {%- if shop.customer_accounts_enabled -%}<li><a href="{{ routes.account_url }}">Account</a></li>{%- endif -%}
+        </ul>
+      </div>
 
-    <div class="footer-col">
-      <p class="caps footer-label">Brand</p>
-      <ul>
-        <li><a href="/pages/about">About</a></li>
-        {%- if shop.privacy_policy.url != blank -%}<li><a href="{{ shop.privacy_policy.url }}">Privacy Policy</a></li>{%- endif -%}
-        {%- if shop.terms_of_service.url != blank -%}<li><a href="{{ shop.terms_of_service.url }}">Terms of Service</a></li>{%- endif -%}
-        {%- if settings.instagram_url != blank -%}<li><a href="{{ settings.instagram_url }}" rel="noopener" target="_blank">Instagram</a></li>{%- endif -%}
-        {%- if settings.tiktok_url != blank -%}<li><a href="{{ settings.tiktok_url }}" rel="noopener" target="_blank">TikTok</a></li>{%- endif -%}
-      </ul>
-    </div>
+      <div class="footer-col">
+        <p class="label footer-label">{{ brand }}</p>
+        <ul>
+          <li><a href="/pages/about">About</a></li>
+          {%- if settings.instagram_url != blank -%}<li><a href="{{ settings.instagram_url }}" rel="noopener" target="_blank">Instagram</a></li>{%- endif -%}
+          {%- if settings.tiktok_url != blank -%}<li><a href="{{ settings.tiktok_url }}" rel="noopener" target="_blank">TikTok</a></li>{%- endif -%}
+          {%- if shop.privacy_policy.url != blank -%}<li><a href="{{ shop.privacy_policy.url }}">Privacy</a></li>{%- endif -%}
+          {%- if shop.terms_of_service.url != blank -%}<li><a href="{{ shop.terms_of_service.url }}">Terms</a></li>{%- endif -%}
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <div class="shell footer-mark">
+    <a href="{{ routes.root_url }}" class="footer-logo" aria-label="{{ brand | escape }}, home">
+      <span class="brand-mark brand-wordmark" aria-hidden="true"></span>
+    </a>
   </div>
 
   <div class="shell footer-bottom">
-    <p class="caps muted">&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.</p>
-    <div class="footer-pay">
-      {%- if shop.enabled_payment_types.size > 0 -%}
-        <span class="caps muted">Secure checkout</span>
-        <ul class="pay-icons" aria-label="Ways to pay">
-          {%- for type in shop.enabled_payment_types -%}
-            <li>{{ type | payment_type_svg_tag: class: 'pay-icon' }}</li>
-          {%- endfor -%}
-        </ul>
-      {%- endif -%}
-      <span class="caps muted">Prices in {{ cart.currency.iso_code }}</span>
-    </div>
+    <p class="micro muted">&copy; {{ 'now' | date: '%Y' }} {{ brand }}{% if settings.contact_email != blank %} · <a href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a>{% endif %}</p>
+    {%- if shop.enabled_payment_types.size > 0 -%}
+      <ul class="pay-icons" aria-label="Ways to pay">
+        {%- for type in shop.enabled_payment_types -%}
+          <li>{{ type | payment_type_svg_tag: class: 'pay-icon' }}</li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
   </div>
 </footer>
 

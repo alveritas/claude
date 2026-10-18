@@ -12,9 +12,23 @@
     "settings": [
       {
         "type": "text",
+        "id": "brand_name",
+        "label": "Brand name (as written on the site)",
+        "default": "Neverhollow",
+        "info": "Used in page titles, the footer and sign-up text. Leave empty to use the store name."
+      },
+      {
+        "type": "text",
         "id": "brand_tagline",
         "label": "Tagline (used in the browser tab on the homepage)",
         "default": "An identity without explanation."
+      },
+      {
+        "type": "textarea",
+        "id": "seo_description",
+        "label": "Search and share description",
+        "default": "Neverhollow is an independent unisex streetwear label. Drop 001: washed black denim, a leopard-lined zip hoodie and long sleeves carrying the Neverhollow script, made to order.",
+        "info": "Shown by Google and in link previews when a page has no description of its own."
       },
       {
         "type": "image_picker",
@@ -37,6 +51,12 @@
         "type": "url",
         "id": "tiktok_url",
         "label": "TikTok link"
+      },
+      {
+        "type": "image_picker",
+        "id": "share_image",
+        "label": "Share image",
+        "info": "Shown when a link to the store is shared. 1200 × 630 works best. Leave empty for the Neverhollow image."
       }
     ]
   },

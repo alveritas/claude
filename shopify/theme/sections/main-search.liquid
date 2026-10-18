@@ -3,13 +3,13 @@
   <form action="{{ routes.search_url }}" method="get" role="search" class="search-page-form">
     <input type="hidden" name="type" value="product">
     <label for="search-page" class="sr-only">Search</label>
-    <input id="search-page" class="field" type="search" name="q" value="{{ search.terms | escape }}" placeholder="Search the collection">
+    <input id="search-page" class="field" type="search" name="q" value="{{ search.terms | escape }}" placeholder="Search">
     <button type="submit" class="btn btn-solid">Search</button>
   </form>
   {%- if search.performed -%}
     {%- paginate search.results by 24 -%}
-      <p class="muted small search-count">{{ search.results_count }} {% if search.results_count == 1 %}result{% else %}results{% endif %} for “{{ search.terms | escape }}”</p>
-      <div class="grid grid--4">
+      <p class="label search-count">{{ search.results_count }} {% if search.results_count == 1 %}result{% else %}results{% endif %} for “{{ search.terms | escape }}”</p>
+      <div class="grid grid--4 joints product-grid-list">
         {%- for item in search.results -%}
           {%- if item.object_type == 'product' -%}
             <div class="grid-cell">{% render 'product-card', product: item %}</div>
