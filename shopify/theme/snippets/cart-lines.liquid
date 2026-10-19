@@ -3,7 +3,7 @@
   {%- for item in cart.items -%}
     <li class="cart-line" data-line-key="{{ item.key }}">
       <a class="frame cart-thumb" href="{{ item.url }}">
-        {%- if item.image -%}{{ item.image | image_url: width: 240 | image_tag: loading: 'lazy', alt: item.product.title, sizes: '96px', widths: '120, 240' }}{%- endif -%}
+        {%- if item.image -%}{{ item.image | image_url: width: 240 | image_tag: loading: 'lazy', decoding: 'async', alt: item.product.title, sizes: '96px', widths: '120, 240' }}{%- endif -%}
       </a>
       <div class="cart-line-body">
         <div class="cart-line-top">

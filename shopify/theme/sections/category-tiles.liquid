@@ -50,7 +50,7 @@
         <a class="cat-tile" href="{{ link }}" {{ block.shopify_attributes }}>
           <span class="frame cat-frame">
             {%- if img != blank -%}
-              {{ img | image_url: width: 900 | image_tag: widths: '360, 540, 720, 900', sizes: '(min-width: 1024px) 25vw, 50vw', loading: 'lazy', alt: '', class: 'cat-img' }}
+              {{ img | image_url: width: 900 | image_tag: widths: '360, 540, 720, 900', sizes: '(min-width: 1024px) 25vw, 50vw', loading: 'lazy', decoding: 'async', alt: '', class: 'cat-img' }}
             {%- else -%}
               {{ 'collection-1' | placeholder_svg_tag: 'placeholder' }}
             {%- endif -%}
@@ -73,7 +73,7 @@
           {%- endfor -%}
           <a class="cat-tile" href="{{ t | url_for_type }}">
             <span class="frame cat-frame">
-              {%- if img -%}{{ img | image_url: width: 900 | image_tag: widths: '360, 540, 720, 900', sizes: '(min-width: 1024px) 25vw, 50vw', loading: 'lazy', alt: '', class: 'cat-img' }}{%- endif -%}
+              {%- if img -%}{{ img | image_url: width: 900 | image_tag: widths: '360, 540, 720, 900', sizes: '(min-width: 1024px) 25vw, 50vw', loading: 'lazy', decoding: 'async', alt: '', class: 'cat-img' }}{%- endif -%}
             </span>
             <span class="cat-label">
               <span class="card-title">{{ t }}</span>

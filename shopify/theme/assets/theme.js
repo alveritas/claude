@@ -18,37 +18,38 @@
 
   /* ── Header ── */
   const header = $("[data-header]");
-  // The cover photo sinks into its fade a little slower than the page scrolls.
   const heroShift = reduceMotion ? null : $(".hero-parallax");
   // Reading down, the header tucks away; any scroll up brings it back. It stays while anything in it is in use.
-  let lastY = window.scrollY, travel = 0;
-  const headerBusy = () => document.body.classList.contains("is-locked") || (header && (header.matches(":focus-within") || $(".has-mega.is-open", header)));
+  // (The cover's slower scroll is done by the browser itself in CSS, so it stays in step with the finger.)
+  let lastY = window.scrollY, travel = 0, queued = false;
+  const body = document.body;
+  const headerBusy = () => body.classList.contains("is-locked") || (header && (header.matches(":focus-within") || $(".has-mega.is-open", header)));
+  const setClass = (name, on) => { if (body.classList.contains(name) !== on) body.classList.toggle(name, on); };
   const onScroll = () => {
+    queued = false;
     const y = Math.max(0, window.scrollY);
     const dy = y - lastY;
     lastY = y;
-    document.body.classList.toggle("is-scrolled", y > 24);
-    if (heroShift && y < window.innerHeight * 1.2) heroShift.style.setProperty("--hero-shift", (y * 0.22).toFixed(1));
+    setClass("is-scrolled", y > 24);
     travel = Math.sign(dy) === Math.sign(travel) ? travel + dy : dy;
-    if (y < 160 || headerBusy()) document.body.classList.remove("nav-up");
-    else if (travel > 40) document.body.classList.add("nav-up");
-    else if (travel < -12) document.body.classList.remove("nav-up");
+    if (y < 160 || headerBusy()) setClass("nav-up", false);
+    else if (travel > 40) setClass("nav-up", true);
+    else if (travel < -12) setClass("nav-up", false);
   };
-  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("scroll", () => { if (!queued) { queued = true; requestAnimationFrame(onScroll); } }, { passive: true });
   onScroll();
-  if (header) header.addEventListener("focusin", () => document.body.classList.remove("nav-up"));
+  if (header) header.addEventListener("focusin", () => setClass("nav-up", false));
   // With a mouse, heading for the top edge brings the header back too.
-  if (finePointer) document.addEventListener("pointermove", (e) => { if (e.clientY < 64 && document.body.classList.contains("nav-up")) document.body.classList.remove("nav-up"); }, { passive: true });
+  if (finePointer) document.addEventListener("pointermove", (e) => { if (e.clientY < 64) setClass("nav-up", false); }, { passive: true });
 
   // The cover drifts a few pixels with the mouse, as if the photo had depth.
   const heroBox = $(".hero-photo");
   if (heroShift && heroBox && finePointer) {
     let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0;
     const step = () => {
-      cx += (tx - cx) * 0.08; cy += (ty - cy) * 0.08;
-      heroShift.style.setProperty("--hero-px", cx.toFixed(2));
-      heroShift.style.setProperty("--hero-py", cy.toFixed(2));
-      raf = Math.abs(tx - cx) + Math.abs(ty - cy) > 0.05 ? requestAnimationFrame(step) : 0;
+      cx += (tx - cx) * 0.07; cy += (ty - cy) * 0.07;
+      heroShift.style.transform = `translate3d(${cx.toFixed(2)}px, ${cy.toFixed(2)}px, 0)`;
+      raf = Math.abs(tx - cx) + Math.abs(ty - cy) > 0.04 ? requestAnimationFrame(step) : 0;
     };
     const hero = heroBox.closest(".hero") || heroBox;
     hero.addEventListener("pointermove", (e) => {
@@ -77,19 +78,31 @@
     // Very slow start: the stylesheet has already lifted the black by itself, so just tidy up afterwards.
     if (performance.now() > 4200) { setTimeout(() => end(false), Math.max(0, 5500 - performance.now())); return; }
     const MAX = 3600;  // ms since the page was requested
-    let target = 0, shown = 0, ready = false, finished = false;
+    let finished = false, completing = false;
+    const wait = (ms) => new Promise((r) => setTimeout(r, Math.max(0, ms)));
     const loaded = (img) => (!img || img.complete ? Promise.resolve() : new Promise((r) => { img.addEventListener("load", r, { once: true }); img.addEventListener("error", r, { once: true }); }));
-    const ink = $(".brand-mark", mark).getAnimations ? $(".brand-mark", mark).getAnimations()[0] : null;
+    const wipe = $(".wipe", mark);
+    const ink = wipe && wipe.getAnimations ? wipe.getAnimations()[0] : null;
     const steps = [document.fonts ? document.fonts.ready : Promise.resolve(), loaded($(".hero-img") || $(".gallery-img")), ink ? ink.finished.catch(() => {}) : Promise.resolve()];
-    let got = 0;
-    steps.forEach((p) => p.then(() => { got += 1; target = got / steps.length; }));
-    Promise.all(steps).then(() => setTimeout(() => (ready = true), 120));
+    // The line creeps on its own (on the compositor, so it glides even while the page is busy loading),
+    // then runs to the end once the fonts, the first photo and the logo are in.
+    const lineAt = () => { if (!fill) return 0; const m = getComputedStyle(fill).transform; return m && m.startsWith("matrix") ? parseFloat(m.slice(7)) || 0 : 0; };
+    const creep = fill && fill.animate ? fill.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(0.84)" }], { duration: 2800, easing: "cubic-bezier(0.25, 0.6, 0.3, 1)", fill: "forwards" }) : null;
+    const complete = () => {
+      if (finished || completing) return;
+      completing = true;
+      if (!fill || !fill.animate) return finish(false);
+      const from = lineAt();
+      if (creep) creep.cancel();
+      fill.animate([{ transform: `scaleX(${from})` }, { transform: "scaleX(1)" }], { duration: 220 + 320 * (1 - from), easing: "cubic-bezier(0.3, 0, 0.2, 1)", fill: "forwards" })
+        .finished.then(() => wait(90)).then(() => finish(false), () => finish(false));
+    };
+    Promise.race([Promise.all(steps).then(() => wait(120)), wait(MAX - performance.now())]).then(complete);
     const skip = () => finish(true);
     const finish = (skipped) => {
       if (finished) return;
       finished = true;
       ["pointerdown", "keydown", "wheel", "touchstart"].forEach((t) => window.removeEventListener(t, skip, true));
-      if (fill) fill.style.setProperty("--p", "1");
       // On the homepage the logo glides into the cover's own logo; elsewhere, or when skipped
       // before it finished drawing, it simply lifts away with the black.
       const to = $(".hero-mark");
@@ -101,30 +114,19 @@
         root.classList.add("intro-morph");
         const dx = b.left + b.width / 2 - (a.left + a.width / 2);
         const dy = b.top + b.height / 2 - (a.top + a.height / 2);
-        mark.animate([{ transform: "none" }, { transform: `translate(${dx}px, ${dy}px) scale(${b.width / a.width})` }], { duration: 1050, easing: "cubic-bezier(0.76, 0, 0.24, 1)", fill: "forwards" });
+        mark.animate([{ transform: "none" }, { transform: `translate(${dx}px, ${dy}px) scale(${b.width / a.width})` }], { duration: 1150, easing: "cubic-bezier(0.83, 0, 0.17, 1)", fill: "forwards" });
       } else {
-        mark.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-18px)" }], { duration: skipped ? 300 : 420, easing: "cubic-bezier(0.4, 0, 1, 1)", fill: "forwards" });
+        mark.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-24px)" }], { duration: skipped ? 320 : 520, easing: "cubic-bezier(0.5, 0, 0.75, 0)", fill: "forwards" });
       }
       root.classList.add("intro-out");
       // On a slow connection the cover may still be loading as the black lifts: fade it in when it lands.
       const hero = $(".hero-img");
       if (hero && !hero.complete) {
         hero.style.opacity = "0";
-        hero.addEventListener("load", () => { hero.style.transition = "opacity 0.8s ease"; hero.style.opacity = "1"; }, { once: true });
+        hero.addEventListener("load", () => { hero.style.transition = "opacity 0.9s cubic-bezier(0.2, 0.7, 0.2, 1)"; hero.style.opacity = "1"; }, { once: true });
       }
-      setTimeout(() => end(morph), morph ? 1080 : 980);
+      setTimeout(() => end(morph), morph ? 1180 : 1080);
     };
-    const tick = () => {
-      if (finished) return;
-      const t = performance.now();
-      // the line creeps on its own and jumps forward as the fonts, the first photo and the logo arrive
-      const goal = ready ? 1 : Math.max(target * 0.9, Math.min(0.8, t / 3000));
-      shown += (goal - shown) * (ready ? 0.25 : 0.07);
-      if (fill) fill.style.setProperty("--p", shown.toFixed(3));
-      if ((ready && shown > 0.985) || t >= MAX) return finish(false);
-      requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
     // a tap, click, key or scroll skips it
     ["pointerdown", "keydown", "wheel", "touchstart"].forEach((t) => window.addEventListener(t, skip, { capture: true, passive: true }));
   });
@@ -164,13 +166,14 @@
   /* ── Panels: search, menu, bag ── */
   let lastFocus = null;
   const panel = (name) => $(`[data-panel="${name}"]`);
-  const openPanelEl = () => $$("[data-panel]").find((p) => !p.hidden);
+  const openPanelEl = () => $$("[data-panel]").find((p) => !p.hidden && !p.classList.contains("is-closing"));
   const setExpanded = (name, on) => $$(`[data-open="${name}"]`).forEach((b) => b.setAttribute("aria-expanded", String(on)));
   const openPanel = (name) => {
     const p = panel(name);
     if (!p) return false;
     if (!openPanelEl()) lastFocus = document.activeElement;
-    $$("[data-panel]").forEach((x) => { if (x !== p && !x.hidden) { x.hidden = true; setExpanded(x.dataset.panel, false); } });
+    $$("[data-panel]").forEach((x) => { if (x !== p && !x.hidden) { x.classList.remove("is-closing"); x.hidden = true; setExpanded(x.dataset.panel, false); } });
+    p.classList.remove("is-closing");
     p.hidden = false;
     setExpanded(name, true);
     document.body.classList.add("is-locked");
@@ -181,7 +184,13 @@
   const closePanels = () => {
     const open = openPanelEl();
     if (!open) return;
-    $$("[data-panel]").forEach((x) => { x.hidden = true; setExpanded(x.dataset.panel, false); });
+    $$("[data-panel]").forEach((x) => {
+      setExpanded(x.dataset.panel, false);
+      if (x.hidden || x.classList.contains("is-closing")) return;
+      if (reduceMotion) { x.hidden = true; return; }
+      x.classList.add("is-closing");
+      setTimeout(() => { if (x.classList.contains("is-closing")) { x.classList.remove("is-closing"); x.hidden = true; } }, 340);
+    });
     document.body.classList.remove("is-locked");
     if (lastFocus && lastFocus.focus) lastFocus.focus();
     lastFocus = null;
@@ -272,8 +281,9 @@
       // the free-shipping bar grows from where it was, not from zero
       const before = $("[data-ship-fill]", current);
       const after = $("[data-ship-fill]", fresh);
-      if (before && after) after.style.setProperty("--from", before.style.getPropertyValue("--p"));
+      if (before && after) after.style.setProperty("--from-s", before.style.getPropertyValue("--s"));
       fresh.hidden = !open && !wasOpen;
+      if (current.classList.contains("is-closing")) fresh.hidden = true;
       current.replaceWith(fresh);
     }
     const count = Number(($("[data-cart-count-source]") || {}).textContent || 0);
@@ -654,30 +664,35 @@
       const set = (el.getAttribute("srcset") || "").split(",").map((x) => x.trim().split(" ")[0]).filter(Boolean);
       return set[set.length - 1] || el.currentSrc || el.src;
     };
-    // The zoom is centred on transform-origin; pointing moves that centre around the photo.
+    // The zoom is a single transform (a shift plus a scale about the centre), so it glides on the GPU.
+    // ox/oy say which point of the photo, in %, stays under the pointer.
+    const S = 2.2;
     let ox = 50, oy = 50;
     const clamp = (v) => Math.min(100, Math.max(0, v));
-    const applyOrigin = () => (img.style.transformOrigin = `${ox}% ${oy}%`);
-    const setOrigin = (x, y) => {
-      const r = img.getBoundingClientRect();
-      // getBoundingClientRect includes the zoom, so measure against the unscaled box
+    const stage = $(".lightbox-stage", lb);
+    const render = () => {
+      if (!zoomed) { img.style.transform = ""; return; }
       const w = img.offsetWidth, h = img.offsetHeight;
-      const left = r.left + (r.width - w) * (ox / 100), top = r.top + (r.height - h) * (oy / 100);
-      ox = clamp(((x - left) / w) * 100);
-      oy = clamp(((y - top) / h) * 100);
-      applyOrigin();
+      const tx = -(S - 1) * (ox / 100 - 0.5) * w, ty = -(S - 1) * (oy / 100 - 0.5) * h;
+      img.style.transform = `translate3d(${tx.toFixed(1)}px, ${ty.toFixed(1)}px, 0) scale(${S})`;
+    };
+    const aim = (x, y) => {
+      // measured against the photo's own box (transforms don't move layout)
+      const st = stage.getBoundingClientRect();
+      ox = clamp(((x - st.left - img.offsetLeft) / img.offsetWidth) * 100);
+      oy = clamp(((y - st.top - img.offsetTop) / img.offsetHeight) * 100);
     };
     const zoom = (on, x, y) => {
       zoomed = on;
-      if (on && x !== undefined) setOrigin(x, y);
+      if (on && x !== undefined) aim(x, y);
       img.classList.toggle("is-zoomed", on);
       lb.classList.toggle("is-zoomed", on);
+      render();
     };
     const show = (n) => {
       i = (n + imgs.length) % imgs.length;
-      zoom(false);
       ox = 50; oy = 50;
-      img.style.transformOrigin = "";
+      zoom(false);
       img.classList.add("is-swapping");
       const next = largest(imgs[i]);
       const done = () => img.classList.remove("is-swapping");
@@ -699,23 +714,25 @@
     lb.addEventListener("pointermove", (e) => {
       if (down && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 8) moved = true;
       if (!zoomed) return;
-      if (e.pointerType === "mouse") return setOrigin(e.clientX, e.clientY);
+      if (e.pointerType === "mouse") { aim(e.clientX, e.clientY); return render(); }
       if (!down) return;
-      // touch: the photo follows the finger (moving the zoom centre the other way)
-      const k = 100 / 1.2;
+      // touch: the photo follows the finger directly (no easing while dragging)
+      img.classList.add("is-dragging");
+      const k = 100 / (S - 1);
       ox = clamp(down.ox - ((e.clientX - down.x) / img.offsetWidth) * k);
       oy = clamp(down.oy - ((e.clientY - down.y) / img.offsetHeight) * k);
-      applyOrigin();
+      render();
     });
     lb.addEventListener("pointerup", (e) => {
       if (!down) return;
       const dx = e.clientX - down.x, dy = e.clientY - down.y;
       const swipe = !zoomed && many && e.pointerType !== "mouse" && Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.4;
+      img.classList.remove("is-dragging");
       if (swipe) show(i + (dx < 0 ? 1 : -1));
       else if (!moved) zoom(!zoomed, e.clientX, e.clientY);
       down = null;
     });
-    lb.addEventListener("pointercancel", () => (down = null));
+    lb.addEventListener("pointercancel", () => { down = null; img.classList.remove("is-dragging"); });
     lb.addEventListener("click", (e) => {
       if (e.target.closest(".lightbox-close")) return closeLightbox();
       if (e.target.closest(".lightbox-prev")) return show(i - 1);
@@ -734,7 +751,7 @@
     lb = null;
     lbStep = null;
     box.classList.add("is-closing");
-    setTimeout(() => box.remove(), reduceMotion ? 0 : 200);
+    setTimeout(() => box.remove(), reduceMotion ? 0 : 260);
     if (!openPanelEl()) document.body.classList.remove("is-locked");
     if (lbReturn && lbReturn.focus) lbReturn.focus({ preventScroll: true });
     lbReturn = null;

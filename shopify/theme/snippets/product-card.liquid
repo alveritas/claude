@@ -53,9 +53,9 @@
   <a class="card-link" href="{{ product.url }}">
     <div class="card-frame frame" data-reveal data-cursor="View"{% if index %} style="--d: {{ index | modulo: 4 | times: 0.08 }}s"{% endif %}>
       {%- if first_media -%}
-        {{ first_media.preview_image | image_url: width: 1400 | image_tag: widths: '360, 540, 720, 900, 1200, 1400', sizes: sizes, loading: loading, alt: first_media.alt, class: 'card-img card-img--main' }}
+        {{ first_media.preview_image | image_url: width: 1400 | image_tag: widths: '360, 540, 720, 900, 1200, 1400', sizes: sizes, loading: loading, decoding: 'async', alt: first_media.alt, class: 'card-img card-img--main' }}
         {%- if second_media -%}
-          {{ second_media.preview_image | image_url: width: 1200 | image_tag: widths: '360, 540, 720, 900, 1200', sizes: sizes, loading: 'lazy', alt: '', class: 'card-img card-img--alt' }}
+          {{ second_media.preview_image | image_url: width: 1200 | image_tag: widths: '360, 540, 720, 900, 1200', sizes: sizes, loading: 'lazy', decoding: 'async', alt: '', class: 'card-img card-img--alt' }}
         {%- endif -%}
       {%- else -%}
         {{ 'product-apparel-1' | placeholder_svg_tag: 'placeholder' }}

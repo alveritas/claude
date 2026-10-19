@@ -23,6 +23,6 @@
         {% render 'icon', name: 'check', size: 14, stroke: 2.2 %} This order ships free {{ settings.free_shipping_where }}
       {%- endif -%}
     </p>
-    <div class="ship-bar-track" role="progressbar" aria-label="Progress to free shipping" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ pct }}"><span style="--p: {{ pct }}%" data-ship-fill></span></div>
+    <div class="ship-bar-track" role="progressbar" aria-label="Progress to free shipping" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ pct }}"><span style="--s: {{ pct | times: 0.01 }}" data-ship-fill></span></div>
   </div>
 {%- endif -%}

@@ -32,7 +32,7 @@
                   {%- if p.featured_media -%}
                     <li>
                       <a class="mega-feature" href="{{ p.url }}">
-                        <span class="frame mega-img">{{ p.featured_media.preview_image | image_url: width: 480 | image_tag: loading: 'lazy', sizes: '180px', widths: '240, 360, 480', alt: '' }}</span>
+                        <span class="frame mega-img">{{ p.featured_media.preview_image | image_url: width: 480 | image_tag: loading: 'lazy', decoding: 'async', sizes: '180px', widths: '240, 360, 480', alt: '' }}</span>
                         <span class="mega-name">{{ p.title }}</span>
                         <span class="mega-price">{{ p.price | money_without_trailing_zeros }}</span>
                       </a>

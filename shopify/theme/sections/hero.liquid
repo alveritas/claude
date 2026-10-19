@@ -42,9 +42,12 @@
     <div class="hero-parallax">
       {%- liquid
         assign default_alt = 'Three models against a concrete wall wearing the Spine Long Sleeve, Relic Denim and the Feral Zip Hoodie'
-        # The chosen photo, else the Drop 001 group photo from Content → Files (served by Shopify's image
-        # CDN in the best format each browser takes), else the copy kept with the theme.
+        # The chosen photo, else the Drop 001 group photo from Content → Files (the graded version first;
+        # served by Shopify's image CDN in the best format each browser takes), else the copy kept with the theme.
         assign cover = section.settings.image
+        if cover == blank
+          assign cover = images['nh-cover-drop001-graded.jpg']
+        endif
         if cover == blank
           assign cover = images['nh-cover-drop001.jpg']
         endif
@@ -59,7 +62,7 @@
   </div>
   <div class="hero-copy">
     <p class="hero-status">{{ status | escape }}</p>
-    <h1><span class="sr-only">{{ section.settings.heading | escape }}</span><span class="brand-mark brand-wordmark hero-mark" aria-hidden="true"></span></h1>
+    <h1><span class="sr-only">{{ section.settings.heading | escape }}</span><span class="hero-mark" aria-hidden="true"><span class="wipe"><span class="brand-mark brand-wordmark"></span></span></span></h1>
     <p class="hero-tagline">{{ section.settings.tagline | escape }}</p>
     {%- if po_ship != blank -%}
       <dl class="hero-dates">

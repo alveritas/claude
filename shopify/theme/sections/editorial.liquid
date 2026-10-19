@@ -14,7 +14,7 @@
       {%- assign idx = i | minus: 1 -%}
       <div class="editorial-fig" data-reveal style="--d: {{ idx | times: 0.1 }}s">
         {%- if img != blank -%}
-          {{ img | image_url: width: 900 | image_tag: widths: '450, 600, 900', sizes: '(min-width: 1024px) 25vw, 50vw', loading: 'lazy', alt: '', class: 'editorial-img' }}
+          {{ img | image_url: width: 900 | image_tag: widths: '450, 600, 900', sizes: '(min-width: 1024px) 25vw, 50vw', loading: 'lazy', decoding: 'async', alt: '', class: 'editorial-img' }}
         {%- else -%}
           {%- assign small = defaults[idx] | replace: '.webp', '-540.webp' -%}
           <img class="editorial-img" src="{{ defaults[idx] | asset_url }}" srcset="{{ small | asset_url }} 540w, {{ defaults[idx] | asset_url }} 900w" sizes="(min-width: 1024px) 25vw, 50vw" alt="" loading="lazy" width="900" height="1200">

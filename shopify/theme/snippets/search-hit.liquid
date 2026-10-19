@@ -2,7 +2,7 @@
 <a class="search-hit" href="{{ product.url }}">
   <span class="frame search-hit-img">
     {%- if product.featured_media -%}
-      {{ product.featured_media.preview_image | image_url: width: 240 | image_tag: loading: 'lazy', sizes: '64px', widths: '120, 240', alt: '' }}
+      {{ product.featured_media.preview_image | image_url: width: 240 | image_tag: loading: 'lazy', decoding: 'async', sizes: '64px', widths: '120, 240', alt: '' }}
     {%- endif -%}
   </span>
   <span class="search-hit-name">{{ product.title }}</span>

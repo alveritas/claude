@@ -6,7 +6,7 @@
         {%- assign img = c.image | default: c.products.first.featured_media.preview_image -%}
         <a class="cat-tile" href="{{ c.url }}">
           <span class="frame cat-frame">
-            {%- if img -%}{{ img | image_url: width: 1000 | image_tag: widths: '400, 600, 800, 1000', sizes: '(min-width: 1024px) 33vw, 100vw', loading: 'lazy', alt: '', class: 'cat-img' }}{%- endif -%}
+            {%- if img -%}{{ img | image_url: width: 1000 | image_tag: widths: '400, 600, 800, 1000', sizes: '(min-width: 1024px) 33vw, 100vw', loading: 'lazy', decoding: 'async', alt: '', class: 'cat-img' }}{%- endif -%}
           </span>
           <span class="cat-label">
             <span class="card-title">{{ c.title }}</span>

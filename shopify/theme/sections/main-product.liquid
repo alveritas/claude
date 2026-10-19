@@ -73,7 +73,7 @@
               {%- if forloop.first -%}
                 {{ media.preview_image | image_url: width: 1800 | image_tag: widths: '540, 720, 900, 1200, 1500, 1800', sizes: '(min-width: 768px) 54vw, 100vw', loading: 'eager', fetchpriority: 'high', alt: media.alt, class: 'gallery-img' }}
               {%- else -%}
-                {{ media.preview_image | image_url: width: 1800 | image_tag: widths: '540, 720, 900, 1200, 1500, 1800', sizes: '(min-width: 768px) 27vw, 100vw', loading: 'lazy', alt: media.alt, class: 'gallery-img' }}
+                {{ media.preview_image | image_url: width: 1800 | image_tag: widths: '540, 720, 900, 1200, 1500, 1800', sizes: '(min-width: 768px) 27vw, 100vw', loading: 'lazy', decoding: 'async', alt: media.alt, class: 'gallery-img' }}
               {%- endif -%}
             </button>
           </figure>

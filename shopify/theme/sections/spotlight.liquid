@@ -17,7 +17,7 @@
         <div class="frame spot-frame">
           {%- for media in product.media limit: 6 -%}
             <div class="spot-slide{% if forloop.first %} is-active{% endif %}" data-spot-slide="{{ forloop.index0 }}">
-              {{ media.preview_image | image_url: width: 1200 | image_tag: widths: '540, 720, 900, 1200', sizes: '(min-width: 768px) 560px, 100vw', loading: 'lazy', alt: media.alt }}
+              {{ media.preview_image | image_url: width: 1200 | image_tag: widths: '540, 720, 900, 1200', sizes: '(min-width: 768px) 560px, 100vw', loading: 'lazy', decoding: 'async', alt: media.alt }}
             </div>
           {%- endfor -%}
         </div>
