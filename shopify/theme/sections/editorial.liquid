@@ -7,7 +7,7 @@
     </div>
   </div>
   <div class="editorial-figures" aria-hidden="true">
-    {%- assign defaults = 'ed-feral-seated.webp,ed-relic-side.webp,ed-spine-back.webp,ed-relic-back.webp' | split: ',' -%}
+    {%- assign defaults = 'ed-feral-front.webp,ed-relic-side.webp,ed-spine-front.webp,ed-feral-back.webp' | split: ',' -%}
     {%- for i in (1..4) -%}
       {%- assign key = 'image_' | append: i -%}
       {%- assign img = section.settings[key] -%}

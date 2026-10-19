@@ -16,7 +16,13 @@
 
   /* ── Header ── */
   const header = $("[data-header]");
-  const onScroll = () => document.body.classList.toggle("is-scrolled", window.scrollY > 24);
+  // The cover photo sinks into its fade a little slower than the page scrolls.
+  const heroShift = reduceMotion ? null : $(".hero-parallax");
+  const onScroll = () => {
+    const y = window.scrollY;
+    document.body.classList.toggle("is-scrolled", y > 24);
+    if (heroShift && y < window.innerHeight * 1.2) heroShift.style.setProperty("--hero-shift", (y * 0.22).toFixed(1));
+  };
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
 
@@ -34,11 +40,19 @@
     if (logo) logo.addEventListener("focus", () => header.classList.add("show-logo"));
   }
 
+  // Announcement lines take turns; pointing at or focusing the bar holds the current line.
   const msgs = $$(".ann-msg");
+  const annBar = $("[data-announcement]");
   if (msgs.length > 1 && !reduceMotion) {
-    let i = 0;
+    let i = 0, held = false;
+    if (annBar) {
+      annBar.addEventListener("mouseenter", () => (held = true));
+      annBar.addEventListener("mouseleave", () => (held = false));
+      annBar.addEventListener("focusin", () => (held = true));
+      annBar.addEventListener("focusout", () => (held = false));
+    }
     setInterval(() => {
-      if (document.hidden) return;
+      if (held || document.hidden) return;
       msgs[i].classList.remove("is-active");
       i = (i + 1) % msgs.length;
       msgs[i].classList.add("is-active");
@@ -535,66 +549,6 @@
   };
   revealAll();
   window.NH = Object.assign(window.NH || {}, { reveal: revealAll });
-
-  /* ── Cover photos: one per piece, changing every few seconds; the button stops them ── */
-  $$("[data-hero-slides]").forEach((box) => {
-    const slides = $$("[data-hero-slide]", box);
-    const ticks = $$("[data-hero-tick]", box);
-    const toggle = $("[data-hero-toggle]", box);
-    if (slides.length < 2) { ticks.forEach((t) => (t.hidden = true)); if (toggle) toggle.hidden = true; return; }
-    const MS = 6000;
-    box.style.setProperty("--hero-ms", `${MS}ms`);
-    let i = 0, timer = null, left = MS, started = 0, held = false, stopped = reduceMotion;
-    const schedule = (ms) => {
-      clearTimeout(timer);
-      left = ms; started = performance.now();
-      if (!held && !stopped) timer = setTimeout(() => show(i + 1), ms);
-    };
-    const setSlide = (n, on) => {
-      const sl = slides[n];
-      sl.classList.toggle("is-active", on);
-      if (on) sl.removeAttribute("aria-hidden"); else sl.setAttribute("aria-hidden", "true");
-      $$("a", sl).forEach((a) => (on ? a.removeAttribute("tabindex") : a.setAttribute("tabindex", "-1")));
-      if (on) { const img = $(".hero-img", sl); if (img) { img.style.animation = "none"; void img.offsetWidth; img.style.animation = ""; } }
-      ticks[n].removeAttribute("aria-current");
-      if (on) { void ticks[n].offsetWidth; ticks[n].setAttribute("aria-current", "true"); }
-    };
-    const show = (n) => {
-      setSlide(i, false);
-      i = (n + slides.length) % slides.length;
-      setSlide(i, true);
-      schedule(MS);
-    };
-    const paint = () => box.classList.toggle("is-paused", held || stopped);
-    // Hover, focus or a hidden tab hold the timer; it carries on from where it was.
-    const hold = () => {
-      if (held) return;
-      held = true; clearTimeout(timer);
-      left = Math.max(300, left - (performance.now() - started));
-      paint();
-    };
-    const release = () => {
-      if (!held) return;
-      held = false; paint();
-      if (!stopped) schedule(left);
-    };
-    ticks.forEach((t, n) => t.addEventListener("click", () => show(n)));
-    if (toggle) toggle.addEventListener("click", () => {
-      stopped = !stopped;
-      box.classList.toggle("is-stopped", stopped);
-      toggle.setAttribute("aria-label", stopped ? "Play the photos" : "Pause the photos");
-      paint();
-      if (!stopped) { held = false; paint(); schedule(left); } else clearTimeout(timer);
-    });
-    box.addEventListener("mouseenter", hold);
-    box.addEventListener("mouseleave", release);
-    box.addEventListener("focusin", hold);
-    box.addEventListener("focusout", (e) => { if (!box.contains(e.relatedTarget)) release(); });
-    document.addEventListener("visibilitychange", () => (document.hidden ? hold() : release()));
-    if (stopped) box.classList.add("is-stopped");
-    paint();
-    schedule(MS);
-  });
 
   /* ── Related products ── */
   $$("[data-recos]").forEach(async (el) => {

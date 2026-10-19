@@ -43,7 +43,7 @@
     <link rel="preload" href="{{ 'archivo-nh.woff2' | asset_url }}" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="{{ 'nh-logo.svg' | asset_url }}" as="image" type="image/svg+xml">
     {%- if request.page_type == 'index' -%}
-      <link rel="preload" as="image" href="{{ 'hero-feral.webp' | asset_url }}" imagesrcset="{{ 'hero-feral-800.webp' | asset_url }} 800w, {{ 'hero-feral.webp' | asset_url }} 939w" imagesizes="(min-width: 1024px) 42vw, 100vw" fetchpriority="high">
+      <link rel="preload" as="image" href="{{ 'hero-cover-1300.webp' | asset_url }}" imagesrcset="{{ 'hero-cover-900.webp' | asset_url }} 900w, {{ 'hero-cover-1300.webp' | asset_url }} 1300w, {{ 'hero-cover-1800.webp' | asset_url }} 1800w" imagesizes="(min-width: 1024px) min(56vw, 960px), 100vw" fetchpriority="high">
     {%- endif -%}
     <style>
       @font-face {
