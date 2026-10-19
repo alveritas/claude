@@ -3,8 +3,17 @@
 {%- endcomment -%}
 <section class="shell recos" data-recos data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit=4">
   {%- if recommendations.performed and recommendations.products_count > 0 -%}
-    <h2 class="section-title recos-title">{{ section.settings.heading | escape }}</h2>
-    <div class="grid grid--4 joints product-grid-list">
+    {%- liquid
+      assign n = recommendations.products_count
+      assign cols = 'grid--4'
+      if n == 3
+        assign cols = 'grid--3'
+      elsif n <= 2
+        assign cols = 'grid--2'
+      endif
+    -%}
+    <h2 class="section-title recos-title" data-rise><span>{{ section.settings.heading | escape }}</span></h2>
+    <div class="grid {{ cols }} joints product-grid-list">
       {%- for rec in recommendations.products -%}
         <div class="grid-cell">{% render 'product-card', product: rec, index: forloop.index0, sizes: '(min-width: 1024px) 25vw, 50vw' %}</div>
       {%- endfor -%}

@@ -77,13 +77,26 @@
 <div class="overlay" id="search-panel" data-panel="search" hidden>
   <div class="overlay-scrim" data-close></div>
   <div class="search-panel" role="dialog" aria-modal="true" aria-label="Search">
-    <form action="{{ routes.search_url }}" method="get" role="search" class="shell search-form">
+    <form action="{{ routes.search_url }}" method="get" role="search" class="shell search-form" data-search-form>
       <input type="hidden" name="type" value="product">
       <label for="search-input" class="sr-only">Search the store</label>
       {% render 'icon', name: 'search', size: 24 %}
-      <input id="search-input" class="search-input" type="search" name="q" placeholder="Search" autocomplete="off">
+      <input id="search-input" class="search-input" type="search" name="q" placeholder="Search" autocomplete="off" aria-describedby="search-status">
       <button type="button" class="btn btn-line btn-sm" data-close>Close</button>
     </form>
+    <div class="shell search-body">
+      {%- comment -%} Before anything is typed: the pieces themselves, one tap away. {%- endcomment -%}
+      <div data-search-picks>
+        <p class="label search-label">{{ collections['drop-001'].title | default: 'Shop' }}</p>
+        <ul class="search-hits">
+          {%- for product in collections.all.products limit: 6 -%}
+            <li>{% render 'search-hit', product: product %}</li>
+          {%- endfor -%}
+        </ul>
+      </div>
+      <div data-search-results hidden></div>
+      <p class="sr-only" id="search-status" aria-live="polite" data-search-status></p>
+    </div>
   </div>
 </div>
 
@@ -94,21 +107,24 @@
       <span class="brand-mark brand-wordmark drawer-mark" aria-hidden="true"></span>
       <button type="button" class="icon-btn" data-close aria-label="Close menu">{% render 'icon', name: 'close' %}</button>
     </div>
+    {%- assign n = 0 -%}
     <ul class="mobile-links">
-      <li><a href="{{ routes.all_products_collection_url }}">Shop all</a></li>
+      <li style="--i: {{ n }}"><a href="{{ routes.all_products_collection_url }}">Shop all</a></li>
       {%- for type in live_types -%}
         {%- if type != blank -%}
-          <li class="sub"><a href="{{ type | url_for_type }}">{{ type }}</a></li>
+          {%- assign n = n | plus: 1 -%}
+          <li class="sub" style="--i: {{ n }}"><a href="{{ type | url_for_type }}">{{ type }}</a></li>
         {%- endif -%}
       {%- endfor -%}
       {%- if menu.links.size > 0 -%}
         {%- for link in menu.links -%}
-          <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+          {%- assign n = n | plus: 1 -%}
+          <li style="--i: {{ n }}"><a href="{{ link.url }}">{{ link.title }}</a></li>
         {%- endfor -%}
       {%- else -%}
-        <li><a href="/pages/about">About</a></li>
-        <li><a href="/pages/faq">FAQ</a></li>
-        <li><a href="/pages/contact">Contact</a></li>
+        <li style="--i: {{ n | plus: 1 }}"><a href="/pages/about">About</a></li>
+        <li style="--i: {{ n | plus: 2 }}"><a href="/pages/faq">FAQ</a></li>
+        <li style="--i: {{ n | plus: 3 }}"><a href="/pages/contact">Contact</a></li>
       {%- endif -%}
     </ul>
     <div class="drawer-foot drawer-foot--menu">

@@ -5,6 +5,7 @@
       <div class="cart-page-lines">{% render 'cart-lines' %}</div>
       <aside class="cart-page-aside" aria-label="Order summary">
         <div class="panel">
+          {% render 'shipping-progress' %}
           {% render 'cart-summary' %}
           {%- if additional_checkout_buttons -%}
             <div class="extra-checkout">{{ content_for_additional_checkout_buttons }}</div>
@@ -13,9 +14,10 @@
       </aside>
     </div>
   {%- else -%}
-    <div class="empty-bag">
+    <div class="empty-bag empty-bag--page">
       <p class="empty-title">Your bag is empty.</p>
-      <a href="{{ routes.all_products_collection_url }}" class="btn btn-line">Shop the collection</a>
+      {% render 'bag-suggestions' %}
+      <a href="{{ routes.all_products_collection_url }}" class="btn btn-solid">Shop the drop</a>
     </div>
   {%- endif -%}
 </section>

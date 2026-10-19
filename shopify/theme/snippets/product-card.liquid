@@ -2,7 +2,7 @@
   One card per piece: photo (the worn photo shows on hover), then name and price, then a colour line
   that is the same height on every card. The whole card is one link.
   Accepts: product, feature (large first tile), sizes, eager (load the first photo straight away),
-  index (position in the grid, staggers the reveal).
+  index (position in the grid, staggers the reveal), heading (h2 where the card sits right under the page title; h3 by default).
 {%- endcomment -%}
 {%- liquid
   assign sizes = sizes | default: '(min-width: 1024px) 25vw, 50vw'
@@ -51,7 +51,7 @@
 -%}
 <article class="card{% if feature %} card--feature{% endif %}">
   <a class="card-link" href="{{ product.url }}">
-    <div class="card-frame frame" data-reveal{% if index %} style="--d: {{ index | modulo: 4 | times: 0.08 }}s"{% endif %}>
+    <div class="card-frame frame" data-reveal data-cursor="View"{% if index %} style="--d: {{ index | modulo: 4 | times: 0.08 }}s"{% endif %}>
       {%- if first_media -%}
         {{ first_media.preview_image | image_url: width: 1400 | image_tag: widths: '360, 540, 720, 900, 1200, 1400', sizes: sizes, loading: loading, alt: first_media.alt, class: 'card-img card-img--main' }}
         {%- if second_media -%}
@@ -68,7 +68,8 @@
       {%- endif -%}
     </div>
     <div class="card-body">
-      <h3 class="card-title">{{ product.title }}</h3>
+      {%- assign hl = heading | default: 'h3' -%}
+      <{{ hl }} class="card-title">{{ product.title }}</{{ hl }}>
       <p class="card-price">{{ product.price | money_without_trailing_zeros }}{% if product.price_varies %}+{% endif %}</p>
       {%- if color_option -%}
         <p class="card-meta">

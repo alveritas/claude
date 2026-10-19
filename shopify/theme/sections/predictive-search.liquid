@@ -1,0 +1,24 @@
+{%- comment -%}
+  Live search results, fetched as the shopper types (Shopify's predictive search, Section Rendering API).
+  The search panel in the header asks for this section and swaps in what's inside [data-results].
+{%- endcomment -%}
+<div data-results>
+  {%- if predictive_search.performed -%}
+    {%- assign hits = predictive_search.resources.products -%}
+    {%- if hits.size > 0 -%}
+      <p class="label search-label">{{ hits.size }} {% if hits.size == 1 %}piece{% else %}pieces{% endif %}</p>
+      <ul class="search-hits">
+        {%- for product in hits limit: 6 -%}
+          <li>{% render 'search-hit', product: product %}</li>
+        {%- endfor -%}
+      </ul>
+    {%- else -%}
+      <p class="search-none">Nothing matches “{{ predictive_search.terms | escape }}”. Try a piece’s name, like “hoodie” or “denim”.</p>
+    {%- endif -%}
+    <a class="text-link caps search-all" href="{{ routes.search_url }}?type=product&amp;q={{ predictive_search.terms | url_encode }}">See every result for “{{ predictive_search.terms | escape }}”</a>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{ "name": "Predictive search", "class": "section-predictive-search", "settings": [] }
+{% endschema %}

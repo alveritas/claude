@@ -1,0 +1,11 @@
+{%- comment -%}
+  The pre-order promise, shown with the bag whenever it holds pre-order pieces.
+  Accepts: class (optional extra class).
+{%- endcomment -%}
+{%- assign po_line = '' -%}
+{%- for item in cart.items -%}
+  {%- if item.properties['Pre-order'] != blank -%}{%- assign po_line = item.properties['Pre-order'] -%}{%- endif -%}
+{%- endfor -%}
+{%- if po_line != blank -%}
+  <p class="note micro{% if class != blank %} {{ class }}{% endif %}">Your bag has pre-order pieces. They {{ po_line | replace: 'Ships by', 'ship by' }}. If the run doesn’t go ahead, or it can’t ship by then, you can have a full refund.</p>
+{%- endif -%}

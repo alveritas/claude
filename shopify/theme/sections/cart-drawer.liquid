@@ -7,17 +7,20 @@
     </div>
     <div class="drawer-body" data-cart-body>
       {%- if cart.item_count > 0 -%}
+        {% render 'shipping-progress' %}
         {% render 'cart-lines' %}
+        {% render 'bag-preorder-note', class: 'drawer-note' %}
       {%- else -%}
         <div class="empty-bag">
           <p class="empty-title">Your bag is empty.</p>
-          <a href="{{ routes.all_products_collection_url }}" class="btn btn-line">Shop the collection</a>
+          {% render 'bag-suggestions' %}
+          <a href="{{ routes.all_products_collection_url }}" class="btn btn-solid btn-block">Shop the drop</a>
         </div>
       {%- endif -%}
     </div>
     {%- if cart.item_count > 0 -%}
       <div class="drawer-foot">
-        {% render 'cart-summary' %}
+        {% render 'cart-summary', compact: true %}
         <a href="{{ routes.cart_url }}" class="text-link muted micro">View full bag</a>
       </div>
     {%- endif -%}

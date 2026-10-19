@@ -11,8 +11,23 @@
     <meta name="color-scheme" content="only light">
     <script>
       // Motion only runs with the theme script; if it hasn't started within 4s, show everything as is.
-      document.documentElement.classList.add("js");
-      setTimeout(function () { if (!window.NH_READY) document.documentElement.classList.remove("js"); }, 4000);
+      (function () {
+        var d = document.documentElement;
+        d.classList.add("js");
+        setTimeout(function () { if (!window.NH_READY) d.classList.remove("js"); }, 4000);
+        {%- if settings.intro_enabled and request.design_mode == false %}
+        // The logo intro plays once, on the first page of a visit; never with reduced motion, never mid-visit.
+        try {
+          var ref = document.referrer, own = ref && ref.indexOf(location.protocol + "//" + location.host + "/") === 0;
+          var lite = navigator.connection && navigator.connection.saveData;
+          if (!own && !lite && !sessionStorage.getItem("nh-intro") && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            sessionStorage.setItem("nh-intro", "1");
+            d.classList.add("intro-on");
+            setTimeout(function () { d.classList.remove("intro-on"); }, 6500);
+          }
+        } catch (e) {}
+        {%- endif %}
+      })();
     </script>
     <link rel="canonical" href="{{ canonical_url }}">
     {%- if tpl == 'search' or tpl == '404' or template contains 'customers/' or tpl == 'cart' -%}
@@ -41,10 +56,8 @@
       the site uses, so the first screen never waits on a third-party font server.
     {%- endcomment -%}
     <link rel="preload" href="{{ 'archivo-nh.woff2' | asset_url }}" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="{{ 'nh-logo.svg' | asset_url }}" as="image" type="image/svg+xml">
-    {%- if request.page_type == 'index' -%}
-      <link rel="preload" as="image" href="{{ 'hero-cover-1300.webp' | asset_url }}" imagesrcset="{{ 'hero-cover-900.webp' | asset_url }} 900w, {{ 'hero-cover-1300.webp' | asset_url }} 1300w, {{ 'hero-cover-1800.webp' | asset_url }} 1800w" imagesizes="(min-width: 1024px) min(56vw, 960px), 100vw" fetchpriority="high">
-    {%- endif -%}
+    {%- comment -%} The logo is a CSS mask, and masks are fetched in CORS mode, so the preload says so too. {%- endcomment -%}
+    <link rel="preload" href="{{ 'nh-logo.svg' | asset_url }}" as="image" type="image/svg+xml" crossorigin>
     <style>
       @font-face {
         font-family: Archivo;
@@ -63,6 +76,8 @@
           cart: {{ routes.cart_url | json }},
           cartAdd: {{ routes.cart_add_url | json }},
           cartChange: {{ routes.cart_change_url | json }},
+          suggest: {{ routes.predictive_search_url | json }},
+          search: {{ routes.search_url | json }},
           root: {{ routes.root_url | json }}
         },
         moneyFormat: {{ shop.money_format | json }}
@@ -74,6 +89,13 @@
   </head>
 
   <body class="template-{{ request.page_type | handle }}">
+    {%- if settings.intro_enabled and request.design_mode == false -%}
+      <div class="intro" aria-hidden="true">
+        <div class="intro-curtain"></div>
+        <div class="intro-mark"><span class="brand-mark brand-wordmark"></span></div>
+        <div class="intro-bar"><span></span></div>
+      </div>
+    {%- endif -%}
     <a class="skip-link" href="#main">Skip to content</a>
     {% section 'announcement-bar' %}
     {% section 'header' %}

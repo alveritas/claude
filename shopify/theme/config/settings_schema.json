@@ -88,6 +88,28 @@
     ]
   },
   {
+    "name": "Free shipping bar",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Shows how far the bag is from free shipping. Keep it the same as the free-shipping rate in Shopify settings (Shipping and delivery). Leave the amount empty to hide the bar."
+      },
+      {
+        "type": "number",
+        "id": "free_shipping_threshold",
+        "label": "Free shipping from (store currency)",
+        "default": 200
+      },
+      {
+        "type": "text",
+        "id": "free_shipping_where",
+        "label": "Where it applies",
+        "default": "in the US",
+        "info": "Finishes the sentence “$15 away from free shipping …”"
+      }
+    ]
+  },
+  {
     "name": "Pre-orders",
     "settings": [
       {
@@ -130,6 +152,21 @@
         "id": "preorder_line_closed",
         "label": "Line after pre-orders close",
         "default": "Drop 001 pre-orders have closed"
+      }
+    ]
+  },
+  {
+    "name": "Motion",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "The intro shows the logo on black for about two seconds on the first page of each visit, then lifts into the site. It never plays for visitors who ask their device for less motion, and any tap, click, key or scroll skips it."
+      },
+      {
+        "type": "checkbox",
+        "id": "intro_enabled",
+        "label": "Logo intro on the first page of a visit",
+        "default": true
       }
     ]
   }

@@ -1,0 +1,10 @@
+{%- comment -%} One row in search results and suggestions: photo, name, price. Accepts: product. {%- endcomment -%}
+<a class="search-hit" href="{{ product.url }}">
+  <span class="frame search-hit-img">
+    {%- if product.featured_media -%}
+      {{ product.featured_media.preview_image | image_url: width: 240 | image_tag: loading: 'lazy', sizes: '64px', widths: '120, 240', alt: '' }}
+    {%- endif -%}
+  </span>
+  <span class="search-hit-name">{{ product.title }}</span>
+  <span class="search-hit-price">{{ product.price | money_without_trailing_zeros }}{% if product.price_varies %}+{% endif %}</span>
+</a>

@@ -68,8 +68,8 @@
     <div class="gallery" data-gallery>
       <div class="gallery-track" data-gallery-track tabindex="0" aria-label="Product photos">
         {%- for media in product.media -%}
-          <figure class="gallery-slide frame" data-media-id="{{ media.id }}">
-            <button type="button" class="gallery-zoom" data-zoom aria-label="Open photo {{ forloop.index }} full screen">
+          <figure class="gallery-slide frame" data-media-id="{{ media.id }}"{% if forloop.first %} style="view-transition-name: nh-product"{% endif %}>
+            <button type="button" class="gallery-zoom" data-zoom data-cursor="Zoom" aria-label="Open photo {{ forloop.index }} full screen">
               {%- if forloop.first -%}
                 {{ media.preview_image | image_url: width: 1800 | image_tag: widths: '540, 720, 900, 1200, 1500, 1800', sizes: '(min-width: 768px) 54vw, 100vw', loading: 'eager', fetchpriority: 'high', alt: media.alt, class: 'gallery-img' }}
               {%- else -%}
@@ -77,6 +77,24 @@
               {%- endif -%}
             </button>
           </figure>
+          {%- if forloop.first -%}
+            {%- comment -%}
+              Arriving from a product card, the card's photo (already loaded) sits behind this one, so the
+              photo that travels across from the card lands on a picture rather than an empty frame.
+            {%- endcomment -%}
+            <script>
+              (function () {
+                try {
+                  var t = JSON.parse(sessionStorage.getItem("nh-trail") || "null"), slide = document.currentScript.previousElementSibling;
+                  sessionStorage.removeItem("nh-trail");
+                  if (t && t.src && t.path && t.path.split("/").pop() === location.pathname.split("/").pop()) {
+                    slide.style.setProperty("--trail", "url(" + JSON.stringify(t.src) + ")");
+                    slide.classList.add("has-trail");
+                  }
+                } catch (e) {}
+              })();
+            </script>
+          {%- endif -%}
         {%- else -%}
           <figure class="gallery-slide frame">{{ 'product-apparel-1' | placeholder_svg_tag: 'placeholder' }}</figure>
         {%- endfor -%}
@@ -99,7 +117,7 @@
         {%- if current.compare_at_price > current.price -%}
           <s class="muted" data-compare>{{ current.compare_at_price | money_without_trailing_zeros }}</s>
         {%- endif -%}
-        <span class="muted small" data-availability>{% if po_closed %}Pre-orders closed{% elsif current.available %}{{ avail_text }}{% else %}Sold out{% endif %}</span>
+        <span class="muted small" data-availability{% if po_closed == false and current.available %} hidden{% endif %}>{% if po_closed %}Pre-orders closed{% elsif current.available %}{{ avail_text }}{% else %}Sold out{% endif %}</span>
       </div>
 
       {%- if po -%}
@@ -273,7 +291,7 @@
             "itemCondition": "https://schema.org/NewCondition",
             "seller": { "@type": "Organization", "name": {{ settings.brand_name | default: shop.name | json }} },
             "name": {{ variant.title | json }},
-            "availability": "http://schema.org/{% if variant.available and po_closed == false %}{% if po %}PreOrder{% else %}InStock{% endif %}{% else %}OutOfStock{% endif %}",
+            "availability": "https://schema.org/{% if variant.available and po_closed == false %}{% if po %}PreOrder{% else %}InStock{% endif %}{% else %}OutOfStock{% endif %}",
             "price": {{ variant.price | divided_by: 100.0 | json }},
             "priceCurrency": {{ cart.currency.iso_code | json }},
             "url": {{ request.origin | append: variant.url | json }}

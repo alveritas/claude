@@ -43,9 +43,30 @@
             assign cols = 'grid--3'
           endif
         -%}
+      {%- assign odd = collection.products.size | modulo: 2 -%}
       <div class="grid {{ cols }} product-grid-list joints">
         {%- for product in collection.products -%}
-          <div class="grid-cell">{% render 'product-card', product: product, eager: forloop.first, index: forloop.index0 %}</div>
+          {%- liquid
+            # An odd count opens with one wide card on phones, so no row is left half empty.
+            assign wide = false
+            if forloop.first and odd == 1
+              assign wide = true
+            endif
+            if cols == 'grid--3'
+              assign card_sizes = '(min-width: 640px) 33vw, 50vw'
+              if wide
+                assign card_sizes = '(min-width: 640px) 33vw, 100vw'
+              endif
+            elsif cols == 'grid--2'
+              assign card_sizes = '(min-width: 1024px) 50vw, 50vw'
+            else
+              assign card_sizes = '(min-width: 1024px) 25vw, 50vw'
+              if wide
+                assign card_sizes = '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw'
+              endif
+            endif
+          -%}
+          <div class="grid-cell{% if wide %} span-mobile{% endif %}">{% render 'product-card', product: product, eager: forloop.first, index: forloop.index0, heading: 'h2', sizes: card_sizes %}</div>
         {%- endfor -%}
       </div>
     {%- else -%}

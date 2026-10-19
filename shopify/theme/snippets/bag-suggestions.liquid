@@ -1,0 +1,11 @@
+{%- comment -%} An empty bag shows the pieces, so the next step is one tap away. {%- endcomment -%}
+{%- if collections.all.products.size > 0 -%}
+  <div class="bag-picks">
+    <p class="label search-label">{{ collections['drop-001'].title | default: 'Shop' }}</p>
+    <ul class="search-hits search-hits--stack">
+      {%- for product in collections.all.products limit: 3 -%}
+        <li>{% render 'search-hit', product: product %}</li>
+      {%- endfor -%}
+    </ul>
+  </div>
+{%- endif -%}

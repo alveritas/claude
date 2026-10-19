@@ -5,6 +5,8 @@
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const NH = window.NH || { routes: { cart: "/cart", cartAdd: "/cart/add", cartChange: "/cart/change", root: "/" } };
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const root = document.documentElement;
   const announcer = $("[data-announcer]");
   const announce = (text) => {
     if (!announcer) return;
@@ -18,27 +20,114 @@
   const header = $("[data-header]");
   // The cover photo sinks into its fade a little slower than the page scrolls.
   const heroShift = reduceMotion ? null : $(".hero-parallax");
+  // Reading down, the header tucks away; any scroll up brings it back. It stays while anything in it is in use.
+  let lastY = window.scrollY, travel = 0;
+  const headerBusy = () => document.body.classList.contains("is-locked") || (header && (header.matches(":focus-within") || $(".has-mega.is-open", header)));
   const onScroll = () => {
-    const y = window.scrollY;
+    const y = Math.max(0, window.scrollY);
+    const dy = y - lastY;
+    lastY = y;
     document.body.classList.toggle("is-scrolled", y > 24);
     if (heroShift && y < window.innerHeight * 1.2) heroShift.style.setProperty("--hero-shift", (y * 0.22).toFixed(1));
+    travel = Math.sign(dy) === Math.sign(travel) ? travel + dy : dy;
+    if (y < 160 || headerBusy()) document.body.classList.remove("nav-up");
+    else if (travel > 40) document.body.classList.add("nav-up");
+    else if (travel < -12) document.body.classList.remove("nav-up");
   };
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
+  if (header) header.addEventListener("focusin", () => document.body.classList.remove("nav-up"));
+  // With a mouse, heading for the top edge brings the header back too.
+  if (finePointer) document.addEventListener("pointermove", (e) => { if (e.clientY < 64 && document.body.classList.contains("nav-up")) document.body.classList.remove("nav-up"); }, { passive: true });
 
-  // Homepage: the big script is the logo on the first screen, so the header logo appears once it scrolls away.
-  if (header && header.hasAttribute("data-home")) {
-    const mark = $(".hero-mark");
-    if (mark && "IntersectionObserver" in window) {
-      new IntersectionObserver(([e]) => header.classList.toggle("show-logo", !e.isIntersecting), {
-        rootMargin: "-80px 0px 0px 0px",
-      }).observe(mark);
-    } else {
-      header.classList.add("show-logo");
-    }
-    const logo = $("[data-header-logo]", header);
-    if (logo) logo.addEventListener("focus", () => header.classList.add("show-logo"));
+  // The cover drifts a few pixels with the mouse, as if the photo had depth.
+  const heroBox = $(".hero-photo");
+  if (heroShift && heroBox && finePointer) {
+    let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0;
+    const step = () => {
+      cx += (tx - cx) * 0.08; cy += (ty - cy) * 0.08;
+      heroShift.style.setProperty("--hero-px", cx.toFixed(2));
+      heroShift.style.setProperty("--hero-py", cy.toFixed(2));
+      raf = Math.abs(tx - cx) + Math.abs(ty - cy) > 0.05 ? requestAnimationFrame(step) : 0;
+    };
+    const hero = heroBox.closest(".hero") || heroBox;
+    hero.addEventListener("pointermove", (e) => {
+      const r = hero.getBoundingClientRect();
+      tx = ((e.clientX - r.left) / r.width - 0.5) * -18;
+      ty = ((e.clientY - r.top) / r.height - 0.5) * -10;
+      if (!raf) raf = requestAnimationFrame(step);
+    });
+    hero.addEventListener("pointerleave", () => { tx = 0; ty = 0; if (!raf) raf = requestAnimationFrame(step); });
   }
+
+  /* ── Intro: the logo on black, then the black lifts and the logo settles into the cover ── */
+  const introDone = new Promise((resolve) => {
+    if (!root.classList.contains("intro-on")) { const idle = $(".intro"); if (idle) idle.remove(); return resolve(); }
+    const intro = $(".intro");
+    const mark = intro && $(".intro-mark", intro);
+    const fill = intro && $(".intro-bar span", intro);
+    const end = (morphed) => {
+      if (morphed) { const to = $(".hero-mark"); if (to) to.classList.add("is-handed"); }
+      root.classList.remove("intro-on", "intro-morph");
+      if (intro) intro.remove();
+      window.dispatchEvent(new CustomEvent("nh:intro-end"));
+      resolve();
+    };
+    if (!intro || !mark) return end(false);
+    // Very slow start: the stylesheet has already lifted the black by itself, so just tidy up afterwards.
+    if (performance.now() > 4200) { setTimeout(() => end(false), Math.max(0, 5500 - performance.now())); return; }
+    const MAX = 3600;  // ms since the page was requested
+    let target = 0, shown = 0, ready = false, finished = false;
+    const loaded = (img) => (!img || img.complete ? Promise.resolve() : new Promise((r) => { img.addEventListener("load", r, { once: true }); img.addEventListener("error", r, { once: true }); }));
+    const ink = $(".brand-mark", mark).getAnimations ? $(".brand-mark", mark).getAnimations()[0] : null;
+    const steps = [document.fonts ? document.fonts.ready : Promise.resolve(), loaded($(".hero-img") || $(".gallery-img")), ink ? ink.finished.catch(() => {}) : Promise.resolve()];
+    let got = 0;
+    steps.forEach((p) => p.then(() => { got += 1; target = got / steps.length; }));
+    Promise.all(steps).then(() => setTimeout(() => (ready = true), 120));
+    const skip = () => finish(true);
+    const finish = (skipped) => {
+      if (finished) return;
+      finished = true;
+      ["pointerdown", "keydown", "wheel", "touchstart"].forEach((t) => window.removeEventListener(t, skip, true));
+      if (fill) fill.style.setProperty("--p", "1");
+      // On the homepage the logo glides into the cover's own logo; elsewhere, or when skipped
+      // before it finished drawing, it simply lifts away with the black.
+      const to = $(".hero-mark");
+      const a = mark.getBoundingClientRect();
+      const b = to && to.getBoundingClientRect();
+      const drawn = !ink || ink.playState === "finished";
+      const morph = drawn && b && b.width > 0 && b.bottom > 0 && b.top < window.innerHeight;
+      if (morph) {
+        root.classList.add("intro-morph");
+        const dx = b.left + b.width / 2 - (a.left + a.width / 2);
+        const dy = b.top + b.height / 2 - (a.top + a.height / 2);
+        mark.animate([{ transform: "none" }, { transform: `translate(${dx}px, ${dy}px) scale(${b.width / a.width})` }], { duration: 1050, easing: "cubic-bezier(0.76, 0, 0.24, 1)", fill: "forwards" });
+      } else {
+        mark.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-18px)" }], { duration: skipped ? 300 : 420, easing: "cubic-bezier(0.4, 0, 1, 1)", fill: "forwards" });
+      }
+      root.classList.add("intro-out");
+      // On a slow connection the cover may still be loading as the black lifts: fade it in when it lands.
+      const hero = $(".hero-img");
+      if (hero && !hero.complete) {
+        hero.style.opacity = "0";
+        hero.addEventListener("load", () => { hero.style.transition = "opacity 0.8s ease"; hero.style.opacity = "1"; }, { once: true });
+      }
+      setTimeout(() => end(morph), morph ? 1080 : 980);
+    };
+    const tick = () => {
+      if (finished) return;
+      const t = performance.now();
+      // the line creeps on its own and jumps forward as the fonts, the first photo and the logo arrive
+      const goal = ready ? 1 : Math.max(target * 0.9, Math.min(0.8, t / 3000));
+      shown += (goal - shown) * (ready ? 0.25 : 0.07);
+      if (fill) fill.style.setProperty("--p", shown.toFixed(3));
+      if ((ready && shown > 0.985) || t >= MAX) return finish(false);
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+    // a tap, click, key or scroll skips it
+    ["pointerdown", "keydown", "wheel", "touchstart"].forEach((t) => window.addEventListener(t, skip, { capture: true, passive: true }));
+  });
 
   // Announcement lines take turns; pointing at or focusing the bar holds the current line.
   const msgs = $$(".ann-msg");
@@ -117,11 +206,58 @@
   };
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") { if (lb) closeLightbox(); else closePanels(); return; }
+    if (lb && lbStep && (e.key === "ArrowRight" || e.key === "ArrowLeft")) { e.preventDefault(); lbStep(e.key === "ArrowRight" ? 1 : -1); return; }
     if (e.key !== "Tab") return;
     if (lb) return trap(lb, e);
     const open = openPanelEl();
     if (open) trap(open, e);
   });
+
+  /* ── Search: before typing, the pieces; while typing, live matches ── */
+  const searchForm = $("[data-search-form]");
+  if (searchForm) {
+    const input = $("#search-input", searchForm);
+    const picks = $("[data-search-picks]");
+    const results = $("[data-search-results]");
+    const status = $("[data-search-status]");
+    let timer = 0, ctrl = null, lastQ = "";
+    const reset = () => {
+      if (ctrl) ctrl.abort();
+      lastQ = "";
+      if (results) { results.hidden = true; results.innerHTML = ""; }
+      if (picks) picks.hidden = false;
+      if (status) status.textContent = "";
+    };
+    const run = async (q) => {
+      if (ctrl) ctrl.abort();
+      ctrl = "AbortController" in window ? new AbortController() : null;
+      try {
+        const url = `${NH.routes.suggest || "/search/suggest"}?q=${encodeURIComponent(q)}&resources[type]=product&resources[limit]=6&section_id=predictive-search`;
+        const res = await fetch(url, ctrl ? { signal: ctrl.signal } : {});
+        if (!res.ok) throw new Error(String(res.status));
+        const tmp = document.createElement("div");
+        tmp.innerHTML = await res.text();
+        const fresh = $("[data-results]", tmp);
+        if (!fresh || !results || input.value.trim() !== q) return;
+        results.innerHTML = fresh.innerHTML;
+        results.hidden = false;
+        if (picks) picks.hidden = true;
+        const n = $$(".search-hit", results).length;
+        if (status) status.textContent = n ? `${n} ${n === 1 ? "piece" : "pieces"} found` : "No matches";
+      } catch (e) {
+        // offline or no predictive search: the picks stay, and Enter still runs a full search
+        if (e.name !== "AbortError" && results) { results.hidden = true; if (picks) picks.hidden = false; }
+      }
+    };
+    input.addEventListener("input", () => {
+      const q = input.value.trim();
+      clearTimeout(timer);
+      if (!q) return reset();
+      if (q === lastQ) return;
+      lastQ = q;
+      timer = setTimeout(() => run(q), 180);
+    });
+  }
 
   /* ── Bag ── */
   const sectionUrl = () => `${NH.routes.root.replace(/\/$/, "")}/?sections=cart-drawer`;
@@ -133,6 +269,10 @@
     const current = $("#cart-drawer");
     if (fresh && current) {
       const wasOpen = !current.hidden;
+      // the free-shipping bar grows from where it was, not from zero
+      const before = $("[data-ship-fill]", current);
+      const after = $("[data-ship-fill]", fresh);
+      if (before && after) after.style.setProperty("--from", before.style.getPropertyValue("--p"));
       fresh.hidden = !open && !wasOpen;
       current.replaceWith(fresh);
     }
@@ -331,7 +471,7 @@
         if (addPrice) addPrice.hidden = CLOSED;
         if (dyn) dyn.hidden = true;
         if (restock) restock.hidden = true;
-        if (availability) availability.textContent = CLOSED ? CLOSED_TEXT : AVAIL;
+        if (availability) { availability.textContent = CLOSED ? CLOSED_TEXT : AVAIL; availability.hidden = !CLOSED; }
         const stickyMeta = $("[data-sticky-meta]", root);
         if (stickyMeta) stickyMeta.textContent = `${money((v || initial).price)}, choose a ${missing()[0].toLowerCase()}`;
         if (changed === colorIdx || changed === "init") filterGallery(selected[colorIdx]);
@@ -346,7 +486,8 @@
       input.value = v.id;
       if (priceEl) priceEl.textContent = money(v.price);
       const buyable = v.available && !CLOSED;
-      if (availability) availability.textContent = CLOSED ? CLOSED_TEXT : v.available ? AVAIL : "Sold out";
+      // The badge by the price only speaks up when something is wrong: sold out, or pre-orders closed.
+      if (availability) { availability.textContent = CLOSED ? CLOSED_TEXT : v.available ? AVAIL : "Sold out"; availability.hidden = !CLOSED && v.available; }
       if (addBtn) addBtn.disabled = !buyable;
       if (addLabel) addLabel.textContent = CLOSED ? CLOSED_TEXT : v.available ? ADD : "Sold out";
       if (addPrice) { addPrice.textContent = money(v.price); addPrice.hidden = !buyable; }
@@ -366,6 +507,14 @@
         history.replaceState(history.state, "", url.toString());
       }
       if (changed === colorIdx || changed === "init") filterGallery(selected[colorIdx]);
+    };
+    // A short shake points at the choice that still needs making.
+    const nudge = (el) => {
+      if (!el || reduceMotion) return;
+      el.classList.remove("is-nudged");
+      void el.offsetWidth;
+      el.classList.add("is-nudged");
+      el.addEventListener("animationend", () => el.classList.remove("is-nudged"), { once: true });
     };
     const choose = (i, b) => {
       selected[i] = b.dataset.value;
@@ -413,15 +562,21 @@
     if (form) {
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        if (!addBtn || addBtn.disabled) return;
+        if (!addBtn || addBtn.disabled || addBtn.getAttribute("aria-busy") === "true") return;
         if (missing().length) {
           if (err) { err.textContent = `Choose a ${missing()[0].toLowerCase()} first.`; err.hidden = false; }
           const g = groups.find((x) => selected[Number(x.dataset.option)] === null);
-          if (g) { const first = $("[data-value]:not(.is-unavailable)", g) || $("[data-value]", g); if (first) first.focus(); }
+          if (g) {
+            const first = $("[data-value]:not(.is-unavailable)", g) || $("[data-value]", g);
+            if (first) first.focus();
+            nudge($(".option-values", g));
+          }
           return;
         }
+        // While adding, the button keeps its look and says so (no flash of the disabled style).
         addBtn.setAttribute("aria-busy", "true");
-        addBtn.disabled = true;
+        if (addLabel) addLabel.textContent = "Adding…";
+        let added = false;
         try {
           const body = new FormData(form);
           body.append("sections", "cart-drawer");
@@ -431,11 +586,13 @@
           if (data.sections && data.sections["cart-drawer"]) renderDrawer(data.sections["cart-drawer"], true);
           else await refreshDrawer(true);
           announce(`${product.title} added to bag`);
+          added = true;
           if (addLabel) { addLabel.textContent = "Added to bag"; setTimeout(() => (addLabel.textContent = ADD), 1800); }
         } catch (ex) {
           if (err) { err.textContent = ex.message; err.hidden = false; }
         } finally {
           addBtn.removeAttribute("aria-busy");
+          if (!added && addLabel) addLabel.textContent = ADD;
           const v = findVariant(selected);
           addBtn.disabled = CLOSED || (Boolean(v) && !v.available);
         }
@@ -465,55 +622,121 @@
         else {
           form.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
           if (missing().length && err) { err.textContent = `Choose a ${missing()[0].toLowerCase()} first.`; err.hidden = false; }
+          const g = groups.find((x) => selected[Number(x.dataset.option)] === null);
+          if (g) setTimeout(() => nudge($(".option-values", g)), 450);
         }
       });
     }
   }
 
-  /* ── Full-screen photos ── */
+  /* ── Full-screen photos: click or tap to zoom where you point, move to look around, swipe between photos ── */
   let lb = null;
   let lbReturn = null;
+  let lbStep = null;
+  const svgIcon = (d) => `<svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true" focusable="false"><path d="${d}"/></svg>`;
   function openLightbox(imgs, start, from) {
     if (!imgs.length) return;
     let i = Math.max(0, start);
+    let zoomed = false;
     lbReturn = from || document.activeElement;
     lb = document.createElement("div");
     lb.className = "lightbox";
     lb.setAttribute("role", "dialog");
     lb.setAttribute("aria-modal", "true");
     lb.setAttribute("aria-label", "Photo viewer");
-    lb.innerHTML = `<img alt=""><button type="button" class="icon-btn lightbox-close" aria-label="Close">✕</button>${imgs.length > 1 ? '<button type="button" class="icon-btn lightbox-prev" aria-label="Previous photo">‹</button><button type="button" class="icon-btn lightbox-next" aria-label="Next photo">›</button>' : ""}<p class="lightbox-count" aria-live="polite"></p>`;
+    const many = imgs.length > 1;
+    lb.innerHTML = `<div class="lightbox-stage"><img alt="" draggable="false"></div>` +
+      `<button type="button" class="icon-btn lightbox-close" aria-label="Close">${svgIcon("M5.5 5.5l13 13M18.5 5.5l-13 13")}</button>` +
+      (many ? `<button type="button" class="icon-btn lightbox-prev" aria-label="Previous photo">${svgIcon("M14.5 6l-6 6 6 6")}</button><button type="button" class="icon-btn lightbox-next" aria-label="Next photo">${svgIcon("M9.5 6l6 6-6 6")}</button>` : "") +
+      `<p class="lightbox-count" aria-live="polite"></p><p class="lightbox-hint">${finePointer ? "Click to zoom" : "Tap to zoom"}</p>`;
     const img = $("img", lb);
-    const show = () => {
-      const src = imgs[i];
-      const set = (src.getAttribute("srcset") || "").split(",").map((s) => s.trim().split(" ")[0]).filter(Boolean);
-      img.src = set[set.length - 1] || src.currentSrc || src.src;
-      img.alt = src.alt;
-      img.classList.remove("is-zoomed");
-      $(".lightbox-count", lb).textContent = imgs.length > 1 ? `${i + 1} / ${imgs.length}` : "";
+    const largest = (el) => {
+      const set = (el.getAttribute("srcset") || "").split(",").map((x) => x.trim().split(" ")[0]).filter(Boolean);
+      return set[set.length - 1] || el.currentSrc || el.src;
     };
+    // The zoom is centred on transform-origin; pointing moves that centre around the photo.
+    let ox = 50, oy = 50;
+    const clamp = (v) => Math.min(100, Math.max(0, v));
+    const applyOrigin = () => (img.style.transformOrigin = `${ox}% ${oy}%`);
+    const setOrigin = (x, y) => {
+      const r = img.getBoundingClientRect();
+      // getBoundingClientRect includes the zoom, so measure against the unscaled box
+      const w = img.offsetWidth, h = img.offsetHeight;
+      const left = r.left + (r.width - w) * (ox / 100), top = r.top + (r.height - h) * (oy / 100);
+      ox = clamp(((x - left) / w) * 100);
+      oy = clamp(((y - top) / h) * 100);
+      applyOrigin();
+    };
+    const zoom = (on, x, y) => {
+      zoomed = on;
+      if (on && x !== undefined) setOrigin(x, y);
+      img.classList.toggle("is-zoomed", on);
+      lb.classList.toggle("is-zoomed", on);
+    };
+    const show = (n) => {
+      i = (n + imgs.length) % imgs.length;
+      zoom(false);
+      ox = 50; oy = 50;
+      img.style.transformOrigin = "";
+      img.classList.add("is-swapping");
+      const next = largest(imgs[i]);
+      const done = () => img.classList.remove("is-swapping");
+      img.onload = done;
+      img.src = next;
+      img.alt = imgs[i].alt;
+      if (img.complete) done();
+      $(".lightbox-count", lb).textContent = many ? `${i + 1} / ${imgs.length}` : "";
+      // fetch the neighbours so moving through is instant
+      if (many) [imgs[(i + 1) % imgs.length], imgs[(i - 1 + imgs.length) % imgs.length]].forEach((x) => { const pre = new Image(); pre.src = largest(x); });
+    };
+    // Mouse: the zoomed photo follows the pointer. Touch: drag to look around, swipe to change photo.
+    let down = null, moved = false;
+    lb.addEventListener("pointerdown", (e) => {
+      if (e.target !== img) return;
+      down = { x: e.clientX, y: e.clientY, ox, oy };
+      moved = false;
+    });
+    lb.addEventListener("pointermove", (e) => {
+      if (down && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 8) moved = true;
+      if (!zoomed) return;
+      if (e.pointerType === "mouse") return setOrigin(e.clientX, e.clientY);
+      if (!down) return;
+      // touch: the photo follows the finger (moving the zoom centre the other way)
+      const k = 100 / 1.2;
+      ox = clamp(down.ox - ((e.clientX - down.x) / img.offsetWidth) * k);
+      oy = clamp(down.oy - ((e.clientY - down.y) / img.offsetHeight) * k);
+      applyOrigin();
+    });
+    lb.addEventListener("pointerup", (e) => {
+      if (!down) return;
+      const dx = e.clientX - down.x, dy = e.clientY - down.y;
+      const swipe = !zoomed && many && e.pointerType !== "mouse" && Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.4;
+      if (swipe) show(i + (dx < 0 ? 1 : -1));
+      else if (!moved) zoom(!zoomed, e.clientX, e.clientY);
+      down = null;
+    });
+    lb.addEventListener("pointercancel", () => (down = null));
     lb.addEventListener("click", (e) => {
       if (e.target.closest(".lightbox-close")) return closeLightbox();
-      if (e.target.closest(".lightbox-prev")) { i = (i - 1 + imgs.length) % imgs.length; return show(); }
-      if (e.target.closest(".lightbox-next")) { i = (i + 1) % imgs.length; return show(); }
-      if (e.target === img) img.classList.toggle("is-zoomed");
-      else if (e.target === lb) closeLightbox();
+      if (e.target.closest(".lightbox-prev")) return show(i - 1);
+      if (e.target.closest(".lightbox-next")) return show(i + 1);
+      if (e.target === lb || e.target.classList.contains("lightbox-stage")) closeLightbox();
     });
-    lb.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowRight") { i = (i + 1) % imgs.length; show(); }
-      if (e.key === "ArrowLeft") { i = (i - 1 + imgs.length) % imgs.length; show(); }
-    });
+    lbStep = many ? (d) => show(i + d) : null;
     document.body.appendChild(lb);
     document.body.classList.add("is-locked");
-    show();
+    show(i);
     $(".lightbox-close", lb).focus();
   }
   function closeLightbox() {
     if (!lb) return;
-    lb.remove();
+    const box = lb;
     lb = null;
+    lbStep = null;
+    box.classList.add("is-closing");
+    setTimeout(() => box.remove(), reduceMotion ? 0 : 200);
     if (!openPanelEl()) document.body.classList.remove("is-locked");
-    if (lbReturn && lbReturn.focus) lbReturn.focus();
+    if (lbReturn && lbReturn.focus) lbReturn.focus({ preventScroll: true });
     lbReturn = null;
   }
 
@@ -547,8 +770,69 @@
       watched.get(box).push(el);
     });
   };
-  revealAll();
+  introDone.then(() => revealAll());
   window.NH = Object.assign(window.NH || {}, { reveal: revealAll });
+
+  // The footer script writes itself in once it scrolls into view.
+  const inks = $$("[data-ink]");
+  if (inks.length) {
+    if (reduceMotion || !("IntersectionObserver" in window)) inks.forEach((el) => el.classList.add("is-in"));
+    else {
+      const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        $$("[data-ink]", e.target).forEach((el) => el.classList.add("is-in"));
+        io.unobserve(e.target);
+      }), { threshold: 0.35 });
+      inks.forEach((el) => io.observe(el.parentElement));
+    }
+  }
+
+  /* ── A label follows the mouse over photos you can open ── */
+  if (finePointer) {
+    const tag = document.createElement("div");
+    tag.className = "cursor-tag";
+    tag.setAttribute("aria-hidden", "true");
+    document.body.appendChild(tag);
+    let x = 0, y = 0, tx = 0, ty = 0, raf = 0, active = null;
+    const step = () => {
+      x += (tx - x) * (reduceMotion ? 1 : 0.28); y += (ty - y) * (reduceMotion ? 1 : 0.28);
+      tag.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
+      raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.2 ? requestAnimationFrame(step) : 0;
+    };
+    const set = (el) => {
+      if (el === active) return;
+      active = el;
+      if (el) { tag.textContent = el.dataset.cursor; x = tx; y = ty; tag.style.transform = `translate3d(${x}px, ${y}px, 0)`; }
+      tag.classList.toggle("is-on", Boolean(el));
+    };
+    document.addEventListener("pointermove", (e) => {
+      if (e.pointerType !== "mouse") return set(null);
+      tx = e.clientX; ty = e.clientY;
+      set(e.target.closest ? e.target.closest("[data-cursor]") : null);
+      if (!raf) raf = requestAnimationFrame(step);
+    }, { passive: true });
+    document.addEventListener("pointerleave", () => set(null));
+    document.addEventListener("pointerdown", () => set(null));
+    window.addEventListener("scroll", () => {
+      if (!active) return;
+      const el = document.elementFromPoint(tx, ty);
+      set(el && el.closest ? el.closest("[data-cursor]") : null);
+    }, { passive: true });
+  }
+
+  /* ── Page changes: the clicked card's photo travels into the product page ── */
+  // Only the clicked card carries the shared name, so nothing else on the page flies around.
+  document.addEventListener("click", (e) => {
+    const link = e.target.closest(".card-link");
+    if (!link || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    $$("[style*='nh-product']").forEach((el) => (el.style.viewTransitionName = "none"));
+    const frame = $(".card-frame", link);
+    if (frame) frame.style.viewTransitionName = "nh-product";
+    link.classList.add("is-leaving");
+    const img = $(".card-img--main", link);
+    try { if (img && img.currentSrc) sessionStorage.setItem("nh-trail", JSON.stringify({ path: new URL(link.href).pathname, src: img.currentSrc })); } catch { /* storage off: no trail */ }
+  });
+  window.addEventListener("pageshow", (e) => { if (e.persisted) $$(".card-link.is-leaving").forEach((l) => l.classList.remove("is-leaving")); });
 
   /* ── Related products ── */
   $$("[data-recos]").forEach(async (el) => {

@@ -9,13 +9,19 @@
   {%- if search.performed -%}
     {%- paginate search.results by 24 -%}
       <p class="label search-count">{{ search.results_count }} {% if search.results_count == 1 %}result{% else %}results{% endif %} for “{{ search.terms | escape }}”</p>
-      <div class="grid grid--4 joints product-grid-list">
-        {%- for item in search.results -%}
-          {%- if item.object_type == 'product' -%}
-            <div class="grid-cell">{% render 'product-card', product: item %}</div>
-          {%- endif -%}
-        {%- endfor -%}
-      </div>
+      {%- if search.results_count == 0 -%}
+        <p class="lead">Nothing matches that. Try a piece’s name, like “hoodie” or “denim”, or start from the pieces below.</p>
+        <div class="page-picks">{% render 'bag-suggestions' %}</div>
+      {%- endif -%}
+      {%- if search.results_count > 0 -%}
+        <div class="grid grid--4 joints product-grid-list">
+          {%- for item in search.results -%}
+            {%- if item.object_type == 'product' -%}
+              <div class="grid-cell">{% render 'product-card', product: item, heading: 'h2' %}</div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
       {%- if paginate.pages > 1 -%}
         <nav class="pagination" aria-label="Pages">
           {%- if paginate.previous -%}<a class="btn btn-line" href="{{ paginate.previous.url }}">Previous</a>{%- endif -%}
@@ -24,6 +30,8 @@
         </nav>
       {%- endif -%}
     {%- endpaginate -%}
+  {%- else -%}
+    <div class="page-picks">{% render 'bag-suggestions' %}</div>
   {%- endif -%}
 </section>
 {% schema %}

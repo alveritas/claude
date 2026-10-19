@@ -1,0 +1,28 @@
+{%- comment -%}
+  How far the bag is from free shipping (Theme settings → Free shipping bar). Only shown in the store's
+  own currency, where the amount matches the free-shipping rate set in Shopify.
+{%- endcomment -%}
+{%- liquid
+  assign threshold = settings.free_shipping_threshold | default: 0 | times: 100
+  assign show_bar = false
+  if threshold > 0 and cart.item_count > 0 and cart.currency.iso_code == shop.currency
+    assign show_bar = true
+    assign remaining = threshold | minus: cart.total_price
+    assign pct = cart.total_price | times: 100 | divided_by: threshold
+    if pct > 100
+      assign pct = 100
+    endif
+  endif
+-%}
+{%- if show_bar -%}
+  <div class="ship-bar{% if remaining <= 0 %} is-free{% endif %}" data-ship-bar>
+    <p class="ship-bar-text">
+      {%- if remaining > 0 -%}
+        <strong>{{ remaining | money_without_trailing_zeros }}</strong> away from free shipping {{ settings.free_shipping_where }}
+      {%- else -%}
+        {% render 'icon', name: 'check', size: 14, stroke: 2.2 %} This order ships free {{ settings.free_shipping_where }}
+      {%- endif -%}
+    </p>
+    <div class="ship-bar-track" role="progressbar" aria-label="Progress to free shipping" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ pct }}"><span style="--p: {{ pct }}%" data-ship-fill></span></div>
+  </div>
+{%- endif -%}

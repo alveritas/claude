@@ -38,13 +38,22 @@
 -%}
 <section class="hero" aria-label="Introduction" data-hero>
   <div class="hero-photo">
+    <a class="hero-link" href="{{ section.settings.primary_link | default: routes.all_products_collection_url }}" tabindex="-1" aria-hidden="true" data-cursor="{{ section.settings.primary_label | escape }}"></a>
     <div class="hero-parallax">
-      {%- assign default_alt = 'Three models against a concrete wall wearing the Spine Long Sleeve, Relic Denim and the Feral Zip Hoodie' -%}
-      {%- if section.settings.image != blank -%}
-        {%- assign hero_alt = section.settings.image.alt | default: default_alt -%}
-        {{ section.settings.image | image_url: width: 1800 | image_tag: widths: '600, 900, 1300, 1800', sizes: '(min-width: 1024px) min(56vw, 960px), 100vw', loading: 'eager', fetchpriority: 'high', alt: hero_alt, class: 'hero-img' }}
+      {%- liquid
+        assign default_alt = 'Three models against a concrete wall wearing the Spine Long Sleeve, Relic Denim and the Feral Zip Hoodie'
+        # The chosen photo, else the Drop 001 group photo from Content → Files (served by Shopify's image
+        # CDN in the best format each browser takes), else the copy kept with the theme.
+        assign cover = section.settings.image
+        if cover == blank
+          assign cover = images['nh-cover-drop001.jpg']
+        endif
+      -%}
+      {%- if cover != blank -%}
+        {%- assign hero_alt = cover.alt | default: default_alt -%}
+        {{ cover | image_url: width: 1800 | image_tag: widths: '600, 900, 1300, 1800', sizes: '(min-width: 1714px) 960px, (min-width: 1024px) 56vw, 100vw', loading: 'eager', fetchpriority: 'high', alt: hero_alt, class: 'hero-img' }}
       {%- else -%}
-        <img class="hero-img" src="{{ 'hero-cover-1300.webp' | asset_url }}" srcset="{{ 'hero-cover-900.webp' | asset_url }} 900w, {{ 'hero-cover-1300.webp' | asset_url }} 1300w, {{ 'hero-cover-1800.webp' | asset_url }} 1800w" sizes="(min-width: 1024px) min(56vw, 960px), 100vw" alt="{{ default_alt }}" width="1856" height="2304" fetchpriority="high">
+        <img class="hero-img" src="{{ 'hero-cover-1300.webp' | asset_url }}" srcset="{{ 'hero-cover-900.webp' | asset_url }} 900w, {{ 'hero-cover-1300.webp' | asset_url }} 1300w, {{ 'hero-cover-1800.webp' | asset_url }} 1800w" sizes="(min-width: 1714px) 960px, (min-width: 1024px) 56vw, 100vw" alt="{{ default_alt }}" width="1856" height="2304" fetchpriority="high">
       {%- endif -%}
     </div>
   </div>
