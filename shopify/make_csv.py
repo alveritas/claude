@@ -46,7 +46,7 @@ P = [
                         (MEDIA+"relic-03-seated.jpg","A model in Relic Denim sitting on a white floor, with the script running down the leg")])]),
 ]
 # newest first (the shop's own order is set in the Drop 001 collection)
-ORDER = ["vesper-polo", "veil-cropped-long-sleeve", "feral-zip-hoodie", "spine-long-sleeve", "relic-denim"]
+ORDER = ["vesper-polo", "veil-cropped-long-sleeve", "spine-long-sleeve", "relic-denim"]  # feral-zip-hoodie archived
 P = [p for h in ORDER for p in P if p["handle"] == h]
 H = ["Title","URL handle","Description","Vendor","Product category","Type","Tags","Published on online store","Status","SKU","Barcode",
      "Option1 name","Option1 value","Option1 LinkedTo","Option2 name","Option2 value","Option2 LinkedTo","Option3 name","Option3 value","Option3 LinkedTo",

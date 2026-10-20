@@ -766,44 +766,6 @@
     });
   };
   introDone.then(() => revealAll());
-
-  /* ── Cover on phones: the pair of photos turns by itself until you touch it ── */
-  const heroSlides = $("[data-hero-slides]");
-  if (heroSlides) {
-    const slides = $$("[data-hero-slide]", heroSlides);
-    const dots = $$("[data-hero-dots] span");
-    const WAIT = 5200;
-    const narrow = window.matchMedia("(max-width: 63.99rem)");
-    let current = 0, timer = 0, auto = !reduceMotion && slides.length > 1, inView = true, settle = 0;
-    heroSlides.style.setProperty("--hero-wait", `${WAIT}ms`);
-    const index = () => Math.round(heroSlides.scrollLeft / Math.max(1, heroSlides.clientWidth));
-    const paint = () => {
-      dots.forEach((d, k) => {
-        d.classList.remove("is-on", "is-timing");
-        if (k !== current) return;
-        if (timer) { void d.offsetWidth; d.classList.add("is-timing"); } else d.classList.add("is-on");
-      });
-    };
-    const stop = () => { clearTimeout(timer); timer = 0; };
-    const arm = () => {
-      stop();
-      if (auto && inView && narrow.matches && !document.hidden) timer = setTimeout(() => {
-        timer = 0;
-        heroSlides.scrollTo({ left: ((current + 1) % slides.length) * heroSlides.clientWidth, behavior: "smooth" });
-      }, WAIT);
-      paint();
-    };
-    heroSlides.addEventListener("scroll", () => {
-      clearTimeout(settle);
-      settle = setTimeout(() => { const n = index(); if (n !== current) { current = n; arm(); } }, 90);
-    }, { passive: true });
-    // once someone swipes or taps the photos, they're in charge: no more turning by itself
-    ["pointerdown", "touchstart", "wheel"].forEach((t) => heroSlides.addEventListener(t, () => { if (auto) { auto = false; arm(); } }, { passive: true }));
-    if ("IntersectionObserver" in window) new IntersectionObserver(([e]) => { inView = e.isIntersecting; arm(); }, { threshold: 0.35 }).observe(heroSlides);
-    document.addEventListener("visibilitychange", arm);
-    narrow.addEventListener ? narrow.addEventListener("change", arm) : narrow.addListener(arm);
-    introDone.then(arm);
-  }
   window.NH = Object.assign(window.NH || {}, { reveal: revealAll });
 
   // The footer script writes itself in once it scrolls into view.

@@ -317,47 +317,48 @@ body.is-scrolled .site-header::after { opacity: 1; }
 .search-all { margin-top: 20px; }
 body.is-locked { overflow: hidden; }
 
-/* ── Cover: two studio photos side by side; on phones a pair you swipe between ── */
-.hero { background: var(--white); }
-.hero-slides { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
-.hero-slides::-webkit-scrollbar { display: none; }
-.hero-slide { position: relative; flex: 0 0 100%; aspect-ratio: 3 / 4; overflow: hidden; scroll-snap-align: start; scroll-snap-stop: always; background: var(--white); }
-.hero-frame { position: absolute; inset: 0; }
-.hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; animation: hero-in 2.2s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 0.12s); transition: transform 1.6s var(--ease-out); }
-@keyframes hero-in { from { opacity: 0; transform: scale(1.05); } 40% { opacity: 1; } to { opacity: 1; transform: none; } }
-@keyframes hero-settle { from { transform: scale(1.05); } }
-@media (hover: hover) { .hero-slide:hover .hero-img { transform: scale(1.025); } }
-.hero-caption { position: absolute; left: 12px; bottom: 12px; z-index: 1; display: inline-flex; align-items: center; gap: 10px; padding: 8px 10px 7px; background: rgb(255 255 255 / 0.94); font-size: 0.625rem; font-weight: 500; text-transform: uppercase; letter-spacing: var(--track); line-height: 1; opacity: 0; transform: translateY(6px); animation: rise-in 0.9s var(--ease-out) 0.9s forwards; animation-delay: calc(0.9s + var(--i, 0) * 0.12s); }
-.hero-caption-arrow { width: 14px; height: 1px; background: currentColor; position: relative; transition: transform 0.45s var(--ease-out); }
-.hero-caption-arrow::after { content: ""; position: absolute; right: 0; top: -3px; width: 7px; height: 7px; border-top: 1px solid; border-right: 1px solid; transform: rotate(45deg); transform-origin: 100% 0; }
-@media (hover: hover) { .hero-slide:hover .hero-caption-arrow { transform: translateX(5px); } }
-@media (min-width: 48rem) { .hero-caption { left: 20px; bottom: 20px; } }
-/* the little lines under the photos on phones: which one you're on, and the time until the next */
-.hero-dots { display: flex; justify-content: center; gap: 6px; padding-top: 14px; }
-.hero-dots span { display: block; width: 28px; height: 2px; background: var(--line); overflow: hidden; }
-.hero-dots i { display: block; height: 100%; background: var(--black); transform: scaleX(0); transform-origin: left center; }
-.hero-dots span.is-on i { transform: scaleX(1); }
-.hero-dots span.is-timing i { animation: dot-fill var(--hero-wait, 5s) linear forwards; }
-@keyframes dot-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-.hero-copy { display: grid; justify-items: center; text-align: center; gap: 18px; padding-top: 36px; padding-bottom: 64px; }
+/* ── Cover: one studio photo dissolving into the page; the words beside it (under it on phones) ── */
+.hero { --fade: linear-gradient(to bottom, rgb(255 255 255 / 0) 0%, rgb(255 255 255 / 0.05) 19%, rgb(255 255 255 / 0.15) 34%, rgb(255 255 255 / 0.29) 47%, rgb(255 255 255 / 0.41) 56.5%, rgb(255 255 255 / 0.53) 65%, rgb(255 255 255 / 0.65) 73%, rgb(255 255 255 / 0.76) 80.2%, rgb(255 255 255 / 0.85) 86.1%, rgb(255 255 255 / 0.92) 91%, rgb(255 255 255 / 0.97) 95.2%, #fff 99%); display: grid; background: var(--white); }
+.hero-photo { position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: var(--white); }
+.hero-parallax { position: absolute; inset: -8% 0 0; will-change: transform; }
+/* the photo sinks a little slower than the page scrolls, driven by the scroll itself (never lags) */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-parallax { animation: hero-drift linear both; animation-timeline: scroll(root block); animation-range: 0 120vh; }
+  }
+}
+@keyframes hero-drift { to { translate: 0 18vh; } }
+.hero-link { position: absolute; inset: 0; z-index: 2; }
+.hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; animation: hero-in 2.4s var(--ease-out) both; }
+@keyframes hero-in { from { opacity: 0; transform: scale(1.06); } 35% { opacity: 1; } to { opacity: 1; transform: none; } }
+@keyframes hero-settle { from { transform: scale(1.06); } }
+/* the fade: the bottom edge dissolves into the page (and the left edge on wide screens) */
+.hero-photo::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 48%; z-index: 1; background: var(--fade); pointer-events: none; }
+.hero-copy { position: relative; z-index: 3; display: grid; justify-items: center; text-align: center; gap: 18px; margin-top: -24px; padding: 0 var(--gutter) 72px; }
 .hero-status { font-size: 0.6875rem; font-weight: 500; text-transform: uppercase; letter-spacing: var(--track); color: var(--grey); }
-.hero-tagline { font-size: clamp(1.5rem, 3vw, 2.375rem); font-weight: 400; line-height: 1.15; letter-spacing: -0.02em; max-width: 22ch; }
+.hero-tagline { font-size: clamp(1.75rem, 3.2vw, 3.25rem); font-weight: 400; line-height: 1.1; letter-spacing: -0.025em; max-width: 16ch; }
 .hero-dates { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 28px; }
 .hero-dates > div { display: flex; gap: 8px; align-items: baseline; }
 .hero-dates dt { font-size: 0.625rem; color: var(--grey); }
 .hero-dates dd { font-size: 0.6875rem; font-weight: 500; text-transform: uppercase; letter-spacing: var(--track); }
 .hero-buttons { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px 28px; margin-top: 6px; }
 .hero-buttons .text-link.caps { padding-top: 6px; }
-.js .hero-copy > * { animation: rise-in 1s var(--ease-out) both; }
-.js .hero-copy > :nth-child(2) { animation-delay: 0.12s; }
-.js .hero-copy > :nth-child(3) { animation-delay: 0.22s; }
-.js .hero-copy > :nth-child(4) { animation-delay: 0.32s; }
+.js .hero-copy > * { animation: rise-in 1s var(--ease-out) both; animation-delay: 0.35s; }
+.js .hero-copy > :nth-child(2) { animation-delay: 0.47s; }
+.js .hero-copy > :nth-child(3) { animation-delay: 0.57s; }
+.js .hero-copy > :nth-child(4) { animation-delay: 0.67s; }
 @keyframes rise-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@media (min-width: 40rem) and (max-width: 63.99rem) {
+  .hero-photo { aspect-ratio: 1 / 1; }
+  .hero-copy { margin-top: -48px; padding-bottom: 88px; }
+}
 @media (min-width: 64rem) {
-  .hero-slides { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: visible; height: clamp(560px, calc(100svh - var(--top-h)), 1080px); }
-  .hero-slide { aspect-ratio: auto; height: 100%; }
-  .hero-dots { display: none; }
-  .hero-copy { padding-top: 56px; padding-bottom: 96px; }
+  .hero { --hero-h: clamp(600px, calc(100svh - var(--top-h)), 1000px); grid-template-columns: minmax(0, 1fr) minmax(0, min(58vw, calc(var(--hero-h) * 1.08))); height: var(--hero-h); }
+  .hero-photo { grid-column: 2; grid-row: 1; aspect-ratio: auto; }
+  .hero-photo::before { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 18%; z-index: 1; background: linear-gradient(to left, rgb(255 255 255 / 0), rgb(255 255 255 / 0.35) 45%, rgb(255 255 255 / 0.8) 80%, #fff); pointer-events: none; }
+  .hero-photo::after { height: 32%; }
+  .hero-copy { grid-column: 1; grid-row: 1; margin: 0; align-content: center; justify-items: start; text-align: left; gap: 22px; padding: 32px 48px 56px max(var(--gutter), calc((100vw - 1680px) / 2 + var(--gutter))); }
+  .hero-dates, .hero-buttons { justify-content: flex-start; }
 }
 
 /* ── Ticker (not on the homepage by default) ── */
@@ -733,7 +734,7 @@ main > .shopify-section:last-child > .rich { padding-bottom: 96px; }
 /* the cover waits under the white, then settles as it clears */
 .intro-on:not(.intro-out) .hero-img { animation: none; transform: scale(1.05); }
 .intro-out .hero-img { animation: hero-settle 2.2s var(--ease-out) both; }
-.intro-on:not(.intro-out) .hero-copy > *, .intro-on:not(.intro-out) .hero-caption { animation-play-state: paused; }
+.intro-on:not(.intro-out) .hero-copy > * { animation-play-state: paused; }
 /* while the intro's script travels into the header, the header's own logo waits for it */
 .intro-morph .logo .brand-mark { opacity: 0; }
 
@@ -779,7 +780,8 @@ body.nav-up .site-top { transform: translateY(calc(-100% - var(--joint) - var(--
   .wipe, .wipe > * { animation: none !important; }
   .marquee-track { animation: none; }
   .js [data-reveal], .js [data-reveal] img, .js [data-rise] > span { opacity: 1 !important; transform: none !important; }
-  .hero-img, .js .hero-copy > *, .hero-caption { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .hero-img, .js .hero-copy > * { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .hero-parallax { animation: none !important; }
   .js [data-ink], .js [data-ink] > * { transform: none !important; animation: none !important; }
   .intro { display: none !important; }
 }
