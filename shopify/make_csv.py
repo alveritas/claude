@@ -18,8 +18,8 @@ P = [
              "Obsidian is black with the script in white. Bone is white with the script in black."],
        fit="Relaxed fit with dropped shoulders and a ribbed collar.",
        colors=[("Obsidian", [(MEDIA+"spine-01-flat.jpg","Spine Long Sleeve in Obsidian and Bone laid flat, with the Neverhollow script running down the front"),
-                             (MEDIA+"spine-02-front.jpg","Two models wearing the Spine Long Sleeve in Obsidian and Bone against a concrete wall, front view"),
-                             (MEDIA+"spine-03-back.jpg","Two models wearing the Spine Long Sleeve in Obsidian and Bone, back view, with a plain back")]),
+                             (MEDIA+"spine-02-studio.jpg","A model in the Spine Long Sleeve in Bone, standing, with the Neverhollow script running down the front"),
+                             (MEDIA+"spine-03-seated.jpg","A model in the Spine Long Sleeve in Bone sitting on a white floor")]),
                ("Bone", [])]),
   dict(handle="vesper-polo", title="Vesper Polo", type="Tops", price="95.00", sizes=["S", "M", "L", "XL"], size_name="Size",
        qty=None,
@@ -42,9 +42,8 @@ P = [
        desc=["Washed black denim with the Neverhollow script running down the left leg, faded whiskering and frayed hems."],
        fit="Wide, straight leg that stacks at the ankle.",
        colors=[("Ash", [(MEDIA+"relic-flat.jpg","Relic Denim in Ash laid flat, with the Neverhollow script running down the left leg"),
-                        (MEDIA+"relic-side.jpg","Relic Denim worn with black boots, side view of the script down the leg"),
-                        (MEDIA+"relic-hooded.jpg","A model in a hood and Relic Denim leaning on a concrete wall"),
-                        (MEDIA+"relic-back.jpg","Relic Denim from the back, with the script running down the outside of the leg")])]),
+                        (MEDIA+"relic-02-studio.jpg","A model in Relic Denim, standing, with the Neverhollow script running down the leg"),
+                        (MEDIA+"relic-03-seated.jpg","A model in Relic Denim sitting on a white floor, with the script running down the leg")])]),
 ]
 # newest first (the shop's own order is set in the Drop 001 collection)
 ORDER = ["vesper-polo", "veil-cropped-long-sleeve", "feral-zip-hoodie", "spine-long-sleeve", "relic-denim"]
