@@ -18,9 +18,7 @@
 
   /* ── Header ── */
   const header = $("[data-header]");
-  const heroShift = reduceMotion ? null : $(".hero-parallax");
   // Reading down, the header tucks away; any scroll up brings it back. It stays while anything in it is in use.
-  // (The cover's slower scroll is done by the browser itself in CSS, so it stays in step with the finger.)
   let lastY = window.scrollY, travel = 0, queued = false;
   const body = document.body;
   const headerBusy = () => body.classList.contains("is-locked") || (header && (header.matches(":focus-within") || $(".has-mega.is-open", header)));
@@ -42,41 +40,21 @@
   // With a mouse, heading for the top edge brings the header back too.
   if (finePointer) document.addEventListener("pointermove", (e) => { if (e.clientY < 64) setClass("nav-up", false); }, { passive: true });
 
-  // The cover drifts a few pixels with the mouse, as if the photo had depth.
-  const heroBox = $(".hero-photo");
-  if (heroShift && heroBox && finePointer) {
-    let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0;
-    const step = () => {
-      cx += (tx - cx) * 0.07; cy += (ty - cy) * 0.07;
-      heroShift.style.transform = `translate3d(${cx.toFixed(2)}px, ${cy.toFixed(2)}px, 0)`;
-      raf = Math.abs(tx - cx) + Math.abs(ty - cy) > 0.04 ? requestAnimationFrame(step) : 0;
-    };
-    const hero = heroBox.closest(".hero") || heroBox;
-    hero.addEventListener("pointermove", (e) => {
-      const r = hero.getBoundingClientRect();
-      tx = ((e.clientX - r.left) / r.width - 0.5) * -18;
-      ty = ((e.clientY - r.top) / r.height - 0.5) * -10;
-      if (!raf) raf = requestAnimationFrame(step);
-    });
-    hero.addEventListener("pointerleave", () => { tx = 0; ty = 0; if (!raf) raf = requestAnimationFrame(step); });
-  }
-
-  /* ── Intro: the logo on black, then the black lifts and the logo settles into the cover ── */
+  /* ── Intro: the script writes itself on white, then the white clears and the script glides into the header ── */
   const introDone = new Promise((resolve) => {
     if (!root.classList.contains("intro-on")) { const idle = $(".intro"); if (idle) idle.remove(); return resolve(); }
     const intro = $(".intro");
     const mark = intro && $(".intro-mark", intro);
     const fill = intro && $(".intro-bar span", intro);
-    const end = (morphed) => {
-      if (morphed) { const to = $(".hero-mark"); if (to) to.classList.add("is-handed"); }
+    const end = () => {
       root.classList.remove("intro-on", "intro-morph");
       if (intro) intro.remove();
       window.dispatchEvent(new CustomEvent("nh:intro-end"));
       resolve();
     };
-    if (!intro || !mark) return end(false);
+    if (!intro || !mark) return end();
     // Very slow start: the stylesheet has already lifted the black by itself, so just tidy up afterwards.
-    if (performance.now() > 4200) { setTimeout(() => end(false), Math.max(0, 5500 - performance.now())); return; }
+    if (performance.now() > 4200) { setTimeout(end, Math.max(0, 5500 - performance.now())); return; }
     const MAX = 3600;  // ms since the page was requested
     let finished = false, completing = false;
     const wait = (ms) => new Promise((r) => setTimeout(r, Math.max(0, ms)));
@@ -103,9 +81,9 @@
       if (finished) return;
       finished = true;
       ["pointerdown", "keydown", "wheel", "touchstart"].forEach((t) => window.removeEventListener(t, skip, true));
-      // On the homepage the logo glides into the cover's own logo; elsewhere, or when skipped
-      // before it finished drawing, it simply lifts away with the black.
-      const to = $(".hero-mark");
+      // The script glides up into the header's logo (on every page); skipped before it finished
+      // writing itself, it simply fades away with the white.
+      const to = $("[data-header-logo] .brand-mark");
       const a = mark.getBoundingClientRect();
       const b = to && to.getBoundingClientRect();
       const drawn = !ink || ink.playState === "finished";
@@ -114,7 +92,7 @@
         root.classList.add("intro-morph");
         const dx = b.left + b.width / 2 - (a.left + a.width / 2);
         const dy = b.top + b.height / 2 - (a.top + a.height / 2);
-        mark.animate([{ transform: "none" }, { transform: `translate(${dx}px, ${dy}px) scale(${b.width / a.width})` }], { duration: 1150, easing: "cubic-bezier(0.83, 0, 0.17, 1)", fill: "forwards" });
+        mark.animate([{ transform: "none" }, { transform: `translate(${dx}px, ${dy}px) scale(${b.width / a.width})` }], { duration: 1050, easing: "cubic-bezier(0.55, 0, 0.15, 1)", fill: "forwards" });
       } else {
         mark.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-24px)" }], { duration: skipped ? 320 : 520, easing: "cubic-bezier(0.5, 0, 0.75, 0)", fill: "forwards" });
       }
@@ -125,7 +103,7 @@
         hero.style.opacity = "0";
         hero.addEventListener("load", () => { hero.style.transition = "opacity 0.9s cubic-bezier(0.2, 0.7, 0.2, 1)"; hero.style.opacity = "1"; }, { once: true });
       }
-      setTimeout(() => end(morph), morph ? 1180 : 1080);
+      setTimeout(end, 1240);
     };
     // a tap, click, key or scroll skips it
     ["pointerdown", "keydown", "wheel", "touchstart"].forEach((t) => window.addEventListener(t, skip, { capture: true, passive: true }));
@@ -788,6 +766,44 @@
     });
   };
   introDone.then(() => revealAll());
+
+  /* ── Cover on phones: the pair of photos turns by itself until you touch it ── */
+  const heroSlides = $("[data-hero-slides]");
+  if (heroSlides) {
+    const slides = $$("[data-hero-slide]", heroSlides);
+    const dots = $$("[data-hero-dots] span");
+    const WAIT = 5200;
+    const narrow = window.matchMedia("(max-width: 63.99rem)");
+    let current = 0, timer = 0, auto = !reduceMotion && slides.length > 1, inView = true, settle = 0;
+    heroSlides.style.setProperty("--hero-wait", `${WAIT}ms`);
+    const index = () => Math.round(heroSlides.scrollLeft / Math.max(1, heroSlides.clientWidth));
+    const paint = () => {
+      dots.forEach((d, k) => {
+        d.classList.remove("is-on", "is-timing");
+        if (k !== current) return;
+        if (timer) { void d.offsetWidth; d.classList.add("is-timing"); } else d.classList.add("is-on");
+      });
+    };
+    const stop = () => { clearTimeout(timer); timer = 0; };
+    const arm = () => {
+      stop();
+      if (auto && inView && narrow.matches && !document.hidden) timer = setTimeout(() => {
+        timer = 0;
+        heroSlides.scrollTo({ left: ((current + 1) % slides.length) * heroSlides.clientWidth, behavior: "smooth" });
+      }, WAIT);
+      paint();
+    };
+    heroSlides.addEventListener("scroll", () => {
+      clearTimeout(settle);
+      settle = setTimeout(() => { const n = index(); if (n !== current) { current = n; arm(); } }, 90);
+    }, { passive: true });
+    // once someone swipes or taps the photos, they're in charge: no more turning by itself
+    ["pointerdown", "touchstart", "wheel"].forEach((t) => heroSlides.addEventListener(t, () => { if (auto) { auto = false; arm(); } }, { passive: true }));
+    if ("IntersectionObserver" in window) new IntersectionObserver(([e]) => { inView = e.isIntersecting; arm(); }, { threshold: 0.35 }).observe(heroSlides);
+    document.addEventListener("visibilitychange", arm);
+    narrow.addEventListener ? narrow.addEventListener("change", arm) : narrow.addListener(arm);
+    introDone.then(arm);
+  }
   window.NH = Object.assign(window.NH || {}, { reveal: revealAll });
 
   // The footer script writes itself in once it scrolls into view.

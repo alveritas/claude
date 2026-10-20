@@ -1,23 +1,24 @@
+{%- comment -%}
+  The statement, then two studio photos side by side. Quiet on purpose: the words are short and the
+  photos carry it.
+{%- endcomment -%}
 <section class="editorial" aria-labelledby="editorial-{{ section.id }}">
   <div class="shell editorial-copy">
     <h2 id="editorial-{{ section.id }}" class="statement editorial-title" data-rise><span>{{ section.settings.heading | escape }}</span></h2>
-    <div class="editorial-row">
-      <p class="editorial-body">{{ section.settings.body | escape }}</p>
-      <a href="{{ section.settings.link | default: '/pages/about' }}" class="btn btn-line">{{ section.settings.button | escape }}</a>
-    </div>
+    <p class="editorial-body">{{ section.settings.body | escape }}</p>
+    <a href="{{ section.settings.link | default: '/pages/about' }}" class="text-link caps">{{ section.settings.button | escape }}</a>
   </div>
   <div class="editorial-figures" aria-hidden="true">
-    {%- assign defaults = 'ed-feral-front.webp,ed-relic-side.webp,ed-spine-front.webp,ed-feral-back.webp' | split: ',' -%}
-    {%- for i in (1..4) -%}
+    {%- assign defaults = 'ed-vesper,ed-veil' | split: ',' -%}
+    {%- for i in (1..2) -%}
       {%- assign key = 'image_' | append: i -%}
       {%- assign img = section.settings[key] -%}
       {%- assign idx = i | minus: 1 -%}
-      <div class="editorial-fig" data-reveal style="--d: {{ idx | times: 0.1 }}s">
+      <div class="editorial-fig" data-reveal style="--d: {{ idx | times: 0.12 }}s">
         {%- if img != blank -%}
-          {{ img | image_url: width: 900 | image_tag: widths: '450, 600, 900', sizes: '(min-width: 1024px) 25vw, 50vw', loading: 'lazy', decoding: 'async', alt: '', class: 'editorial-img' }}
+          {{ img | image_url: width: 1200 | image_tag: widths: '540, 900, 1200', sizes: '(min-width: 48rem) 50vw, 100vw', loading: 'lazy', decoding: 'async', alt: '', class: 'editorial-img' }}
         {%- else -%}
-          {%- assign small = defaults[idx] | replace: '.webp', '-540.webp' -%}
-          <img class="editorial-img" src="{{ defaults[idx] | asset_url }}" srcset="{{ small | asset_url }} 540w, {{ defaults[idx] | asset_url }} 900w" sizes="(min-width: 1024px) 25vw, 50vw" alt="" loading="lazy" width="900" height="1200">
+          <img class="editorial-img" src="{{ defaults[idx] | append: '-900.webp' | asset_url }}" srcset="{{ defaults[idx] | append: '-540.webp' | asset_url }} 540w, {{ defaults[idx] | append: '-900.webp' | asset_url }} 900w" sizes="(min-width: 48rem) 50vw, 100vw" alt="" loading="lazy" decoding="async" width="900" height="1200">
         {%- endif -%}
       </div>
     {%- endfor -%}
@@ -29,15 +30,13 @@
   "name": "Editorial",
   "class": "section-editorial",
   "settings": [
-    { "type": "text", "id": "heading", "label": "Heading", "default": "NOT MADE TO EXPLAIN." },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Not made to explain." },
     { "type": "textarea", "id": "body", "label": "Text", "default": "NEVERHOLLOW is an independent clothing label built around silhouette, detail, and restraint. We believe the strongest pieces don’t need to compete for attention." },
-    { "type": "text", "id": "button", "label": "Button", "default": "Discover Neverhollow" },
-    { "type": "url", "id": "link", "label": "Button link", "info": "Leave empty for the About page." },
-    { "type": "header", "content": "Figures", "info": "Tall photos work best. Leave empty to use the Feral, Relic and Spine photos." },
-    { "type": "image_picker", "id": "image_1", "label": "Figure 1" },
-    { "type": "image_picker", "id": "image_2", "label": "Figure 2" },
-    { "type": "image_picker", "id": "image_3", "label": "Figure 3" },
-    { "type": "image_picker", "id": "image_4", "label": "Figure 4" }
+    { "type": "text", "id": "button", "label": "Link", "default": "Discover Neverhollow" },
+    { "type": "url", "id": "link", "label": "Link destination", "info": "Leave empty for the About page." },
+    { "type": "header", "content": "Photos", "info": "Two tall photos. Leave empty to use the Vesper Polo and Veil Cropped Long Sleeve studio photos." },
+    { "type": "image_picker", "id": "image_1", "label": "Photo 1" },
+    { "type": "image_picker", "id": "image_2", "label": "Photo 2" }
   ],
   "presets": [{ "name": "Editorial" }]
 }

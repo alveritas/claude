@@ -12,15 +12,16 @@
     assign n = limit
   endif
   assign odd = n | modulo: 2
-  assign mod4 = n | modulo: 4
-  assign mod3 = n | modulo: 3
-  assign feature = false
-  if n >= 5 and mod4 == 1
-    assign feature = true
-  endif
-  assign three = false
-  if feature == false and mod4 != 0 and mod3 == 0
-    assign three = true
+  # On larger screens the grid has six tracks: three to a row, and when the count doesn't divide by
+  # three the first pieces (the newest) go two to a row, larger, so every row is full.
+  assign rem = n | modulo: 3
+  assign big = 0
+  if rem == 2
+    assign big = 2
+  elsif rem == 1 and n > 1
+    assign big = 4
+  elsif n == 1
+    assign big = 1
   endif
 -%}
 <section class="shell section-pad" aria-labelledby="featured-{{ section.id }}">
@@ -32,26 +33,18 @@
     <a class="text-link caps" href="{{ collection.url }}">View all</a>
   </div>
   {%- if n > 0 -%}
-    <div class="grid joints featured-grid{% if three %} grid--3{% endif %}{% if n == 2 %} grid--2{% endif %}{% if feature %} grid--feature{% endif %}">
+    <div class="grid featured-grid grid--six">
       {%- for product in collection.products limit: limit -%}
         {%- liquid
-          assign big = false
-          if feature and forloop.first
-            assign big = true
+          assign cls = 'span-third'
+          assign card_sizes = '(min-width: 768px) 33vw, 50vw'
+          if forloop.index <= big
+            assign cls = 'span-half'
+            assign card_sizes = '(min-width: 768px) 50vw, 50vw'
           endif
-          assign cls = ''
           if forloop.first and odd == 1
-            assign cls = 'span-mobile'
-          endif
-          if big
-            assign cls = cls | append: ' span-feature'
-            assign card_sizes = '(min-width: 1024px) 50vw, 100vw'
-          elsif three
-            assign card_sizes = '(min-width: 1024px) 33vw, 50vw'
-          elsif n == 2
-            assign card_sizes = '(min-width: 1024px) 50vw, 50vw'
-          else
-            assign card_sizes = '(min-width: 1024px) 25vw, 50vw'
+            assign cls = cls | append: ' span-mobile'
+            assign card_sizes = card_sizes | replace: ', 50vw', ', 100vw'
           endif
           assign eager = false
           if forloop.index <= 2
@@ -59,7 +52,7 @@
           endif
         -%}
         <div class="grid-cell {{ cls }}">
-          {% render 'product-card', product: product, feature: big, sizes: card_sizes, eager: eager, index: forloop.index0 %}
+          {% render 'product-card', product: product, sizes: card_sizes, eager: eager, index: forloop.index0 %}
         </div>
       {%- endfor -%}
     </div>

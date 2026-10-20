@@ -21,6 +21,22 @@ P = [
                              (MEDIA+"spine-02-front.jpg","Two models wearing the Spine Long Sleeve in Obsidian and Bone against a concrete wall, front view"),
                              (MEDIA+"spine-03-back.jpg","Two models wearing the Spine Long Sleeve in Obsidian and Bone, back view, with a plain back")]),
                ("Bone", [])]),
+  dict(handle="vesper-polo", title="Vesper Polo", type="Tops", price="95.00", sizes=["S", "M", "L", "XL"], size_name="Size",
+       qty=None,
+       desc=["A short sleeve polo with the Neverhollow script sweeping across the chest and onto the sleeve.",
+             "Obsidian is black with the script in white. Bone is white with the script in black."],
+       fit="Relaxed, boxy fit with a flat collar and a two-button placket.",
+       colors=[("Obsidian", [(MEDIA+"vesper-01-flat.jpg","Vesper Polo in Obsidian and Bone laid flat, with the Neverhollow script across the chest and onto the sleeve"),
+                             (MEDIA+"vesper-02-standing.jpg","A model in the Vesper Polo in Obsidian with white jeans, against a white wall"),
+                             (MEDIA+"vesper-03-lying.jpg","The Vesper Polo in Obsidian worn lying on a white floor, with the script across the chest")]),
+               ("Bone", [])]),
+  dict(handle="veil-cropped-long-sleeve", title="Veil Cropped Long Sleeve", type="Tops", price="65.00", sizes=["S", "M", "L", "XL"], size_name="Size",
+       qty=None,
+       desc=["A cropped long sleeve with the Neverhollow script across the chest in white."],
+       fit="Fitted and cropped above the waist, with a crew neck.",
+       colors=[("Obsidian", [(MEDIA+"veil-01-flat.jpg","Veil Cropped Long Sleeve in Obsidian laid flat, with the Neverhollow script across the chest"),
+                             (MEDIA+"veil-02-front.jpg","A model in the Veil Cropped Long Sleeve lying on a white floor, front view"),
+                             (MEDIA+"veil-03-back.jpg","The Veil Cropped Long Sleeve from the back: a plain back, cropped above the waist")])]),
   dict(handle="relic-denim", title="Relic Denim", type="Bottoms", price="165.00", sizes=WAISTS, size_name="Waist",
        qty={"28": 4, "30": 9, "32": 13, "34": 12, "36": 8, "38": 4},
        desc=["Washed black denim with the Neverhollow script running down the left leg, faded whiskering and frayed hems."],
@@ -30,6 +46,9 @@ P = [
                         (MEDIA+"relic-hooded.jpg","A model in a hood and Relic Denim leaning on a concrete wall"),
                         (MEDIA+"relic-back.jpg","Relic Denim from the back, with the script running down the outside of the leg")])]),
 ]
+# newest first (the shop's own order is set in the Drop 001 collection)
+ORDER = ["vesper-polo", "veil-cropped-long-sleeve", "feral-zip-hoodie", "spine-long-sleeve", "relic-denim"]
+P = [p for h in ORDER for p in P if p["handle"] == h]
 H = ["Title","URL handle","Description","Vendor","Product category","Type","Tags","Published on online store","Status","SKU","Barcode",
      "Option1 name","Option1 value","Option1 LinkedTo","Option2 name","Option2 value","Option2 LinkedTo","Option3 name","Option3 value","Option3 LinkedTo",
      "Price","Compare-at price","Cost per item","Charge tax","Inventory tracker","Inventory quantity","Continue selling when out of stock",
@@ -52,7 +71,7 @@ for p in P:
             c,s,imgs=variants[i]
             if i==0: r.update({"Option1 name":"Color","Option2 name":p["size_name"]})
             r.update({"Option1 value":c,"Option2 value":s,"Price":p["price"],"Charge tax":"TRUE",
-                      "Inventory tracker":"shopify","Inventory quantity":str(p["qty"][s] if c not in ("Obsidian","Bone") or p["handle"]!="spine-long-sleeve" else p["qty"][s]),"Continue selling when out of stock":"DENY",
+                      "Inventory tracker":"shopify" if p["qty"] else "","Inventory quantity":str(p["qty"][s]) if p["qty"] else "","Continue selling when out of stock":"DENY",
                       "Requires shipping":"TRUE","Fulfillment service":"manual","Variant image URL":url(imgs[0][0])})
         if i<len(images):
             f,alt=images[i]

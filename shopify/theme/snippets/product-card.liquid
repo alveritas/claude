@@ -60,23 +60,20 @@
       {%- else -%}
         {{ 'product-apparel-1' | placeholder_svg_tag: 'placeholder' }}
       {%- endif -%}
-      {%- unless product.available -%}
-        <span class="tag">Sold out</span>
-      {%- endunless -%}
-      {%- if po_tag -%}
-        <span class="tag">Pre-order</span>
-      {%- endif -%}
     </div>
     <div class="card-body">
       {%- assign hl = heading | default: 'h3' -%}
       <{{ hl }} class="card-title">{{ product.title }}</{{ hl }}>
       <p class="card-price">{{ product.price | money_without_trailing_zeros }}{% if product.price_varies %}+{% endif %}</p>
-      {%- if color_option -%}
+      {%- if color_option or po_tag or product.available == false -%}
         <p class="card-meta">
-          <span class="card-dots" aria-hidden="true">
-            {%- for value in color_option.values -%}<span class="dot" style="--dot: {% render 'swatch', color: value %}"></span>{%- endfor -%}
-          </span>
-          <span class="card-color">{{ color_option.values | join: ' / ' }}</span>
+          {%- if color_option -%}
+            <span class="card-dots" aria-hidden="true">
+              {%- for value in color_option.values -%}<span class="dot" style="--dot: {% render 'swatch', color: value %}"></span>{%- endfor -%}
+            </span>
+            <span class="card-color">{{ color_option.values | join: ' / ' }}</span>
+          {%- endif -%}
+          {%- if product.available == false -%}<span class="card-flag">Sold out</span>{%- elsif po_tag -%}<span class="card-flag">Pre-order</span>{%- endif -%}
         </p>
       {%- endif -%}
     </div>

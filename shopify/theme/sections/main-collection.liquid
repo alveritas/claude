@@ -36,37 +36,44 @@
   {%- paginate collection.products by 24 -%}
     {%- if collection.products.size > 0 -%}
       {%- liquid
-          assign cols = 'grid--4'
-          if collection.products_count <= 2
-            assign cols = 'grid--2'
-          elsif collection.products_count == 3
-            assign cols = 'grid--3'
-          endif
-        -%}
-      {%- assign odd = collection.products.size | modulo: 2 -%}
-      <div class="grid {{ cols }} product-grid-list joints">
+        # Up to twelve pieces: three to a row on larger screens, the first (newest) two to a row when the
+        # count doesn't divide by three, so no row is left part-empty. More than that: four to a row.
+        assign n = collection.products.size
+        assign odd = n | modulo: 2
+        assign six = false
+        if collection.products_count <= 12
+          assign six = true
+        endif
+        assign rem = n | modulo: 3
+        assign big = 0
+        if rem == 2
+          assign big = 2
+        elsif rem == 1 and n > 1
+          assign big = 4
+        elsif n == 1
+          assign big = 1
+        endif
+      -%}
+      <div class="grid {% if six %}grid--six{% else %}grid--4{% endif %} product-grid-list">
         {%- for product in collection.products -%}
           {%- liquid
             # An odd count opens with one wide card on phones, so no row is left half empty.
-            assign wide = false
-            if forloop.first and odd == 1
-              assign wide = true
+            assign cls = ''
+            assign card_sizes = '(min-width: 1024px) 25vw, 50vw'
+            if six
+              assign cls = 'span-third'
+              assign card_sizes = '(min-width: 768px) 33vw, 50vw'
+              if forloop.index <= big
+                assign cls = 'span-half'
+                assign card_sizes = '(min-width: 768px) 50vw, 50vw'
+              endif
             endif
-            if cols == 'grid--3'
-              assign card_sizes = '(min-width: 640px) 33vw, 50vw'
-              if wide
-                assign card_sizes = '(min-width: 640px) 33vw, 100vw'
-              endif
-            elsif cols == 'grid--2'
-              assign card_sizes = '(min-width: 1024px) 50vw, 50vw'
-            else
-              assign card_sizes = '(min-width: 1024px) 25vw, 50vw'
-              if wide
-                assign card_sizes = '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw'
-              endif
+            if forloop.first and odd == 1
+              assign cls = cls | append: ' span-mobile'
+              assign card_sizes = card_sizes | replace: ', 50vw', ', 100vw'
             endif
           -%}
-          <div class="grid-cell{% if wide %} span-mobile{% endif %}">{% render 'product-card', product: product, eager: forloop.first, index: forloop.index0, heading: 'h2', sizes: card_sizes %}</div>
+          <div class="grid-cell {{ cls }}">{% render 'product-card', product: product, eager: forloop.first, index: forloop.index0, heading: 'h2', sizes: card_sizes %}</div>
         {%- endfor -%}
       </div>
     {%- else -%}

@@ -1,7 +1,7 @@
 {%- comment -%}
-  The cover: one photo of the drop that dissolves into the page, with the script logo beside it
-  (under it on phones). The words never sit on the photo, so they don't compete with the script
-  printed on the clothes. The photo eases in on load and sinks slowly into the fade as you scroll.
+  The cover: two studio photos side by side (on phones, a pair you swipe between, turning by itself),
+  each one a way into its piece. Under them, the line, the dates and the way in. No words sit on the
+  photos, so nothing competes with the script printed on the clothes.
 {%- endcomment -%}
 {%- liquid
   # While pre-orders are on, an "out now" line is swapped for the pre-order line (Theme settings → Pre-orders).
@@ -37,33 +37,56 @@
   endif
 -%}
 <section class="hero" aria-label="Introduction" data-hero>
-  <div class="hero-photo">
-    <a class="hero-link" href="{{ section.settings.primary_link | default: routes.all_products_collection_url }}" tabindex="-1" aria-hidden="true" data-cursor="{{ section.settings.primary_label | escape }}"></a>
-    <div class="hero-parallax">
+  <div class="hero-slides" data-hero-slides>
+    {%- for i in (1..2) -%}
       {%- liquid
-        assign default_alt = 'Three models against a concrete wall wearing the Spine Long Sleeve, Relic Denim and the Feral Zip Hoodie'
-        # The chosen photo, else the Drop 001 group photo from Content → Files (the graded version first;
-        # served by Shopify's image CDN in the best format each browser takes), else the copy kept with the theme.
-        assign cover = section.settings.image
-        if cover == blank
-          assign cover = images['nh-cover-drop001-graded.jpg']
+        assign key_img = 'image_' | append: i
+        assign key_product = 'product_' | append: i
+        assign img = section.settings[key_img]
+        assign piece = section.settings[key_product]
+        if piece == blank
+          if i == 1
+            assign piece = all_products['vesper-polo']
+          else
+            assign piece = all_products['veil-cropped-long-sleeve']
+          endif
         endif
-        if cover == blank
-          assign cover = images['nh-cover-drop001.jpg']
+        if piece != blank and piece.id != blank
+          assign slide_url = piece.url
+          assign slide_label = piece.title
+        else
+          assign slide_url = section.settings.primary_link | default: routes.all_products_collection_url
+          assign slide_label = section.settings.primary_label
+        endif
+        if i == 1
+          assign fallback = 'campaign-vesper'
+          assign fallback_alt = 'A model in the Vesper Polo lying on a white floor'
+        else
+          assign fallback = 'campaign-veil'
+          assign fallback_alt = 'A model in the Veil Cropped Long Sleeve lying on a white floor'
+        endif
+        assign load = 'eager'
+        assign priority = 'high'
+        if i > 1
+          assign priority = 'auto'
         endif
       -%}
-      {%- if cover != blank -%}
-        {%- assign hero_alt = cover.alt | default: default_alt -%}
-        {{ cover | image_url: width: 1800 | image_tag: widths: '600, 900, 1300, 1800', sizes: '(min-width: 1714px) 960px, (min-width: 1024px) 56vw, 100vw', loading: 'eager', fetchpriority: 'high', alt: hero_alt, class: 'hero-img' }}
-      {%- else -%}
-        <img class="hero-img" src="{{ 'hero-cover-1300.webp' | asset_url }}" srcset="{{ 'hero-cover-900.webp' | asset_url }} 900w, {{ 'hero-cover-1300.webp' | asset_url }} 1300w, {{ 'hero-cover-1800.webp' | asset_url }} 1800w" sizes="(min-width: 1714px) 960px, (min-width: 1024px) 56vw, 100vw" alt="{{ default_alt }}" width="1856" height="2304" fetchpriority="high">
-      {%- endif -%}
-    </div>
+      <a class="hero-slide" href="{{ slide_url }}" data-hero-slide data-cursor="{{ slide_label | escape }}" style="--i: {{ i | minus: 1 }}">
+        <span class="hero-frame">
+          {%- if img != blank -%}
+            {{ img | image_url: width: 1600 | image_tag: widths: '720, 1100, 1600', sizes: '(min-width: 64rem) 50vw, 100vw', loading: load, fetchpriority: priority, alt: img.alt, class: 'hero-img' }}
+          {%- else -%}
+            <img class="hero-img" src="{{ fallback | append: '-1100.webp' | asset_url }}" srcset="{{ fallback | append: '-720.webp' | asset_url }} 720w, {{ fallback | append: '-1100.webp' | asset_url }} 1100w, {{ fallback | append: '-1600.webp' | asset_url }} 1600w" sizes="(min-width: 64rem) 50vw, 100vw" alt="{{ fallback_alt }}" width="1600" height="2133" fetchpriority="{{ priority }}">
+          {%- endif -%}
+        </span>
+        <span class="hero-caption">{{ slide_label | escape }}<span class="hero-caption-arrow" aria-hidden="true"></span></span>
+      </a>
+    {%- endfor -%}
   </div>
-  <div class="hero-copy">
-    <p class="hero-status">{{ status | escape }}</p>
-    <h1><span class="sr-only">{{ section.settings.heading | escape }}</span><span class="hero-mark" aria-hidden="true"><span class="wipe"><span class="brand-mark brand-wordmark"></span></span></span></h1>
-    <p class="hero-tagline">{{ section.settings.tagline | escape }}</p>
+  <div class="hero-dots" aria-hidden="true" data-hero-dots><span><i></i></span><span><i></i></span></div>
+  <div class="shell hero-copy">
+    {%- if status != blank -%}<p class="hero-status">{{ status | escape }}</p>{%- endif -%}
+    <h1 class="hero-tagline"><span class="sr-only">{{ section.settings.heading | escape }}. </span>{{ section.settings.tagline | escape }}</h1>
     {%- if po_ship != blank -%}
       <dl class="hero-dates">
         {%- if po_close != blank -%}<div><dt>Pre-order until</dt><dd>{{ po_close }}</dd></div>{%- endif -%}
@@ -73,7 +96,7 @@
     <div class="hero-buttons">
       <a href="{{ section.settings.primary_link | default: routes.all_products_collection_url }}" class="btn btn-solid">{{ section.settings.primary_label | escape }}</a>
       {%- if section.settings.secondary_label != blank -%}
-        <a href="{{ section.settings.secondary_link | default: '/pages/about' }}" class="btn btn-line">{{ section.settings.secondary_label | escape }}</a>
+        <a href="{{ section.settings.secondary_link | default: '/pages/about' }}" class="text-link caps">{{ section.settings.secondary_label | escape }}</a>
       {%- endif -%}
     </div>
   </div>
@@ -84,15 +107,19 @@
   "name": "Cover",
   "class": "section-hero",
   "settings": [
-    { "type": "image_picker", "id": "image", "label": "Cover photo", "info": "A tall photo works best; its edges fade into the page. Leave empty to use the Drop 001 group photo." },
+    { "type": "header", "content": "Photos", "info": "Two tall photos, side by side on a computer and swiped between on a phone. Each opens its piece. Leave empty to use the Vesper Polo and Veil Cropped Long Sleeve studio photos." },
+    { "type": "image_picker", "id": "image_1", "label": "Photo 1" },
+    { "type": "product", "id": "product_1", "label": "Photo 1 opens", "info": "Leave empty for the Vesper Polo." },
+    { "type": "image_picker", "id": "image_2", "label": "Photo 2" },
+    { "type": "product", "id": "product_2", "label": "Photo 2 opens", "info": "Leave empty for the Veil Cropped Long Sleeve." },
     { "type": "header", "content": "Words" },
-    { "type": "text", "id": "heading", "label": "Headline (read out by screen readers; the logo shows instead)", "default": "NEVERHOLLOW" },
-    { "type": "text", "id": "tagline", "label": "Supporting line", "default": "An identity without explanation." },
+    { "type": "text", "id": "heading", "label": "Brand name (read out by screen readers)", "default": "NEVERHOLLOW" },
+    { "type": "text", "id": "tagline", "label": "Headline", "default": "An identity without explanation." },
     { "type": "text", "id": "status", "label": "Release line", "default": "Drop 001 is out now" },
-    { "type": "text", "id": "primary_label", "label": "First button", "default": "Shop the drop" },
-    { "type": "url", "id": "primary_link", "label": "First button link" },
-    { "type": "text", "id": "secondary_label", "label": "Second button", "default": "About Neverhollow" },
-    { "type": "url", "id": "secondary_link", "label": "Second button link", "info": "Leave empty for the About page." }
+    { "type": "text", "id": "primary_label", "label": "Button", "default": "Shop the drop" },
+    { "type": "url", "id": "primary_link", "label": "Button link" },
+    { "type": "text", "id": "secondary_label", "label": "Link", "default": "About Neverhollow" },
+    { "type": "url", "id": "secondary_link", "label": "Link destination", "info": "Leave empty for the About page." }
   ],
   "presets": [{ "name": "Cover" }]
 }
