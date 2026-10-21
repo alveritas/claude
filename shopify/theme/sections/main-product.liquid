@@ -253,7 +253,7 @@
             {%- if product.metafields.custom.size_guide != blank -%}
               {{ product.metafields.custom.size_guide | metafield_tag }}
             {%- else -%}
-              <p class="muted">Unisex sizing. Not sure which size to get?{% if settings.contact_email != blank %} Email <a class="text-link" href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a> with your usual size and we’ll help you choose.{% endif %}</p>
+              <p class="muted">{% if product.tags contains 'Women' %}Women’s sizing.{% else %}Unisex sizing.{% endif %} Not sure which size to get?{% if settings.contact_email != blank %} Email <a class="text-link" href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a> with your usual size and we’ll help you choose.{% endif %}</p>
             {%- endif -%}
           </div>
         </details>

@@ -27,7 +27,7 @@
         "type": "textarea",
         "id": "seo_description",
         "label": "Search and share description",
-        "default": "Neverhollow is an independent unisex streetwear label. Drop 001: washed black denim, a leopard-lined zip hoodie and long sleeves carrying the Neverhollow script, made to order.",
+        "default": "Neverhollow is an independent streetwear label. Drop 001: pieces in black and white carrying the Neverhollow script, made to order.",
         "info": "Shown by Google and in link previews when a page has no description of its own."
       },
       {

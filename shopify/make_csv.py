@@ -30,7 +30,7 @@ P = [
                              (MEDIA+"vesper-02-standing.jpg","A model in the Vesper Polo in Obsidian with white jeans, against a white wall"),
                              (MEDIA+"vesper-03-lying.jpg","The Vesper Polo in Obsidian worn lying on a white floor, with the script across the chest")]),
                ("Bone", [])]),
-  dict(handle="veil-cropped-long-sleeve", title="Veil Cropped Long Sleeve", type="Tops", price="65.00", sizes=["S", "M", "L", "XL"], size_name="Size",
+  dict(women=True, handle="veil-cropped-long-sleeve", title="Veil Cropped Long Sleeve", type="Tops", price="65.00", sizes=["S", "M", "L", "XL"], size_name="Size",
        qty=None,
        desc=["A cropped long sleeve with the Neverhollow script across the chest in white."],
        fit="Fitted and cropped above the waist, with a crew neck.",
@@ -44,7 +44,7 @@ P = [
        colors=[("Ash", [(MEDIA+"relic-flat.jpg","Relic Denim in Ash laid flat, with the Neverhollow script running down the left leg"),
                         (MEDIA+"relic-02-studio.jpg","A model in Relic Denim, standing, with the Neverhollow script running down the leg"),
                         (MEDIA+"relic-03-seated.jpg","A model in Relic Denim sitting on a white floor, with the script running down the leg")])]),
-  dict(handle="halo-fitted-polo", title="Halo Fitted Polo", type="Tops", price="75.00", sizes=SIZES, size_name="Size",
+  dict(women=True, handle="halo-fitted-polo", title="Halo Fitted Polo", type="Tops", price="75.00", sizes=SIZES, size_name="Size",
        qty=None,
        desc=["A fitted short sleeve polo with the Neverhollow script sweeping across the chest.",
              "Obsidian is black with the script in white. Bone is white with the script in black."],
@@ -54,7 +54,7 @@ P = [
                              (MEDIA+"halo-03-lying.jpg","A model in the Halo Fitted Polo in Obsidian lying on a white rug"),
                              (MEDIA+"halo-04-back.jpg","The Halo Fitted Polo in Obsidian from the back")]),
                ("Bone", [])]),
-  dict(handle="requiem-sweatpants", title="Requiem Sweatpants", type="Bottoms", price="110.00", sizes=SIZES, size_name="Size",
+  dict(women=True, handle="requiem-sweatpants", title="Requiem Sweatpants", type="Bottoms", price="110.00", sizes=SIZES, size_name="Size",
        qty=None,
        desc=["Sweatpants with the Neverhollow script across the back.",
              "Obsidian is black with the script in white. Bone is white with the script in black."],
@@ -72,7 +72,7 @@ P = [
        colors=[("Obsidian", [(MEDIA+"sigil-01-flat.jpg","Sigil Hoodie in Obsidian laid flat, with the NH monogram on the left chest"),
                              (MEDIA+"sigil-02-standing.jpg","A model in the Sigil Hoodie in Obsidian, standing, with the NH monogram on the chest"),
                              (MEDIA+"sigil-03-back.jpg","The Sigil Hoodie in Obsidian from the back: a plain back")])]),
-  dict(handle="cathedral-dress", title="Cathedral Dress", type="Dresses", price="75.00", sizes=["XS", "S", "M", "L"], size_name="Size",
+  dict(women=True, handle="cathedral-dress", title="Cathedral Dress", type="Dresses", price="75.00", sizes=["XS", "S", "M", "L"], size_name="Size",
        qty=None,
        desc=["A long sleeve mini dress with a gothic cross on the hip, the Neverhollow script running through it.",
              "Obsidian is black with the cross in white."],
@@ -99,7 +99,7 @@ for p in P:
         r={k:"" for k in H}
         r["URL handle"]=p["handle"]
         if i==0:
-            r.update({"Title":p["title"],"Description":body,"Vendor":"NEVERHOLLOW","Type":p["type"],"Tags":f"Drop 001, {p['type']}, pre-order",
+            r.update({"Title":p["title"],"Description":body,"Vendor":"NEVERHOLLOW","Type":p["type"],"Tags":f"Drop 001, {p['type']}, pre-order" + (", Women" if p.get("women") else ""),
                       "Published on online store":"TRUE","Status":"Active","Gift card":"FALSE",
                       "SEO title":"","SEO description":p["desc"][0][:300],"Collection":"Drop 001"})
         if i<len(variants):
