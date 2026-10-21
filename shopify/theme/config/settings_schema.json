@@ -132,7 +132,7 @@
         "type": "text",
         "id": "preorder_ship",
         "label": "Ships by (YYYY-MM-DD)",
-        "default": "2027-02-28"
+        "default": "2027-01-15"
       },
       {
         "type": "text",
