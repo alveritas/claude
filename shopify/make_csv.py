@@ -35,7 +35,7 @@ P = [
        desc=["A cropped long sleeve with the Neverhollow script across the chest in white."],
        fit="Fitted and cropped above the waist, with a crew neck.",
        colors=[("Obsidian", [(MEDIA+"veil-01-flat.jpg","Veil Cropped Long Sleeve in Obsidian laid flat, with the Neverhollow script across the chest"),
-                             (MEDIA+"veil-02-front.jpg","A model in the Veil Cropped Long Sleeve lying on a white floor, front view"),
+                             (MEDIA+"veil-02-selfie.jpg","A model in the Veil Cropped Long Sleeve taking a photo with a digital camera, the Neverhollow script across the chest"),
                              (MEDIA+"veil-03-back.jpg","The Veil Cropped Long Sleeve from the back: a plain back, cropped above the waist")])]),
   dict(handle="relic-denim", title="Relic Denim", type="Bottoms", price="150.00", sizes=WAISTS, size_name="Waist",
        qty={"28": 4, "30": 9, "32": 13, "34": 12, "36": 8, "38": 4},
