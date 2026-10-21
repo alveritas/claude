@@ -72,9 +72,17 @@ P = [
        colors=[("Obsidian", [(MEDIA+"sigil-01-flat.jpg","Sigil Hoodie in Obsidian laid flat, with the NH monogram on the left chest"),
                              (MEDIA+"sigil-02-standing.jpg","A model in the Sigil Hoodie in Obsidian, standing, with the NH monogram on the chest"),
                              (MEDIA+"sigil-03-back.jpg","The Sigil Hoodie in Obsidian from the back: a plain back")])]),
+  dict(handle="cathedral-dress", title="Cathedral Dress", type="Dresses", price="75.00", sizes=["XS", "S", "M", "L"], size_name="Size",
+       qty=None,
+       desc=["A long sleeve mini dress with a gothic cross on the hip, the Neverhollow script running through it.",
+             "Obsidian is black with the cross in white."],
+       fit="Fitted, with a crew neck and long sleeves.",
+       colors=[("Obsidian", [(MEDIA+"cathedral-01-flat.jpg","Cathedral Dress in Obsidian laid flat, with a gothic cross and the Neverhollow script on the hip"),
+                             (MEDIA+"cathedral-02-seated.jpg","A model in the Cathedral Dress in Obsidian sitting on a white floor, the cross across her hip"),
+                             (MEDIA+"cathedral-03-lying.jpg","A model in the Cathedral Dress in Obsidian lying on a white floor")])]),
 ]
 # newest first (the shop's own order is set in the Drop 001 collection)
-ORDER = ["sigil-hoodie", "halo-fitted-polo", "requiem-sweatpants", "vesper-polo", "veil-cropped-long-sleeve", "spine-long-sleeve", "relic-denim"]  # feral-zip-hoodie archived
+ORDER = ["cathedral-dress", "sigil-hoodie", "halo-fitted-polo", "requiem-sweatpants", "vesper-polo", "veil-cropped-long-sleeve", "spine-long-sleeve", "relic-denim"]  # feral-zip-hoodie archived
 P = [p for h in ORDER for p in P if p["handle"] == h]
 H = ["Title","URL handle","Description","Vendor","Product category","Type","Tags","Published on online store","Status","SKU","Barcode",
      "Option1 name","Option1 value","Option1 LinkedTo","Option2 name","Option2 value","Option2 LinkedTo","Option3 name","Option3 value","Option3 LinkedTo",
