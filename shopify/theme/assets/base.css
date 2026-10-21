@@ -168,6 +168,9 @@ textarea.field { height: auto; padding: 12px 14px; resize: vertical; }
 /* ── Panels ── */
 .frame { position: relative; overflow: hidden; background: var(--white); display: block; }
 .frame .placeholder { width: 100%; height: 100%; fill: var(--mist); }
+/* Every product photo sits in a light hairline frame, so the pieces read as a set rather than floating on the page.
+   Drawn on top of the photo, so it stays crisp while the photo zooms on hover and takes no layout space. */
+.card-frame::after, .gallery-slide::after, .cart-thumb::after, .search-hit-img::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; box-shadow: inset 0 0 0 1px var(--line); }
 .slab { background: var(--black); color: var(--white); }
 .slab .muted { color: var(--grey-on-black); }
 .tag { position: absolute; left: 10px; top: 10px; z-index: 2; font-size: 0.625rem; font-weight: 500; text-transform: uppercase; letter-spacing: var(--track); line-height: 1; padding: 6px 7px 5px; background: rgb(255 255 255 / 0.92); color: var(--black); }
