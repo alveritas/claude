@@ -321,8 +321,9 @@ body.is-scrolled .site-header::after { opacity: 1; }
 body.is-locked { overflow: hidden; }
 
 /* ── Cover: one studio photo dissolving into the page; the words beside it (under it on phones) ── */
-.hero { --fade: linear-gradient(to bottom, rgb(255 255 255 / 0) 0%, rgb(255 255 255 / 0.05) 19%, rgb(255 255 255 / 0.15) 34%, rgb(255 255 255 / 0.29) 47%, rgb(255 255 255 / 0.41) 56.5%, rgb(255 255 255 / 0.53) 65%, rgb(255 255 255 / 0.65) 73%, rgb(255 255 255 / 0.76) 80.2%, rgb(255 255 255 / 0.85) 86.1%, rgb(255 255 255 / 0.92) 91%, rgb(255 255 255 / 0.97) 95.2%, #fff 99%); display: grid; background: var(--white); }
-.hero-photo { position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: var(--white); }
+.hero { display: grid; background: var(--white); }
+/* The cover photo has a pure white backdrop, so it is shown whole (contain, no crop) and meets the page with no fade over it. */
+.hero-photo { position: relative; aspect-ratio: 3 / 4; overflow: hidden; background: var(--white); }
 .hero-parallax { position: absolute; inset: -8% 0 0; will-change: transform; }
 /* the photo sinks a little slower than the page scrolls, driven by the scroll itself (never lags) */
 @supports (animation-timeline: scroll()) {
@@ -332,12 +333,11 @@ body.is-locked { overflow: hidden; }
 }
 @keyframes hero-drift { to { translate: 0 18vh; } }
 .hero-link { position: absolute; inset: 0; z-index: 2; }
-.hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; animation: hero-in 2.4s var(--ease-out) both; }
+.hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; animation: hero-in 2.4s var(--ease-out) both; }
 @keyframes hero-in { from { opacity: 0; transform: scale(1.06); } 35% { opacity: 1; } to { opacity: 1; transform: none; } }
 @keyframes hero-settle { from { transform: scale(1.06); } }
 /* the fade: the bottom edge dissolves into the page (and the left edge on wide screens) */
-.hero-photo::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 48%; z-index: 1; background: var(--fade); pointer-events: none; }
-.hero-copy { position: relative; z-index: 3; display: grid; justify-items: center; text-align: center; gap: 18px; margin-top: -24px; padding: 0 var(--gutter) 72px; }
+.hero-copy { position: relative; z-index: 3; display: grid; justify-items: center; text-align: center; gap: 18px; margin-top: 12px; padding: 0 var(--gutter) 72px; }
 .hero-status { font-size: 0.6875rem; font-weight: 500; text-transform: uppercase; letter-spacing: var(--track); color: var(--grey); }
 .hero-tagline { font-size: clamp(1.75rem, 3.2vw, 3.25rem); font-weight: 400; line-height: 1.1; letter-spacing: -0.025em; max-width: 16ch; }
 .hero-dates { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 28px; }
@@ -353,13 +353,11 @@ body.is-locked { overflow: hidden; }
 @keyframes rise-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @media (min-width: 40rem) and (max-width: 63.99rem) {
   .hero-photo { aspect-ratio: 1 / 1; }
-  .hero-copy { margin-top: -48px; padding-bottom: 88px; }
+  .hero-copy { margin-top: 16px; padding-bottom: 88px; }
 }
 @media (min-width: 64rem) {
   .hero { --hero-h: clamp(600px, calc(100svh - var(--top-h)), 1000px); grid-template-columns: minmax(0, 1fr) minmax(0, min(58vw, calc(var(--hero-h) * 1.08))); height: var(--hero-h); }
   .hero-photo { grid-column: 2; grid-row: 1; aspect-ratio: auto; }
-  .hero-photo::before { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 18%; z-index: 1; background: linear-gradient(to left, rgb(255 255 255 / 0), rgb(255 255 255 / 0.35) 45%, rgb(255 255 255 / 0.8) 80%, #fff); pointer-events: none; }
-  .hero-photo::after { height: 32%; }
   .hero-copy { grid-column: 1; grid-row: 1; margin: 0; align-content: center; justify-items: start; text-align: left; gap: 22px; padding: 32px 48px 56px max(var(--gutter), calc((100vw - 1680px) / 2 + var(--gutter))); }
   .hero-dates, .hero-buttons { justify-content: flex-start; }
 }
