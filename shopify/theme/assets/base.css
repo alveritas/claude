@@ -329,13 +329,11 @@ body.is-scrolled .site-header::after { opacity: 1; }
 body.is-locked { overflow: hidden; }
 
 /* ── Cover: one studio photo on pure white, so it has no edge and simply becomes the page; the words
-   beside it (under it on phones). A photo cut off at the bottom fades out there (a mask, not a white
-   wash, so the photo itself is never lightened). ── */
+   beside it (under it on phones). Nothing is laid over the photo and it never fades: it shows exactly as graded. ── */
 .hero { display: grid; background: var(--white); }
 .hero-photo { position: relative; display: block; aspect-ratio: 3 / 4; overflow: hidden; background: var(--white); }
 .hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; animation: hero-in 1.8s var(--ease-out) both; }
-.hero--fade .hero-img { -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent 99%); mask-image: linear-gradient(to bottom, #000 80%, transparent 99%); }
-@keyframes hero-in { from { opacity: 0; transform: scale(1.03); } to { opacity: 1; transform: none; } }
+@keyframes hero-in { from { transform: scale(1.03); } to { transform: none; } }
 @keyframes hero-settle { from { transform: scale(1.03); } }
 @media (min-width: 40rem) and (max-width: 63.99rem) { .hero-photo { aspect-ratio: 1 / 1; } }
 .hero-copy { display: grid; justify-items: center; text-align: center; gap: 12px; padding-top: 28px; padding-bottom: 44px; }
@@ -355,7 +353,7 @@ body.is-locked { overflow: hidden; }
 .js .hero-copy > :nth-child(2) { animation-delay: 0.33s; }
 .js .hero-copy > :nth-child(3) { animation-delay: 0.41s; }
 @keyframes rise-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-.hero-facts { margin-top: 8px; }
+.hero-facts { margin-top: 0; }
 /* the facts people ask first, on hairlines */
 .facts { display: grid; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .fact { display: grid; gap: 6px; padding: 18px 0; align-content: start; }

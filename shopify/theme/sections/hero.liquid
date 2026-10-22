@@ -1,7 +1,7 @@
 {%- comment -%}
-  The cover: one studio photo on pure white, so the photo has no edge and simply becomes the page;
-  where the photo is cut (the bottom), it fades out. The release, its dates and the way in sit beside
-  it (under it on phones), then a short strip of the facts people ask first.
+  The cover: one studio photo on pure white, so the photo has no edge and simply becomes the page.
+  The release, its dates and the way in sit beside it (under it on phones), then a short strip of the
+  facts people ask first.
 {%- endcomment -%}
 {%- liquid
   # Pre-order dates come from Theme settings → Pre-orders; once pre-orders close they stop showing.
@@ -41,15 +41,8 @@
       assign look = 'look-requiem'
       assign look_alt = 'A model in the Requiem Sweatpants lying on a white floor, the Neverhollow script across the back'
   endcase
-  # Photos cut off at the bottom (the model runs out of the frame) fade out there instead of stopping on a line.
-  assign fade = false
-  if section.settings.image != blank
-    assign fade = section.settings.fade_bottom
-  elsif look == 'look-requiem'
-    assign fade = true
-  endif
 -%}
-<section class="hero{% if fade %} hero--fade{% endif %}" aria-labelledby="hero-{{ section.id }}" data-hero>
+<section class="hero" aria-labelledby="hero-{{ section.id }}" data-hero>
   <a class="hero-photo" href="{{ shop_url }}" tabindex="-1" aria-hidden="true">
     {%- if section.settings.image != blank -%}
       {{ section.settings.image | image_url: width: 1600 | image_tag: widths: '720, 1100, 1600', sizes: '(min-width: 64rem) 45vw, 100vw', loading: 'eager', fetchpriority: 'high', alt: '', class: 'hero-img' }}
@@ -108,7 +101,6 @@
       ]
     },
     { "type": "image_picker", "id": "image", "label": "Or upload your own", "info": "A tall photo on a pure white background, so it blends into the page. Overrides the choice above." },
-    { "type": "checkbox", "id": "fade_bottom", "label": "Fade your photo's bottom edge", "info": "For a photo where the model runs off the bottom of the frame.", "default": true },
     { "type": "header", "content": "Words" },
     { "type": "text", "id": "heading", "label": "Brand name (read out by screen readers)", "default": "NEVERHOLLOW" },
     { "type": "text", "id": "tagline", "label": "Headline", "default": "Drop 001" },
