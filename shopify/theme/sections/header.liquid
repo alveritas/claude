@@ -20,6 +20,23 @@
   if current_tags contains 'Women' or current_tags contains 'women'
     assign on_women = true
   endif
+  # On a product page, the piece's own section (Men or Women) is the one that lights up.
+  if request.page_type == 'product'
+    if product.tags contains 'Men'
+      assign on_men = true
+    elsif product.tags contains 'Women'
+      assign on_women = true
+    endif
+  endif
+  # Each section lists only its own categories (types found among its pieces).
+  capture men_csv
+    render 'gender-types', tag: 'Men'
+  endcapture
+  capture women_csv
+    render 'gender-types', tag: 'Women'
+  endcapture
+  assign men_types = men_csv | strip | split: ','
+  assign women_types = women_csv | strip | split: ','
   assign on_shop = false
   if request.page_type == 'collection' or request.page_type == 'product'
     assign on_shop = true
@@ -40,16 +57,32 @@
           <a class="nav-link{% if on_shop %} is-active{% endif %}" href="{{ routes.all_products_collection_url }}"{% if on_shop %} aria-current="true"{% endif %}>Shop</a>
           <div class="mega" data-mega-panel>
             <div class="shell mega-inner">
-              <ul class="mega-list">
-                <li><a href="{{ routes.all_products_collection_url }}">All products</a></li>
-                {%- if has_men -%}<li><a href="{{ men_url }}">Men</a></li>{%- endif -%}
-                {%- if has_women -%}<li><a href="{{ women_url }}">Women</a></li>{%- endif -%}
-                {%- for type in live_types -%}
-                  {%- if type != blank -%}
-                    <li><a href="{{ type | url_for_type }}">{{ type }}</a></li>
-                  {%- endif -%}
-                {%- endfor -%}
-              </ul>
+              <div class="mega-cols">
+                {%- if has_men -%}
+                  <div class="mega-col">
+                    <p class="label mega-label">Men</p>
+                    <ul class="mega-list">
+                      <li><a href="{{ men_url }}">All men’s</a></li>
+                      {%- for type in men_types -%}<li><a href="{{ men_url }}+{{ type | handle }}">{{ type }}</a></li>{%- endfor -%}
+                    </ul>
+                  </div>
+                {%- endif -%}
+                {%- if has_women -%}
+                  <div class="mega-col">
+                    <p class="label mega-label">Women</p>
+                    <ul class="mega-list">
+                      <li><a href="{{ women_url }}">All women’s</a></li>
+                      {%- for type in women_types -%}<li><a href="{{ women_url }}+{{ type | handle }}">{{ type }}</a></li>{%- endfor -%}
+                    </ul>
+                  </div>
+                {%- endif -%}
+                <div class="mega-col">
+                  <p class="label mega-label">Shop</p>
+                  <ul class="mega-list">
+                    <li><a href="{{ routes.all_products_collection_url }}">All products</a></li>
+                  </ul>
+                </div>
+              </div>
               <ul class="mega-products">
                 {%- for p in collections.all.products limit: 3 -%}
                   {%- if p.featured_media -%}
@@ -139,19 +172,21 @@
     {%- assign n = 0 -%}
     <ul class="mobile-links">
       <li style="--i: {{ n }}"><a href="{{ routes.all_products_collection_url }}">Shop all</a></li>
-      {%- for type in live_types -%}
-        {%- if type != blank -%}
-          {%- assign n = n | plus: 1 -%}
-          <li class="sub" style="--i: {{ n }}"><a href="{{ type | url_for_type }}">{{ type }}</a></li>
-        {%- endif -%}
-      {%- endfor -%}
       {%- if has_men -%}
         {%- assign n = n | plus: 1 -%}
         <li style="--i: {{ n }}"><a href="{{ men_url }}">Men</a></li>
+        {%- for type in men_types -%}
+          {%- assign n = n | plus: 1 -%}
+          <li class="sub" style="--i: {{ n }}"><a href="{{ men_url }}+{{ type | handle }}">{{ type }}</a></li>
+        {%- endfor -%}
       {%- endif -%}
       {%- if has_women -%}
         {%- assign n = n | plus: 1 -%}
         <li style="--i: {{ n }}"><a href="{{ women_url }}">Women</a></li>
+        {%- for type in women_types -%}
+          {%- assign n = n | plus: 1 -%}
+          <li class="sub" style="--i: {{ n }}"><a href="{{ women_url }}+{{ type | handle }}">{{ type }}</a></li>
+        {%- endfor -%}
       {%- endif -%}
       {%- if menu.links.size > 0 -%}
         {%- for link in menu.links -%}

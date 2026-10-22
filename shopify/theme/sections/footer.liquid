@@ -23,9 +23,6 @@
           <li><a href="{{ routes.all_products_collection_url }}">All products</a></li>
           {%- if collections.all.all_tags contains 'Men' -%}<li><a href="{{ routes.all_products_collection_url }}/men">Men</a></li>{%- endif -%}
           {%- if collections.all.all_tags contains 'Women' -%}<li><a href="{{ routes.all_products_collection_url }}/women">Women</a></li>{%- endif -%}
-          {%- for type in live_types -%}
-            {%- if type != blank -%}<li><a href="{{ type | url_for_type }}">{{ type }}</a></li>{%- endif -%}
-          {%- endfor -%}
         </ul>
       </div>
 

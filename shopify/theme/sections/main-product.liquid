@@ -53,9 +53,23 @@
     <nav aria-label="Breadcrumb" class="breadcrumb muted">
       <ol>
         <li><a href="{{ routes.all_products_collection_url }}">Shop</a></li>
+        {%- liquid
+          assign crumb_g = ''
+          if product.tags contains 'Men'
+            assign crumb_g = 'Men'
+          elsif product.tags contains 'Women'
+            assign crumb_g = 'Women'
+          endif
+          assign crumb_g_handle = crumb_g | downcase
+          assign crumb_g_url = routes.all_products_collection_url | append: '/' | append: crumb_g_handle
+        -%}
+        {%- if crumb_g != blank -%}
+          <li aria-hidden="true">/</li>
+          <li><a href="{{ crumb_g_url }}">{{ crumb_g }}</a></li>
+        {%- endif -%}
         {%- if product.type != blank -%}
           <li aria-hidden="true">/</li>
-          <li><a href="{{ product.type | url_for_type }}">{{ product.type }}</a></li>
+          <li><a href="{% if crumb_g != blank %}{{ crumb_g_url }}+{{ product.type | handle }}{% else %}{{ product.type | url_for_type }}{% endif %}">{{ product.type }}</a></li>
         {%- endif -%}
         <li aria-hidden="true">/</li>
         <li aria-current="page">{{ product.title }}</li>

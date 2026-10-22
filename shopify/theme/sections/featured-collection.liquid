@@ -1,3 +1,7 @@
+{%- comment -%}
+  A row of pieces from a collection, newest first. With a tag (Men or Women) it shows only that
+  section's pieces and links to that section; four to a row on larger screens, two on phones.
+{%- endcomment -%}
 {%- liquid
   assign collection = section.settings.collection
   if collection == blank
@@ -6,40 +10,58 @@
   if collection == blank or collection.products_count == 0
     assign collection = collections.all
   endif
+  assign tag = section.settings.tag | strip
   assign limit = section.settings.limit
-  assign n = collection.products.size
+
+  # the pieces this row may show (all of them, or only those carrying the tag)
+  assign total = 0
+  for product in collection.products
+    if tag == blank or product.tags contains tag
+      assign total = total | plus: 1
+    endif
+  endfor
+  assign n = total
   if n > limit
     assign n = limit
   endif
-  # Four to a row on larger screens, two on phones; an odd count opens with one wide card on phones.
   assign odd = n | modulo: 2
+
+  assign view_all = collection.url
+  if tag != blank
+    assign tag_handle = tag | handle
+    assign view_all = routes.all_products_collection_url | append: '/' | append: tag_handle
+  endif
 -%}
-<section class="shell section-pad" aria-labelledby="featured-{{ section.id }}">
+<section class="shell section-pad featured" aria-labelledby="featured-{{ section.id }}">
   <div class="section-head">
     <div>
       <h2 id="featured-{{ section.id }}" class="section-title">{{ section.settings.heading | escape }}</h2>
-      <p class="section-sub muted">{% if section.settings.subheading != blank %}{{ section.settings.subheading | escape }}{% else %}{{ collection.products_count }} {% if collection.products_count == 1 %}piece{% else %}pieces{% endif %}{% if settings.preorder_enabled %}, made to order{% endif %}{% endif %}</p>
+      <p class="section-sub muted">{% if section.settings.subheading != blank %}{{ section.settings.subheading | escape }}{% else %}{{ total }} {% if total == 1 %}piece{% else %}pieces{% endif %}{% if settings.preorder_enabled %}, made to order{% endif %}{% endif %}</p>
     </div>
-    <a class="text-link section-link" href="{{ collection.url }}">Shop all</a>
+    <a class="text-link section-link" href="{{ view_all }}">{% if tag != blank %}Shop all {{ tag | downcase }}’s{% else %}Shop all{% endif %}</a>
   </div>
   {%- if n > 0 -%}
     <div class="grid grid--4 featured-grid">
-      {%- for product in collection.products limit: limit -%}
+      {%- assign shown = 0 -%}
+      {%- for product in collection.products -%}
+        {%- if tag != blank -%}{%- unless product.tags contains tag -%}{%- continue -%}{%- endunless -%}{%- endif -%}
+        {%- if shown >= limit -%}{%- break -%}{%- endif -%}
         {%- liquid
           assign cls = ''
           assign card_sizes = '(min-width: 1024px) 25vw, 50vw'
-          if forloop.first and odd == 1
+          if shown == 0 and odd == 1
             assign cls = 'span-mobile'
             assign card_sizes = '(min-width: 1024px) 25vw, 100vw'
           endif
           assign eager = false
-          if forloop.index <= 4
+          if shown < 4
             assign eager = true
           endif
         -%}
         <div class="grid-cell {{ cls }}">
-          {% render 'product-card', product: product, sizes: card_sizes, eager: eager, index: forloop.index0 %}
+          {% render 'product-card', product: product, sizes: card_sizes, eager: eager, index: shown %}
         </div>
+        {%- assign shown = shown | plus: 1 -%}
       {%- endfor -%}
     </div>
   {%- else -%}
@@ -55,6 +77,7 @@
     { "type": "text", "id": "heading", "label": "Heading", "default": "Drop 001" },
     { "type": "text", "id": "subheading", "label": "Subheading" },
     { "type": "collection", "id": "collection", "label": "Collection", "info": "Leave empty for the Drop 001 collection (or all products)." },
+    { "type": "text", "id": "tag", "label": "Only pieces tagged", "info": "Men or Women shows just that section, with a link to it. Leave empty for every piece." },
     { "type": "range", "id": "limit", "label": "Products shown", "min": 2, "max": 12, "step": 1, "default": 8 }
   ],
   "presets": [{ "name": "Featured products" }]

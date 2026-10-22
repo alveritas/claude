@@ -1,0 +1,22 @@
+{%- comment -%}
+  Prints the product types found among the pieces tagged with `tag` (Men or Women), comma separated,
+  e.g. "Bottoms,Hoodies,Tops". Capture it and split on commas:
+  {% capture men_types %}{% render 'gender-types', tag: 'Men' %}{% endcapture %}
+{%- endcomment -%}
+{%- liquid
+  assign out = ''
+  for p in collections.all.products
+    if p.tags contains tag and p.type != blank
+      assign key = ',' | append: p.type | append: ','
+      assign probe = ',' | append: out | append: ','
+      unless probe contains key
+        if out != blank
+          assign out = out | append: ','
+        endif
+        assign out = out | append: p.type
+      endunless
+    endif
+  endfor
+  assign sorted = out | split: ',' | sort | join: ','
+  echo sorted
+-%}

@@ -200,6 +200,8 @@ textarea.field { height: auto; padding: 12px 14px; resize: vertical; }
 .section-head .muted, .section-sub { margin-top: 8px; font-size: 0.875rem; }
 .section-head .text-link.caps { padding-top: 6px; }
 .section-link { font-size: 0.875rem; font-weight: 500; white-space: nowrap; }
+/* two rows in a row (Women, then Men) sit closer together */
+.section-featured + .section-featured .featured { padding-top: 8px; }
 @media (min-width: 48rem) { .section-head { margin-bottom: 32px; } }
 .narrow > :not(.page-title):not(.label) { max-width: 46rem; }
 
@@ -258,6 +260,8 @@ body.is-scrolled .site-header::after { opacity: 1; }
 .mega { position: absolute; left: 0; right: 0; top: 100%; background: var(--white); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); opacity: 0; visibility: hidden; transform: translateY(-6px); transition: opacity 0.3s var(--ease), transform 0.3s var(--ease), visibility 0.3s; }
 .has-mega.is-open .mega { opacity: 1; visibility: visible; transform: none; }
 .mega-inner { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 48px; padding-top: 28px; padding-bottom: 36px; }
+.mega-cols { display: flex; gap: 72px; align-items: flex-start; }
+.mega-label { color: var(--grey); margin-bottom: 10px; }
 .mega-list { display: grid; gap: 2px; align-content: start; }
 .mega-list a { display: inline-block; font-size: 0.9375rem; padding: 6px 0; }
 @media (hover: hover) { .mega-list a:hover { color: var(--grey); } }
@@ -609,8 +613,14 @@ body.is-locked { overflow: hidden; }
 .collection-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
 .collection-head .muted { font-size: 0.875rem; white-space: nowrap; padding-bottom: 4px; }
 .collection-desc { margin-top: 14px; max-width: 60ch; color: var(--grey); }
-.toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin: 24px 0 24px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.toolbar { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; margin: 24px 0 24px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.tab-rows { display: grid; gap: 14px; min-width: 0; max-width: 100%; }
 .tabs { display: flex; gap: 22px; overflow-x: auto; scrollbar-width: none; max-width: 100%; }
+/* inside Men or Women: that section's own categories */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; align-items: center; min-height: 34px; padding: 0 14px; border: 1px solid var(--line-mid); font-size: 0.8125rem; white-space: nowrap; transition: border-color 0.25s var(--ease), background-color 0.25s var(--ease), color 0.25s var(--ease); }
+@media (hover: hover) { .chip:hover { border-color: var(--black); } }
+.chip.is-active { background: var(--black); border-color: var(--black); color: var(--white); }
 .tab { position: relative; font-size: 0.9375rem; padding: 8px 0; white-space: nowrap; color: var(--grey); transition: color 0.25s var(--ease); }
 @media (hover: hover) { .tab:hover { color: var(--black); } }
 .tab.is-active { color: var(--black); }

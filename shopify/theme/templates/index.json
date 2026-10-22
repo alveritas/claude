@@ -9,10 +9,20 @@
       "settings": {},
       "disabled": true
     },
-    "featured": {
+    "featured_women": {
       "type": "featured-collection",
       "settings": {
-        "limit": 8
+        "heading": "Women",
+        "tag": "Women",
+        "limit": 4
+      }
+    },
+    "featured_men": {
+      "type": "featured-collection",
+      "settings": {
+        "heading": "Men",
+        "tag": "Men",
+        "limit": 4
       }
     },
     "categories": {
@@ -69,7 +79,8 @@
   "order": [
     "hero",
     "ticker",
-    "featured",
+    "featured_women",
+    "featured_men",
     "categories",
     "editorial",
     "spotlight",
