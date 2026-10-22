@@ -2,23 +2,27 @@
   assign brand = settings.brand_name | default: shop.name
   assign live_types = collections.all.products | map: 'type' | uniq | sort
   assign menu = linklists[section.settings.menu]
-  assign women_url = routes.all_products_collection_url | append: '/women'
-  assign men_url = routes.all_products_collection_url | append: '/men'
+  # Men and Women are collections of their own (/collections/men, /collections/women).
+  assign men_c = collections['men']
+  assign women_c = collections['women']
   assign has_men = false
-  if collections.all.all_tags contains 'Men'
+  assign has_women = false
+  if men_c != blank and men_c.products_count > 0
     assign has_men = true
+    assign men_url = men_c.url
+  endif
+  if women_c != blank and women_c.products_count > 0
+    assign has_women = true
+    assign women_url = women_c.url
   endif
   assign on_men = false
-  if current_tags contains 'Men' or current_tags contains 'men'
-    assign on_men = true
-  endif
-  assign has_women = false
-  if collections.all.all_tags contains 'Women'
-    assign has_women = true
-  endif
   assign on_women = false
-  if current_tags contains 'Women' or current_tags contains 'women'
-    assign on_women = true
+  if request.page_type == 'collection'
+    if collection.handle == 'men'
+      assign on_men = true
+    elsif collection.handle == 'women'
+      assign on_women = true
+    endif
   endif
   # On a product page, the piece's own section (Men or Women) is the one that lights up.
   if request.page_type == 'product'
@@ -63,7 +67,7 @@
                     <p class="label mega-label">Men</p>
                     <ul class="mega-list">
                       <li><a href="{{ men_url }}">All men’s</a></li>
-                      {%- for type in men_types -%}<li><a href="{{ men_url }}+{{ type | handle }}">{{ type }}</a></li>{%- endfor -%}
+                      {%- for type in men_types -%}<li><a href="{{ men_url }}/{{ type | handle }}">{{ type }}</a></li>{%- endfor -%}
                     </ul>
                   </div>
                 {%- endif -%}
@@ -72,7 +76,7 @@
                     <p class="label mega-label">Women</p>
                     <ul class="mega-list">
                       <li><a href="{{ women_url }}">All women’s</a></li>
-                      {%- for type in women_types -%}<li><a href="{{ women_url }}+{{ type | handle }}">{{ type }}</a></li>{%- endfor -%}
+                      {%- for type in women_types -%}<li><a href="{{ women_url }}/{{ type | handle }}">{{ type }}</a></li>{%- endfor -%}
                     </ul>
                   </div>
                 {%- endif -%}
@@ -177,7 +181,7 @@
         <li style="--i: {{ n }}"><a href="{{ men_url }}">Men</a></li>
         {%- for type in men_types -%}
           {%- assign n = n | plus: 1 -%}
-          <li class="sub" style="--i: {{ n }}"><a href="{{ men_url }}+{{ type | handle }}">{{ type }}</a></li>
+          <li class="sub" style="--i: {{ n }}"><a href="{{ men_url }}/{{ type | handle }}">{{ type }}</a></li>
         {%- endfor -%}
       {%- endif -%}
       {%- if has_women -%}
@@ -185,7 +189,7 @@
         <li style="--i: {{ n }}"><a href="{{ women_url }}">Women</a></li>
         {%- for type in women_types -%}
           {%- assign n = n | plus: 1 -%}
-          <li class="sub" style="--i: {{ n }}"><a href="{{ women_url }}+{{ type | handle }}">{{ type }}</a></li>
+          <li class="sub" style="--i: {{ n }}"><a href="{{ women_url }}/{{ type | handle }}">{{ type }}</a></li>
         {%- endfor -%}
       {%- endif -%}
       {%- if menu.links.size > 0 -%}

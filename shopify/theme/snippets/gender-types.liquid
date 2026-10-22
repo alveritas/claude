@@ -1,6 +1,7 @@
 {%- comment -%}
-  Prints the product types found among the pieces tagged with `tag` (Men or Women), comma separated,
-  e.g. "Bottoms,Hoodies,Tops". Capture it and split on commas:
+  Prints the product types among the pieces tagged `tag` (Men or Women), comma separated, e.g.
+  "Bottoms,Hoodies,Tops". Reads every piece (not the page's own, possibly filtered, collection), so the
+  list is the same on /collections/men and /collections/men/tops. Capture it and split on commas:
   {% capture men_types %}{% render 'gender-types', tag: 'Men' %}{% endcapture %}
 {%- endcomment -%}
 {%- liquid

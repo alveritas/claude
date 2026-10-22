@@ -1,28 +1,29 @@
 {%- liquid
   assign sort_by = collection.sort_by | default: collection.default_sort_by
   assign all_url = routes.all_products_collection_url
-  # Men's and women's pieces are tagged "Men" and "Women"; /collections/all/men and /women list just those.
+  # Men and Women are collections of their own (/collections/men, /collections/women); All is /collections/all.
+  assign men_c = collections['men']
+  assign women_c = collections['women']
   assign has_men = false
-  if collections.all.all_tags contains 'Men'
+  assign has_women = false
+  if men_c != blank and men_c.products_count > 0
     assign has_men = true
   endif
-  assign on_men = false
-  if current_tags contains 'Men' or current_tags contains 'men'
-    assign on_men = true
-  endif
-  assign has_women = false
-  if collections.all.all_tags contains 'Women'
+  if women_c != blank and women_c.products_count > 0
     assign has_women = true
   endif
+  assign on_men = false
   assign on_women = false
-  if current_tags contains 'Women' or current_tags contains 'women'
+  if collection.handle == 'men'
+    assign on_men = true
+  elsif collection.handle == 'women'
     assign on_women = true
   endif
   assign on_all = false
-  if collection.handle == 'all' and on_women == false and on_men == false
+  if collection.handle == 'all'
     assign on_all = true
   endif
-  # Inside Men or Women, the categories are only that section's own (e.g. /collections/all/men+tops).
+  # Inside Men or Women, the categories are only that section's own (e.g. /collections/men/tops).
   assign g = ''
   if on_men
     assign g = 'Men'
@@ -42,12 +43,11 @@
         assign on_type = t
       endif
     endfor
-    assign g_handle = g | downcase
-    assign g_url = all_url | append: '/' | append: g_handle
+    assign g_url = collection.url
   endif
   assign page_heading = collection.title
   if g != blank
-    assign page_heading = g
+    assign page_heading = collection.title
     if on_type != blank
       assign page_heading = g | append: '’s ' | append: on_type | downcase | capitalize
     endif
@@ -67,17 +67,17 @@
     <nav class="tabs" aria-label="Sections">
       <a class="tab{% if on_all %} is-active{% endif %}" href="{{ all_url }}"{% if on_all %} aria-current="page"{% endif %}>All</a>
       {%- if has_men -%}
-        <a class="tab{% if on_men %} is-active{% endif %}" href="{{ all_url }}/men"{% if on_men %} aria-current="page"{% endif %}>Men</a>
+        <a class="tab{% if on_men %} is-active{% endif %}" href="{{ men_c.url }}"{% if on_men %} aria-current="page"{% endif %}>Men</a>
       {%- endif -%}
       {%- if has_women -%}
-        <a class="tab{% if on_women %} is-active{% endif %}" href="{{ all_url }}/women"{% if on_women %} aria-current="page"{% endif %}>Women</a>
+        <a class="tab{% if on_women %} is-active{% endif %}" href="{{ women_c.url }}"{% if on_women %} aria-current="page"{% endif %}>Women</a>
       {%- endif -%}
     </nav>
     {%- if g != blank and g_types.size > 1 -%}
       <nav class="chips" aria-label="{{ g }}’s categories">
         <a class="chip{% if on_type == blank %} is-active{% endif %}" href="{{ g_url }}"{% if on_type == blank %} aria-current="page"{% endif %}>All {{ g | downcase }}’s</a>
         {%- for t in g_types -%}
-          <a class="chip{% if on_type == t %} is-active{% endif %}" href="{{ g_url }}+{{ t | handle }}"{% if on_type == t %} aria-current="page"{% endif %}>{{ t }}</a>
+          <a class="chip{% if on_type == t %} is-active{% endif %}" href="{{ g_url }}/{{ t | handle }}"{% if on_type == t %} aria-current="page"{% endif %}>{{ t }}</a>
         {%- endfor -%}
       </nav>
     {%- endif -%}

@@ -30,6 +30,10 @@
   if tag != blank
     assign tag_handle = tag | handle
     assign view_all = routes.all_products_collection_url | append: '/' | append: tag_handle
+    # a collection with the tag's name (Men, Women) is that section's own page
+    if collections[tag_handle].products_count > 0
+      assign view_all = collections[tag_handle].url
+    endif
   endif
 -%}
 <section class="shell section-pad featured" aria-labelledby="featured-{{ section.id }}">

@@ -24,18 +24,18 @@
       endif
     endif
   endif
-  # The two buttons default to the women's and men's pieces (products tagged Women / Men); a link set in
-  # the editor wins, and with nothing tagged they fall back to every piece.
+  # The two buttons default to the Women and Men collections; a link set in the editor wins, and
+  # without those collections they fall back to every piece.
   assign shop_url = routes.all_products_collection_url
-  if collections.all.all_tags contains 'Women'
-    assign shop_url = routes.all_products_collection_url | append: '/women'
+  if collections['women'].products_count > 0
+    assign shop_url = collections['women'].url
   endif
   if section.settings.primary_link != blank
     assign shop_url = section.settings.primary_link
   endif
   assign second_url = routes.all_products_collection_url
-  if collections.all.all_tags contains 'Men'
-    assign second_url = routes.all_products_collection_url | append: '/men'
+  if collections['men'].products_count > 0
+    assign second_url = collections['men'].url
   endif
   if section.settings.secondary_link != blank
     assign second_url = section.settings.secondary_link
@@ -119,9 +119,9 @@
     { "type": "text", "id": "tagline", "label": "Headline", "default": "Drop 001" },
     { "type": "text", "id": "status", "label": "Line under the headline", "info": "Shown only when pre-orders are off. While they're on, the pre-order and ship-by dates show here instead." },
     { "type": "text", "id": "primary_label", "label": "Button", "default": "Shop women" },
-    { "type": "url", "id": "primary_link", "label": "Button link", "info": "Leave empty for the women's pieces (products tagged Women)." },
+    { "type": "url", "id": "primary_link", "label": "Button link", "info": "Leave empty for the Women collection." },
     { "type": "text", "id": "secondary_label", "label": "Second button", "default": "Shop men" },
-    { "type": "url", "id": "secondary_link", "label": "Second button link", "info": "Leave empty for the men's pieces (products tagged Men)." },
+    { "type": "url", "id": "secondary_link", "label": "Second button link", "info": "Leave empty for the Men collection." },
     { "type": "checkbox", "id": "show_facts", "label": "Show shipping, how it's made and contact under the cover", "default": true }
   ],
   "presets": [{ "name": "Cover" }]
