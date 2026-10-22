@@ -177,7 +177,7 @@ textarea.field { height: auto; padding: 12px 14px; resize: vertical; }
 /* Every photo sits on one light grey studio tile, so the pieces read as a set rather than floating on the page.
    The photos have pure white backdrops; multiplied onto the tile, the backdrop takes the tile's tone and the
    clothes, skin and shadows stay exactly as shot. */
-.card-img, .gallery-img, .cart-thumb img, .search-hit-img img, .mega-img img, .editorial-img, .hero-img, .cat-img, .spot-slide img, .spot-thumb img { mix-blend-mode: multiply; }
+.card-img, .gallery-img, .cart-thumb img, .search-hit-img img, .mega-img img, .editorial-img, .cat-img, .spot-slide img, .spot-thumb img { mix-blend-mode: multiply; }
 .slab { background: var(--black); color: var(--white); }
 .slab .muted { color: var(--grey-on-black); }
 .tag { position: absolute; left: 10px; top: 10px; z-index: 2; font-size: 0.625rem; font-weight: 500; text-transform: uppercase; letter-spacing: var(--track); line-height: 1; padding: 6px 7px 5px; background: rgb(255 255 255 / 0.92); color: var(--black); }
@@ -328,29 +328,34 @@ body.is-scrolled .site-header::after { opacity: 1; }
 .search-all { margin-top: 20px; }
 body.is-locked { overflow: hidden; }
 
-/* ── Cover: two studio photos side by side on one seamless tile, then the release and the way in ── */
-.hero { background: var(--white); }
-.hero-spread { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: var(--tile); }
-.hero-look { position: relative; display: block; aspect-ratio: 2 / 3; overflow: hidden; }
-.hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; animation: hero-in 1.6s var(--ease-out) both; }
-.hero-look + .hero-look .hero-img { animation-delay: 0.12s; }
+/* ── Cover: one studio photo on pure white, so it has no edge and simply becomes the page; the words
+   beside it (under it on phones). A photo cut off at the bottom fades out there (a mask, not a white
+   wash, so the photo itself is never lightened). ── */
+.hero { display: grid; background: var(--white); }
+.hero-photo { position: relative; display: block; aspect-ratio: 3 / 4; overflow: hidden; background: var(--white); }
+.hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; animation: hero-in 1.8s var(--ease-out) both; }
+.hero--fade .hero-img { -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent 99%); mask-image: linear-gradient(to bottom, #000 80%, transparent 99%); }
 @keyframes hero-in { from { opacity: 0; transform: scale(1.03); } to { opacity: 1; transform: none; } }
 @keyframes hero-settle { from { transform: scale(1.03); } }
-@media (min-width: 40rem) { .hero-look { aspect-ratio: 3 / 4; } }
-/* larger screens: both photos whole, standing on the same floor, sized so the headline shows on the first screen */
+@media (min-width: 40rem) and (max-width: 63.99rem) { .hero-photo { aspect-ratio: 1 / 1; } }
+.hero-copy { display: grid; justify-items: center; text-align: center; gap: 12px; padding-top: 28px; padding-bottom: 44px; }
+.hero-title { font-size: clamp(2.25rem, 5.5vw, 5.25rem); font-weight: 400; letter-spacing: -0.035em; line-height: 1; }
+.hero-sub { font-size: 0.9375rem; color: var(--grey); max-width: 44ch; }
+.hero-sub > span { display: block; }
+.hero-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 14px; }
+/* larger screens: the words and the photo side by side, centred as one composition, the photo as tall as the first screen */
 @media (min-width: 64rem) {
-  .hero-look { aspect-ratio: auto; height: clamp(520px, calc(100svh - var(--top-h) - 150px), 920px); }
-  .hero-img { object-fit: contain; object-position: 50% 100%; }
+  .hero { --hero-h: clamp(560px, calc(100svh - var(--top-h)), 980px); grid-template-columns: minmax(0, 1fr) minmax(0, 30rem) calc(var(--hero-h) * 0.75) minmax(0, 1fr); column-gap: clamp(32px, 4vw, 80px); height: var(--hero-h); }
+  .hero-photo { grid-column: 3; grid-row: 1; aspect-ratio: auto; height: 100%; }
+  .hero-copy { grid-column: 2; grid-row: 1; margin: 0; max-width: none; align-content: center; justify-items: start; text-align: left; gap: 16px; padding: 0 0 64px; }
+  .hero-sub { font-size: 1rem; }
+  .hero-buttons { justify-content: flex-start; }
 }
-.hero-copy { display: grid; justify-items: center; text-align: center; gap: 12px; padding-top: 36px; padding-bottom: 40px; }
-.hero-title { font-size: clamp(2.25rem, 5vw, 4rem); font-weight: 400; letter-spacing: -0.03em; line-height: 1.05; }
-.hero-sub { font-size: 0.9375rem; color: var(--grey); max-width: 62ch; }
-.hero-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 12px; }
-@media (min-width: 48rem) { .hero-copy { padding-top: 44px; padding-bottom: 52px; } }
 .js .hero-copy > * { animation: rise-in 0.9s var(--ease-out) both; animation-delay: 0.25s; }
 .js .hero-copy > :nth-child(2) { animation-delay: 0.33s; }
 .js .hero-copy > :nth-child(3) { animation-delay: 0.41s; }
 @keyframes rise-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.hero-facts { margin-top: 8px; }
 /* the facts people ask first, on hairlines */
 .facts { display: grid; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .fact { display: grid; gap: 6px; padding: 18px 0; align-content: start; }
