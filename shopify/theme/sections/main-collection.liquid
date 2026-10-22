@@ -2,7 +2,15 @@
 {%- liquid
   assign sort_by = collection.sort_by | default: collection.default_sort_by
   assign all_url = routes.all_products_collection_url
-  # Women's pieces are tagged "Women"; /collections/all/women lists just those.
+  # Men's and women's pieces are tagged "Men" and "Women"; /collections/all/men and /women list just those.
+  assign has_men = false
+  if collections.all.all_tags contains 'Men'
+    assign has_men = true
+  endif
+  assign on_men = false
+  if current_tags contains 'Men' or current_tags contains 'men'
+    assign on_men = true
+  endif
   assign has_women = false
   if collections.all.all_tags contains 'Women'
     assign has_women = true
@@ -12,13 +20,13 @@
     assign on_women = true
   endif
   assign on_all = false
-  if collection.handle == 'all' and on_women == false
+  if collection.handle == 'all' and on_women == false and on_men == false
     assign on_all = true
   endif
 -%}
 <section class="shell page-pad" data-collection>
   <div class="collection-head">
-    <h1 class="page-title">{% if on_women %}Women{% elsif collection.handle == 'all' %}All products{% else %}{{ collection.title }}{% endif %}</h1>
+    <h1 class="page-title">{% if on_men %}Men{% elsif on_women %}Women{% elsif collection.handle == 'all' %}All products{% else %}{{ collection.title }}{% endif %}</h1>
     <p class="muted collection-count">{{ collection.products_count }} {% if collection.products_count == 1 %}piece{% else %}pieces{% endif %}</p>
   </div>
   {%- if collection.description != blank -%}<div class="muted rte collection-desc">{{ collection.description }}</div>{%- endif -%}
@@ -26,6 +34,9 @@
   <div class="toolbar">
   <nav class="tabs" aria-label="Categories">
     <a class="tab{% if on_all %} is-active{% endif %}" href="{{ all_url }}"{% if on_all %} aria-current="page"{% endif %}>All</a>
+    {%- if has_men -%}
+      <a class="tab{% if on_men %} is-active{% endif %}" href="{{ all_url }}/men"{% if on_men %} aria-current="page"{% endif %}>Men</a>
+    {%- endif -%}
     {%- if has_women -%}
       <a class="tab{% if on_women %} is-active{% endif %}" href="{{ all_url }}/women"{% if on_women %} aria-current="page"{% endif %}>Women</a>
     {%- endif -%}

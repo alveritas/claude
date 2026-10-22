@@ -18,7 +18,7 @@
   <div class="section-head">
     <div>
       <h2 id="featured-{{ section.id }}" class="section-title">{{ section.settings.heading | escape }}</h2>
-      <p class="section-sub muted">{% if section.settings.subheading != blank %}{{ section.settings.subheading | escape }}{% else %}{{ n }} {% if n == 1 %}piece{% else %}pieces{% endif %}{% if settings.preorder_enabled %}, made to order{% endif %}{% endif %}</p>
+      <p class="section-sub muted">{% if section.settings.subheading != blank %}{{ section.settings.subheading | escape }}{% else %}{{ collection.products_count }} {% if collection.products_count == 1 %}piece{% else %}pieces{% endif %}{% if settings.preorder_enabled %}, made to order{% endif %}{% endif %}</p>
     </div>
     <a class="text-link section-link" href="{{ collection.url }}">Shop all</a>
   </div>
