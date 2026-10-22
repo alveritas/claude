@@ -61,7 +61,7 @@ P = [
        fit="Straight leg with an elastic waistband.",
        colors=[("Obsidian", [(MEDIA+"requiem-01-flat.jpg","Requiem Sweatpants in Obsidian and Bone laid flat, with the Neverhollow script across the back"),
                              (MEDIA+"requiem-02-standing.jpg","A model in the Requiem Sweatpants in Obsidian, standing, seen from the back with the Neverhollow script"),
-                             (MEDIA+"requiem-03-lying.jpg","A model in the Requiem Sweatpants in Obsidian lying on a white floor, with the script across the back"),
+                             (MEDIA+"requiem-05-lying.jpg","A model in the Requiem Sweatpants in Obsidian lying on a white floor, with the script across the back"),
                              (MEDIA+"requiem-04-seated.jpg","A model in the Requiem Sweatpants in Obsidian sitting on a white floor")]),
                ("Bone", [])]),
   dict(handle="sigil-hoodie", title="Sigil Hoodie", type="Hoodies", price="120.00", sizes=SIZES, size_name="Size",
