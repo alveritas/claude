@@ -11,8 +11,8 @@
         <p class="muted small">{{ section.settings.signup_text }}</p>
         {% render 'newsletter-form', form_id: 'newsletter-footer', compact: true %}
       {%- else -%}
-        <p class="footer-heading">Independent unisex streetwear</p>
-        <p class="muted small">Made in small runs. Sold first to the people on the list.</p>
+        <p class="footer-heading">{{ brand }}</p>
+        <p class="muted small">{{ section.settings.brand_text | escape }}</p>
       {%- endunless -%}
     </div>
 
@@ -21,6 +21,7 @@
         <p class="label footer-label">Shop</p>
         <ul>
           <li><a href="{{ routes.all_products_collection_url }}">All products</a></li>
+          {%- if collections.all.all_tags contains 'Women' -%}<li><a href="{{ routes.all_products_collection_url }}/women">Women</a></li>{%- endif -%}
           {%- for type in live_types -%}
             {%- if type != blank -%}<li><a href="{{ type | url_for_type }}">{{ type }}</a></li>{%- endif -%}
           {%- endfor -%}
@@ -74,8 +75,9 @@
   "name": "Footer",
   "class": "section-footer",
   "settings": [
-    { "type": "text", "id": "signup_heading", "label": "Sign-up heading", "default": "Join the list" },
-    { "type": "text", "id": "signup_text", "label": "Sign-up text", "default": "One email when something new drops or comes back." }
+    { "type": "text", "id": "signup_heading", "label": "Sign-up heading", "default": "Mailing list" },
+    { "type": "text", "id": "signup_text", "label": "Sign-up text", "default": "New releases and restocks, by email." },
+    { "type": "textarea", "id": "brand_text", "label": "Brand line (homepage)", "default": "An independent clothing label. Drop 001 is made to order in one production run." }
   ]
 }
 {% endschema %}

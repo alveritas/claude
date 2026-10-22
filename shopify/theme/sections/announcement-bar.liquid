@@ -33,6 +33,11 @@
           assign t = po_line
           assign swapped = true
         endif
+        # "Worldwide shipping" also says where shipping is free (Theme settings → Free shipping bar).
+        if t_down == 'worldwide shipping' and settings.free_shipping_threshold > 0
+          assign free_from = settings.free_shipping_threshold | times: 100 | money_without_trailing_zeros
+          assign t = 'Worldwide shipping. Free ' | append: settings.free_shipping_where | append: ' over ' | append: free_from
+        endif
       -%}
       <p class="ann-msg{% if forloop.first %} is-active{% endif %}" {{ block.shopify_attributes }}>
         {%- if block.settings.link != blank -%}

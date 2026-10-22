@@ -21,7 +21,7 @@
         "type": "text",
         "id": "brand_tagline",
         "label": "Tagline (used in the browser tab on the homepage)",
-        "default": "An identity without explanation."
+        "default": "Official store"
       },
       {
         "type": "textarea",
@@ -166,7 +166,7 @@
         "type": "checkbox",
         "id": "intro_enabled",
         "label": "Logo intro on the first page of a visit",
-        "default": true
+        "default": false
       }
     ]
   }

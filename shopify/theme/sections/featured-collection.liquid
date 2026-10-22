@@ -11,43 +11,29 @@
   if n > limit
     assign n = limit
   endif
+  # Four to a row on larger screens, two on phones; an odd count opens with one wide card on phones.
   assign odd = n | modulo: 2
-  # On larger screens the grid has six tracks: three to a row, and when the count doesn't divide by
-  # three the first pieces (the newest) go two to a row, larger, so every row is full.
-  assign rem = n | modulo: 3
-  assign big = 0
-  if rem == 2
-    assign big = 2
-  elsif rem == 1 and n > 1
-    assign big = 4
-  elsif n == 1
-    assign big = 1
-  endif
 -%}
 <section class="shell section-pad" aria-labelledby="featured-{{ section.id }}">
   <div class="section-head">
     <div>
-      <h2 id="featured-{{ section.id }}" class="section-title" data-rise><span>{{ section.settings.heading | escape }}</span></h2>
-      <p class="muted small">{% if section.settings.subheading != blank %}{{ section.settings.subheading | escape }}{% else %}{{ n }} {% if n == 1 %}piece{% else %}pieces{% endif %}{% if settings.preorder_enabled %}, made to order{% endif %}{% endif %}</p>
+      <h2 id="featured-{{ section.id }}" class="section-title">{{ section.settings.heading | escape }}</h2>
+      <p class="section-sub muted">{% if section.settings.subheading != blank %}{{ section.settings.subheading | escape }}{% else %}{{ n }} {% if n == 1 %}piece{% else %}pieces{% endif %}{% if settings.preorder_enabled %}, made to order{% endif %}{% endif %}</p>
     </div>
-    <a class="text-link caps" href="{{ collection.url }}">View all</a>
+    <a class="text-link section-link" href="{{ collection.url }}">Shop all</a>
   </div>
   {%- if n > 0 -%}
-    <div class="grid featured-grid grid--six">
+    <div class="grid grid--4 featured-grid">
       {%- for product in collection.products limit: limit -%}
         {%- liquid
-          assign cls = 'span-third'
-          assign card_sizes = '(min-width: 768px) 33vw, 50vw'
-          if forloop.index <= big
-            assign cls = 'span-half'
-            assign card_sizes = '(min-width: 768px) 50vw, 50vw'
-          endif
+          assign cls = ''
+          assign card_sizes = '(min-width: 1024px) 25vw, 50vw'
           if forloop.first and odd == 1
-            assign cls = cls | append: ' span-mobile'
-            assign card_sizes = card_sizes | replace: ', 50vw', ', 100vw'
+            assign cls = 'span-mobile'
+            assign card_sizes = '(min-width: 1024px) 25vw, 100vw'
           endif
           assign eager = false
-          if forloop.index <= 2
+          if forloop.index <= 4
             assign eager = true
           endif
         -%}
@@ -66,7 +52,7 @@
   "name": "Featured products",
   "class": "section-featured",
   "settings": [
-    { "type": "text", "id": "heading", "label": "Heading", "default": "DROP 001" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Drop 001" },
     { "type": "text", "id": "subheading", "label": "Subheading" },
     { "type": "collection", "id": "collection", "label": "Collection", "info": "Leave empty for the Drop 001 collection (or all products)." },
     { "type": "range", "id": "limit", "label": "Products shown", "min": 2, "max": 12, "step": 1, "default": 8 }

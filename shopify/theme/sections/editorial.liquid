@@ -1,24 +1,24 @@
 {%- comment -%}
-  The statement, then two studio photos side by side. Quiet on purpose: the words are short and the
-  photos carry it.
+  The brand in a few lines beside two studio photos (under them on phones).
 {%- endcomment -%}
-<section class="editorial" aria-labelledby="editorial-{{ section.id }}">
-  <div class="shell editorial-copy">
-    <h2 id="editorial-{{ section.id }}" class="statement editorial-title" data-rise><span>{{ section.settings.heading | escape }}</span></h2>
+<section class="editorial shell section-pad" aria-labelledby="editorial-{{ section.id }}">
+  <div class="editorial-copy">
+    <p class="caps editorial-eyebrow">{{ section.settings.eyebrow | escape }}</p>
+    <h2 id="editorial-{{ section.id }}" class="editorial-title">{{ section.settings.heading | escape }}</h2>
     <p class="editorial-body">{{ section.settings.body | escape }}</p>
-    <a href="{{ section.settings.link | default: '/pages/about' }}" class="text-link caps">{{ section.settings.button | escape }}</a>
+    <a href="{{ section.settings.link | default: '/pages/about' }}" class="btn btn-line">{{ section.settings.button | escape }}</a>
   </div>
   <div class="editorial-figures" aria-hidden="true">
-    {%- assign defaults = 'ed-vesper,ed-veil' | split: ',' -%}
+    {%- assign defaults = 'ed-spine-seated,ed-cathedral-seated' | split: ',' -%}
     {%- for i in (1..2) -%}
       {%- assign key = 'image_' | append: i -%}
       {%- assign img = section.settings[key] -%}
       {%- assign idx = i | minus: 1 -%}
-      <div class="editorial-fig" data-reveal style="--d: {{ idx | times: 0.12 }}s">
+      <div class="editorial-fig frame" data-reveal style="--d: {{ idx | times: 0.1 }}s">
         {%- if img != blank -%}
-          {{ img | image_url: width: 1200 | image_tag: widths: '540, 900, 1200', sizes: '(min-width: 48rem) 50vw, 100vw', loading: 'lazy', decoding: 'async', alt: '', class: 'editorial-img' }}
+          {{ img | image_url: width: 1200 | image_tag: widths: '540, 900, 1200', sizes: '(min-width: 64rem) 33vw, 50vw', loading: 'lazy', decoding: 'async', alt: '', class: 'editorial-img' }}
         {%- else -%}
-          <img class="editorial-img" src="{{ defaults[idx] | append: '-900.webp' | asset_url }}" srcset="{{ defaults[idx] | append: '-540.webp' | asset_url }} 540w, {{ defaults[idx] | append: '-900.webp' | asset_url }} 900w" sizes="(min-width: 48rem) 50vw, 100vw" alt="" loading="lazy" decoding="async" width="900" height="1200">
+          <img class="editorial-img" src="{{ defaults[idx] | append: '-900.webp' | asset_url }}" srcset="{{ defaults[idx] | append: '-540.webp' | asset_url }} 540w, {{ defaults[idx] | append: '-900.webp' | asset_url }} 900w" sizes="(min-width: 64rem) 33vw, 50vw" alt="" loading="lazy" decoding="async" width="900" height="1200">
         {%- endif -%}
       </div>
     {%- endfor -%}
@@ -30,11 +30,12 @@
   "name": "Editorial",
   "class": "section-editorial",
   "settings": [
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Not made to explain." },
+    { "type": "text", "id": "eyebrow", "label": "Small label", "default": "About" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Silhouette, detail and restraint." },
     { "type": "textarea", "id": "body", "label": "Text", "default": "NEVERHOLLOW is an independent clothing label built around silhouette, detail, and restraint. We believe the strongest pieces don’t need to compete for attention." },
-    { "type": "text", "id": "button", "label": "Link", "default": "Discover Neverhollow" },
+    { "type": "text", "id": "button", "label": "Button", "default": "Read more" },
     { "type": "url", "id": "link", "label": "Link destination", "info": "Leave empty for the About page." },
-    { "type": "header", "content": "Photos", "info": "Two tall photos. Leave empty to use the Vesper Polo and Veil Cropped Long Sleeve studio photos." },
+    { "type": "header", "content": "Photos", "info": "Two tall photos. Leave empty to use the Spine Long Sleeve and Cathedral Dress studio photos." },
     { "type": "image_picker", "id": "image_1", "label": "Photo 1" },
     { "type": "image_picker", "id": "image_2", "label": "Photo 2" }
   ],

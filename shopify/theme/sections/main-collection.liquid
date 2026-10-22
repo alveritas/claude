@@ -2,17 +2,33 @@
 {%- liquid
   assign sort_by = collection.sort_by | default: collection.default_sort_by
   assign all_url = routes.all_products_collection_url
+  # Women's pieces are tagged "Women"; /collections/all/women lists just those.
+  assign has_women = false
+  if collections.all.all_tags contains 'Women'
+    assign has_women = true
+  endif
+  assign on_women = false
+  if current_tags contains 'Women' or current_tags contains 'women'
+    assign on_women = true
+  endif
+  assign on_all = false
+  if collection.handle == 'all' and on_women == false
+    assign on_all = true
+  endif
 -%}
 <section class="shell page-pad" data-collection>
   <div class="collection-head">
-    <h1 class="page-title" data-rise><span>{% if collection.handle == 'all' %}All products{% else %}{{ collection.title }}{% endif %}</span></h1>
-    <p class="muted">{{ collection.products_count }} {% if collection.products_count == 1 %}piece{% else %}pieces{% endif %}</p>
+    <h1 class="page-title">{% if on_women %}Women{% elsif collection.handle == 'all' %}All products{% else %}{{ collection.title }}{% endif %}</h1>
+    <p class="muted collection-count">{{ collection.products_count }} {% if collection.products_count == 1 %}piece{% else %}pieces{% endif %}</p>
   </div>
   {%- if collection.description != blank -%}<div class="muted rte collection-desc">{{ collection.description }}</div>{%- endif -%}
 
   <div class="toolbar">
   <nav class="tabs" aria-label="Categories">
-    <a class="tab{% if collection.handle == 'all' %} is-active{% endif %}" href="{{ all_url }}"{% if collection.handle == 'all' %} aria-current="page"{% endif %}>All</a>
+    <a class="tab{% if on_all %} is-active{% endif %}" href="{{ all_url }}"{% if on_all %} aria-current="page"{% endif %}>All</a>
+    {%- if has_women -%}
+      <a class="tab{% if on_women %} is-active{% endif %}" href="{{ all_url }}/women"{% if on_women %} aria-current="page"{% endif %}>Women</a>
+    {%- endif -%}
     {%- for type in live_types -%}
       {%- if type != blank -%}
         {%- assign on_type = false -%}{%- if collection.title == type and collection.handle == 'types' -%}{%- assign on_type = true -%}{%- endif -%}
@@ -36,44 +52,24 @@
   {%- paginate collection.products by 24 -%}
     {%- if collection.products.size > 0 -%}
       {%- liquid
-        # Up to twelve pieces: three to a row on larger screens, the first (newest) two to a row when the
-        # count doesn't divide by three, so no row is left part-empty. More than that: four to a row.
-        assign n = collection.products.size
-        assign odd = n | modulo: 2
-        assign six = false
-        if collection.products_count <= 12
-          assign six = true
-        endif
-        assign rem = n | modulo: 3
-        assign big = 0
-        if rem == 2
-          assign big = 2
-        elsif rem == 1 and n > 1
-          assign big = 4
-        elsif n == 1
-          assign big = 1
-        endif
+        # Four to a row on larger screens, two on phones; an odd count opens with one wide card on phones.
+        assign odd = collection.products.size | modulo: 2
       -%}
-      <div class="grid {% if six %}grid--six{% else %}grid--4{% endif %} product-grid-list">
+      <div class="grid grid--4 product-grid-list">
         {%- for product in collection.products -%}
           {%- liquid
-            # An odd count opens with one wide card on phones, so no row is left half empty.
             assign cls = ''
             assign card_sizes = '(min-width: 1024px) 25vw, 50vw'
-            if six
-              assign cls = 'span-third'
-              assign card_sizes = '(min-width: 768px) 33vw, 50vw'
-              if forloop.index <= big
-                assign cls = 'span-half'
-                assign card_sizes = '(min-width: 768px) 50vw, 50vw'
-              endif
-            endif
             if forloop.first and odd == 1
-              assign cls = cls | append: ' span-mobile'
-              assign card_sizes = card_sizes | replace: ', 50vw', ', 100vw'
+              assign cls = 'span-mobile'
+              assign card_sizes = '(min-width: 1024px) 25vw, 100vw'
+            endif
+            assign eager = false
+            if forloop.index <= 4
+              assign eager = true
             endif
           -%}
-          <div class="grid-cell {{ cls }}">{% render 'product-card', product: product, eager: forloop.first, index: forloop.index0, heading: 'h2', sizes: card_sizes %}</div>
+          <div class="grid-cell {{ cls }}">{% render 'product-card', product: product, eager: eager, index: forloop.index0, heading: 'h2', sizes: card_sizes %}</div>
         {%- endfor -%}
       </div>
     {%- else -%}

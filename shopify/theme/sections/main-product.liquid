@@ -69,7 +69,7 @@
       <div class="gallery-track" data-gallery-track tabindex="0" aria-label="Product photos">
         {%- for media in product.media -%}
           <figure class="gallery-slide frame" data-media-id="{{ media.id }}"{% if forloop.first %} style="view-transition-name: nh-product"{% endif %}>
-            <button type="button" class="gallery-zoom" data-zoom data-cursor="Zoom" aria-label="Open photo {{ forloop.index }} full screen">
+            <button type="button" class="gallery-zoom" data-zoom aria-label="Open photo {{ forloop.index }} full screen">
               {%- if forloop.first -%}
                 {{ media.preview_image | image_url: width: 1800 | image_tag: widths: '540, 720, 900, 1200, 1500, 1800', sizes: '(min-width: 768px) 54vw, 100vw', loading: 'eager', fetchpriority: 'high', alt: media.alt, class: 'gallery-img' }}
               {%- else -%}

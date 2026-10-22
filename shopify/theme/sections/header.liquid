@@ -2,9 +2,21 @@
   assign brand = settings.brand_name | default: shop.name
   assign live_types = collections.all.products | map: 'type' | uniq | sort
   assign menu = linklists[section.settings.menu]
+  assign women_url = routes.all_products_collection_url | append: '/women'
+  assign has_women = false
+  if collections.all.all_tags contains 'Women'
+    assign has_women = true
+  endif
+  assign on_women = false
+  if current_tags contains 'Women' or current_tags contains 'women'
+    assign on_women = true
+  endif
   assign on_shop = false
   if request.page_type == 'collection' or request.page_type == 'product'
     assign on_shop = true
+  endif
+  if on_women
+    assign on_shop = false
   endif
 -%}
 <div class="site-top" data-header{% if request.page_type == 'index' %} data-home{% endif %}>
@@ -21,6 +33,7 @@
             <div class="shell mega-inner">
               <ul class="mega-list">
                 <li><a href="{{ routes.all_products_collection_url }}">All products</a></li>
+                {%- if has_women -%}<li><a href="{{ women_url }}">Women</a></li>{%- endif -%}
                 {%- for type in live_types -%}
                   {%- if type != blank -%}
                     <li><a href="{{ type | url_for_type }}">{{ type }}</a></li>
@@ -43,6 +56,9 @@
             </div>
           </div>
         </div>
+        {%- if has_women -%}
+          <a class="nav-link{% if on_women %} is-active{% endif %}" href="{{ women_url }}"{% if on_women %} aria-current="page"{% endif %}>Women</a>
+        {%- endif -%}
         {%- if menu.links.size > 0 -%}
           {%- for link in menu.links -%}
             <a class="nav-link{% if link.active %} is-active{% endif %}" href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title }}</a>
@@ -116,6 +132,10 @@
           <li class="sub" style="--i: {{ n }}"><a href="{{ type | url_for_type }}">{{ type }}</a></li>
         {%- endif -%}
       {%- endfor -%}
+      {%- if has_women -%}
+        {%- assign n = n | plus: 1 -%}
+        <li style="--i: {{ n }}"><a href="{{ women_url }}">Women</a></li>
+      {%- endif -%}
       {%- if menu.links.size > 0 -%}
         {%- for link in menu.links -%}
           {%- assign n = n | plus: 1 -%}
