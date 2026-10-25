@@ -79,8 +79,8 @@
   "order": [
     "hero",
     "ticker",
-    "featured_women",
     "featured_men",
+    "featured_women",
     "categories",
     "editorial",
     "spotlight",

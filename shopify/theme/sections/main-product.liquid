@@ -239,7 +239,20 @@
       </div>
 
       {%- comment -%} The work order: what you're buying into, label left, value right. {%- endcomment -%}
+      {%- liquid
+        assign sizing_label = 'Unisex sizing.'
+        if product.tags contains 'Women'
+          assign sizing_label = 'Women’s sizing.'
+        elsif product.tags contains 'Men'
+          assign sizing_label = 'Men’s sizing.'
+        endif
+        assign fit_note = product.metafields.custom.fit_note | default: settings.fit_note
+      -%}
       <dl class="spec">
+        {%- if product.metafields.custom.fabric != blank -%}
+          <div><dt>Material</dt><dd>{{ product.metafields.custom.fabric | escape }}</dd></div>
+        {%- endif -%}
+        <div><dt>Sizing</dt><dd>{{ sizing_label }}{% if fit_note != blank %} {{ fit_note | escape }}{% endif %}</dd></div>
         {%- if settings.shipping_summary != blank -%}
           <div><dt>Shipping</dt><dd>{{ settings.shipping_summary | escape }}{% if settings.processing_time != blank %} {{ settings.processing_time | escape }}{% endif %}{% if shop.shipping_policy.url != blank %} <a class="text-link" href="{{ shop.shipping_policy.url }}">Shipping policy</a>{% endif %}</dd></div>
         {%- endif -%}
@@ -247,9 +260,6 @@
           <div><dt>Returns</dt><dd>{{ returns_line | escape }}{% if shop.refund_policy.url != blank %} <a class="text-link" href="{{ shop.refund_policy.url }}">Refund policy</a>{% endif %}</dd></div>
         {%- endif -%}
         <div><dt>Payment</dt><dd>Secure checkout. Card details never reach this site.{% if shop.enabled_payment_types.size > 0 %} <span class="trust-pay" aria-label="Ways to pay">{% for type in shop.enabled_payment_types limit: 6 %}{{ type | payment_type_svg_tag: class: 'pay-icon pay-icon--sm' }}{% endfor %}</span>{% endif %}</dd></div>
-        {%- if settings.contact_email != blank -%}
-          <div><dt>Questions</dt><dd><a class="text-link" href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a></dd></div>
-        {%- endif -%}
       </dl>
 
       <div class="accordions">
@@ -257,11 +267,8 @@
           <summary>Details {% render 'icon', name: 'plus', size: 14 %}</summary>
           <div class="acc-body rte">
             {{ product.description }}
-            {%- if product.metafields.custom.fabric != blank -%}<p>{{ product.metafields.custom.fabric }}</p>{%- endif -%}
+            {%- if product.metafields.custom.fabric != blank -%}<p><strong>Material:</strong> {{ product.metafields.custom.fabric | escape }}</p>{%- endif -%}
             {%- if product.metafields.custom.care != blank -%}<p>{{ product.metafields.custom.care }}</p>{%- endif -%}
-            {%- if product.metafields.custom.fabric == blank and settings.contact_email != blank -%}
-              <p class="muted">Questions about fabric or care? Email <a class="text-link" href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a> and we’ll answer before you order.</p>
-            {%- endif -%}
           </div>
         </details>
         <details class="acc" id="size-fit">
@@ -270,7 +277,8 @@
             {%- if product.metafields.custom.size_guide != blank -%}
               {{ product.metafields.custom.size_guide | metafield_tag }}
             {%- else -%}
-              <p class="muted">{% if product.tags contains 'Women' %}Women’s sizing.{% else %}Unisex sizing.{% endif %} Not sure which size to get?{% if settings.contact_email != blank %} Email <a class="text-link" href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a> with your usual size and we’ll help you choose.{% endif %}</p>
+              <p>{{ sizing_label }}{% if fit_note != blank %} {{ fit_note | escape }}{% endif %}</p>
+              <p class="muted">Not sure which size to get?{% if settings.contact_email != blank %} Email <a class="text-link" href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a> with your usual size and we’ll help you choose.{% endif %}</p>
             {%- endif -%}
           </div>
         </details>

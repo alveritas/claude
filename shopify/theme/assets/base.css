@@ -1,12 +1,13 @@
 /* NEVERHOLLOW — a white studio. Black and white only; the photos and the script do the talking.
    One family (Archivo, normal width), in sentence case: names, headings and links read like ordinary
-   words; small capitals are kept for short labels only. Photos sit on one light grey studio tile.
+   words; small capitals are kept for short labels only. Photos sit on white in a light hairline frame.
    Hairlines instead of borders. Spacing steps: 4 8 12 16 24 32 48 64 96 128. */
 :root {
   --white: #fff;
   --black: #000;
   --mist: #f4f4f4;           /* pressed and hover fills */
-  --tile: #f3f3f3;           /* the studio tile every photo sits on (white backdrops take this tone) */
+  --tile: #ffffff;           /* what every photo sits on: white, like the studio backdrop */
+  --band: #f6f6f6;           /* the one tinted band (sign-up) */
   --line: #e4e4e4;           /* hairlines between things */
   --line-mid: #cfcfcf;       /* outlines of size buttons and fields at rest */
   --grey: #636363;           /* secondary text on white, 6:1 */
@@ -174,10 +175,10 @@ textarea.field { height: auto; padding: 12px 14px; resize: vertical; }
 /* ── Panels ── */
 .frame { position: relative; overflow: hidden; background: var(--tile); display: block; }
 .frame .placeholder { width: 100%; height: 100%; fill: var(--mist); }
-/* Every photo sits on one light grey studio tile, so the pieces read as a set rather than floating on the page.
-   The photos have pure white backdrops; multiplied onto the tile, the backdrop takes the tile's tone and the
-   clothes, skin and shadows stay exactly as shot. */
-.card-img, .gallery-img, .cart-thumb img, .search-hit-img img, .mega-img img, .editorial-img, .cat-img, .spot-slide img, .spot-thumb img { mix-blend-mode: multiply; }
+/* Every product photo sits on white in a light hairline frame, so the pieces read as a set rather than floating
+   on the page. Photos are shown exactly as graded: nothing is blended over them, so blacks stay true black and
+   whites stay white. The frame is drawn on top, so it stays crisp while the photo zooms and takes no space. */
+.card-frame::after, .gallery-slide::after, .cart-thumb::after, .search-hit-img::after, .mega-img::after, .editorial-fig::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; box-shadow: inset 0 0 0 1px var(--line); }
 .slab { background: var(--black); color: var(--white); }
 .slab .muted { color: var(--grey-on-black); }
 .tag { position: absolute; left: 10px; top: 10px; z-index: 2; font-size: 0.625rem; font-weight: 500; text-transform: uppercase; letter-spacing: var(--track); line-height: 1; padding: 6px 7px 5px; background: rgb(255 255 255 / 0.92); color: var(--black); }
@@ -446,7 +447,7 @@ body.is-locked { overflow: hidden; }
 .spot-actions .muted { color: var(--black); font-size: 0.9375rem; }
 
 /* ── Newsletter ── */
-.newsletter { background: var(--tile); }
+.newsletter { background: var(--band); }
 .newsletter-inner { display: grid; gap: 24px; padding-top: 56px; padding-bottom: 56px; }
 @media (min-width: 64rem) { .newsletter-inner { grid-template-columns: minmax(0, 1fr) minmax(0, 460px); align-items: end; column-gap: 64px; padding-top: 72px; padding-bottom: 72px; } }
 .newsletter-title { font-size: clamp(1.5rem, 2.4vw, 2rem); }
@@ -473,7 +474,8 @@ body.is-locked { overflow: hidden; }
 .footer-label { margin-bottom: 14px; color: var(--grey); }
 .footer-col ul { display: grid; gap: 10px; font-size: 0.875rem; }
 .footer-col a { padding-bottom: 1px; }
-.footer-mark { padding-top: 8px; padding-bottom: 28px; }
+.footer-mark { padding-top: 8px; padding-bottom: 40px; display: flex; justify-content: center; }
+.footer-mark .footer-logo { display: block; width: min(100%, 640px); }
 .footer-mark .brand-wordmark { width: 100%; color: var(--black); }
 .footer-bottom { border-top: 1px solid var(--line); padding-top: 18px; padding-bottom: 26px; display: flex; flex-direction: column; gap: 14px; }
 @media (hover: hover) { .footer-bottom a:hover { text-decoration: underline; text-underline-offset: 3px; } }
@@ -775,7 +777,7 @@ main > .shopify-section:last-child > .rich { padding-bottom: 96px; }
 @keyframes vt-hold { to { transform: translateY(-10px); } }
 @keyframes vt-in { from { opacity: 0; transform: translateY(14px); } }
 .card-link.is-leaving .card-img--alt { opacity: 0 !important; transition: none !important; }
-.gallery-slide.has-trail { background: var(--tile) var(--trail) center / cover no-repeat; background-blend-mode: multiply; }
+.gallery-slide.has-trail { background: var(--tile) var(--trail) center / cover no-repeat; }
 
 /* ── Header tucks away while you read down, comes back the moment you scroll up ── */
 .site-top { transition: transform 0.55s var(--ease-out); }

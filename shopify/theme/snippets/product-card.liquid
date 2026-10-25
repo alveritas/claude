@@ -65,15 +65,15 @@
       {%- assign hl = heading | default: 'h3' -%}
       <{{ hl }} class="card-title">{{ product.title }}</{{ hl }}>
       <p class="card-price">{{ product.price | money_without_trailing_zeros }}{% if product.price_varies %}+{% endif %}</p>
-      {%- if color_option or po_tag or product.available == false -%}
+      {%- if color_option or product.available == false -%}
         <p class="card-meta">
           {%- if color_option -%}
             <span class="card-dots" aria-hidden="true">
               {%- for value in color_option.values -%}<span class="dot" style="--dot: {% render 'swatch', color: value %}"></span>{%- endfor -%}
             </span>
-            <span class="card-color">{{ color_option.values | join: ' / ' }}</span>
+            <span class="card-color sr-only">{{ color_option.values | join: ' / ' }}</span>
           {%- endif -%}
-          {%- if product.available == false -%}<span class="card-flag">Sold out</span>{%- elsif po_tag -%}<span class="card-flag">Pre-order</span>{%- endif -%}
+          {%- if product.available == false -%}<span class="card-flag">Sold out</span>{%- endif -%}
         </p>
       {%- endif -%}
     </div>

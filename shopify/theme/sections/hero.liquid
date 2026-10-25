@@ -24,18 +24,18 @@
       endif
     endif
   endif
-  # The two buttons default to the Women and Men collections; a link set in the editor wins, and
+  # The two buttons default to the Men and Women collections; a link set in the editor wins, and
   # without those collections they fall back to every piece.
   assign shop_url = routes.all_products_collection_url
-  if collections['women'].products_count > 0
-    assign shop_url = collections['women'].url
+  if collections['men'].products_count > 0
+    assign shop_url = collections['men'].url
   endif
   if section.settings.primary_link != blank
     assign shop_url = section.settings.primary_link
   endif
   assign second_url = routes.all_products_collection_url
-  if collections['men'].products_count > 0
-    assign second_url = collections['men'].url
+  if collections['women'].products_count > 0
+    assign second_url = collections['women'].url
   endif
   if section.settings.secondary_link != blank
     assign second_url = section.settings.secondary_link
@@ -105,7 +105,7 @@
   "class": "section-hero",
   "settings": [
     {
-      "type": "select", "id": "look", "label": "Cover photo", "default": "requiem",
+      "type": "select", "id": "look", "label": "Cover photo", "default": "vesper",
       "options": [
         { "value": "requiem", "label": "Requiem Sweatpants, lying" },
         { "value": "vesper", "label": "Vesper Polo, lying" },
@@ -118,11 +118,11 @@
     { "type": "text", "id": "heading", "label": "Brand name (read out by screen readers)", "default": "NEVERHOLLOW" },
     { "type": "text", "id": "tagline", "label": "Headline", "default": "Drop 001" },
     { "type": "text", "id": "status", "label": "Line under the headline", "info": "Shown only when pre-orders are off. While they're on, the pre-order and ship-by dates show here instead." },
-    { "type": "text", "id": "primary_label", "label": "Button", "default": "Shop women" },
-    { "type": "url", "id": "primary_link", "label": "Button link", "info": "Leave empty for the Women collection." },
-    { "type": "text", "id": "secondary_label", "label": "Second button", "default": "Shop men" },
-    { "type": "url", "id": "secondary_link", "label": "Second button link", "info": "Leave empty for the Men collection." },
-    { "type": "checkbox", "id": "show_facts", "label": "Show shipping, how it's made and contact under the cover", "default": true }
+    { "type": "text", "id": "primary_label", "label": "Button", "default": "Shop men" },
+    { "type": "url", "id": "primary_link", "label": "Button link", "info": "Leave empty for the Men collection." },
+    { "type": "text", "id": "secondary_label", "label": "Second button", "default": "Shop women" },
+    { "type": "url", "id": "secondary_link", "label": "Second button link", "info": "Leave empty for the Women collection." },
+    { "type": "checkbox", "id": "show_facts", "label": "Show shipping, how it's made and contact under the cover", "default": false }
   ],
   "presets": [{ "name": "Cover" }]
 }

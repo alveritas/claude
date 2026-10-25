@@ -88,6 +88,18 @@
     ]
   },
   {
+    "name": "Sizing",
+    "settings": [
+      {
+        "type": "text",
+        "id": "fit_note",
+        "label": "Fit note on every piece",
+        "default": "True to size. Size up for a looser fit.",
+        "info": "Shown after Men’s / Women’s sizing on each product page. A product’s own fit note (metafield custom.fit_note) replaces it."
+      }
+    ]
+  },
+  {
     "name": "Free shipping bar",
     "settings": [
       {
