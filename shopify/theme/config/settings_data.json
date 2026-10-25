@@ -4,10 +4,12 @@
     "Default": {
       "brand_tagline": "Official store",
       "contact_email": "neverhollowonline@gmail.com",
-      "shipping_summary": "Ships worldwide. United States $8, free over $200. Everywhere else $35.",
+      "shipping_summary": "Ships worldwide. United States $8, free over $100. Everywhere else $35.",
       "returns_note": "All sales are final. No returns or exchanges. Damaged or incorrect items are replaced or refunded.",
       "preorder_ship": "2027-01-15",
-      "intro_enabled": false
+      "intro_enabled": false,
+      "free_shipping_threshold": 100,
+      "photo_outline": false
     }
   }
 }

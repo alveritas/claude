@@ -88,7 +88,7 @@
     {{ content_for_header }}
   </head>
 
-  <body class="template-{{ request.page_type | handle }}">
+  <body class="template-{{ request.page_type | handle }}{% unless settings.photo_outline %} no-photo-outline{% endunless %}">
     {%- if settings.intro_enabled and request.design_mode == false -%}
       <div class="intro" aria-hidden="true">
         <div class="intro-curtain"></div>

@@ -172,8 +172,8 @@
                 <div class="option-head">
                   <p class="label">{{ option.name }}<span class="option-chosen"> · <span data-option-value="{{ forloop.index0 }}">{{ option.selected_value }}</span></span></p>
                   {%- unless is_color -%}
-                    {%- if product.metafields.custom.size_guide != blank -%}
-                      <a href="#size-fit" class="text-link micro" data-open-size>Size guide</a>
+                    {%- if product.metafields.custom.size_chart != blank or product.metafields.custom.size_guide != blank -%}
+                      <a href="#size-fit" class="text-link micro" data-open-size>Size chart</a>
                     {%- endif -%}
                   {%- endunless -%}
                 </div>
@@ -268,18 +268,39 @@
           <div class="acc-body rte">
             {{ product.description }}
             {%- if product.metafields.custom.fabric != blank -%}<p><strong>Material:</strong> {{ product.metafields.custom.fabric | escape }}</p>{%- endif -%}
-            {%- if product.metafields.custom.care != blank -%}<p>{{ product.metafields.custom.care }}</p>{%- endif -%}
+            {%- if product.metafields.custom.care != blank -%}<p><strong>Care:</strong> {{ product.metafields.custom.care | escape | newline_to_br }}</p>{%- endif -%}
           </div>
         </details>
         <details class="acc" id="size-fit">
           <summary>Size &amp; fit {% render 'icon', name: 'plus', size: 14 %}</summary>
           <div class="acc-body rte">
-            {%- if product.metafields.custom.size_guide != blank -%}
+            <p>{{ sizing_label }}{% if fit_note != blank %} {{ fit_note | escape }}{% endif %}</p>
+            {%- comment -%}
+              The size chart is typed into the product's "Size chart" field: one row per line, columns split
+              with |, the first line being the header. Until it's filled in, no table shows.
+            {%- endcomment -%}
+            {%- assign chart = product.metafields.custom.size_chart.value | default: product.metafields.custom.size_chart -%}
+            {%- if chart != blank -%}
+              {%- assign chart_rows = chart | strip | newline_to_br | split: '<br />' -%}
+              <div class="size-table-wrap">
+                <table class="size-table">
+                  {%- for row in chart_rows -%}
+                    {%- assign line = row | strip -%}
+                    {%- if line == blank -%}{%- continue -%}{%- endif -%}
+                    {%- assign cells = line | split: '|' -%}
+                    {%- if forloop.first -%}
+                      <thead><tr>{%- for cell in cells -%}<th scope="col">{{ cell | strip | escape }}</th>{%- endfor -%}</tr></thead><tbody>
+                    {%- else -%}
+                      <tr>{%- for cell in cells -%}{%- if forloop.first -%}<th scope="row">{{ cell | strip | escape }}</th>{%- else -%}<td>{{ cell | strip | escape }}</td>{%- endif -%}{%- endfor -%}</tr>
+                    {%- endif -%}
+                  {%- endfor -%}
+                  </tbody>
+                </table>
+              </div>
+            {%- elsif product.metafields.custom.size_guide != blank -%}
               {{ product.metafields.custom.size_guide | metafield_tag }}
-            {%- else -%}
-              <p>{{ sizing_label }}{% if fit_note != blank %} {{ fit_note | escape }}{% endif %}</p>
-              <p class="muted">Not sure which size to get?{% if settings.contact_email != blank %} Email <a class="text-link" href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a> with your usual size and we’ll help you choose.{% endif %}</p>
             {%- endif -%}
+            <p class="muted">Not sure which size to get?{% if settings.contact_email != blank %} Email <a class="text-link" href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a> with your usual size and we’ll help you choose.{% endif %}</p>
           </div>
         </details>
       </div>

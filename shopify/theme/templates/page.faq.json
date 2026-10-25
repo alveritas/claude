@@ -17,7 +17,7 @@
           "type": "question",
           "settings": {
             "question": "Where do you ship, and how much is it?",
-            "answer": "<p>We ship worldwide. United States: $8, free over $200. Everywhere else: $35. The exact cost for your address is shown at checkout before you pay.</p>"
+            "answer": "<p>We ship worldwide. United States: $8, free over $100. Everywhere else: $35. The exact cost for your address is shown at checkout before you pay.</p>"
           }
         },
         "q3": {
@@ -38,7 +38,7 @@
           "type": "question",
           "settings": {
             "question": "How do I find my size?",
-            "answer": "<p>Each product page lists the fit. Still unsure? Email us with your usual size and we’ll help you choose.</p>"
+            "answer": "<p>Every piece is true to size. Size up for a looser fit. Each product page says whether it’s men’s or women’s sizing. Still unsure? Email us with your usual size and we’ll help you choose.</p>"
           }
         },
         "q6": {
