@@ -3,7 +3,7 @@ BASE = "https://neverhollow.online/images/products/"
 MEDIA = "https://raw.githubusercontent.com/alveritas/claude/main/shopify/media/drop001/"
 url = lambda f: f if f.startswith("http") else BASE + f + ".jpg"
 SIZES = ["XS", "S", "M", "L", "XL", "XXL"]
-WAISTS = ["28", "30", "32", "34", "36", "38"]
+WAISTS = ["28", "30", "32", "34", "36", "38", "40", "42", "44", "46"]
 P = [
   dict(handle="feral-zip-hoodie", title="Feral Zip Hoodie", type="Hoodies", price="185.00", sizes=SIZES, size_name="Size",
        qty={"XS": 4, "S": 8, "M": 12, "L": 12, "XL": 9, "XXL": 5},
@@ -132,7 +132,7 @@ for p in P:
             c,s,imgs=variants[i]
             if i==0: r.update({"Option1 name":"Color","Option2 name":p["size_name"]})
             r.update({"Option1 value":c,"Option2 value":s,"Price":p["price"],"Charge tax":"TRUE",
-                      "Inventory tracker":"shopify" if p["qty"] else "","Inventory quantity":str(p["qty"][s]) if p["qty"] else "","Continue selling when out of stock":"DENY",
+                      "Inventory tracker":"shopify" if p["qty"] and s in p["qty"] else "","Inventory quantity":str(p["qty"][s]) if p["qty"] and s in p["qty"] else "","Continue selling when out of stock":"DENY",
                       "Requires shipping":"TRUE","Fulfillment service":"manual","Variant image URL":url(imgs[0][0])})
         if i<len(images):
             f,alt=images[i]
