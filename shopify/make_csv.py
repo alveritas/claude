@@ -37,13 +37,13 @@ P = [
        colors=[("Obsidian", [(MEDIA+"veil-01-flat.jpg","Veil Cropped Long Sleeve in Obsidian laid flat, with the Neverhollow script across the chest"),
                              (MEDIA+"veil-04-standing.jpg","A model in the Veil Cropped Long Sleeve, standing, with the Neverhollow script across the chest"),
                              (MEDIA+"veil-05-standing-back.jpg","The Veil Cropped Long Sleeve from the back: a plain back, cropped above the waist")])]),
-  dict(men=True, handle="litany-half-zip", title="Litany Half-Zip", type="Tops", price="75.00", sizes=SIZES, size_name="Size",
+  dict(men=True, handle="seraph-half-zip", title="Seraph Half-Zip", type="Tops", price="75.00", sizes=SIZES, size_name="Size",
        qty=None,
        desc=["A half-zip pullover with a ribbed stand collar, a metal zip and the nh label at the neck.", "Slate is a charcoal grey."],
        fit="Dropped shoulders, with ribbed cuffs and hem.",
-       colors=[("Slate", [(MEDIA+"litany-01-flat.jpg","Litany Half-Zip in Slate laid flat, with the nh label at the neck"),
-                          (MEDIA+"litany-02-front.jpg","A model in the Litany Half-Zip in Slate, standing, with the collar up"),
-                          (MEDIA+"litany-03-back.jpg","The Litany Half-Zip in Slate from the back: a plain back")])]),
+       colors=[("Slate", [(MEDIA+"litany-01-flat.jpg","Seraph Half-Zip in Slate laid flat, with the nh label at the neck"),
+                          (MEDIA+"litany-02-front.jpg","A model in the Seraph Half-Zip in Slate, standing, with the collar up"),
+                          (MEDIA+"litany-03-back.jpg","The Seraph Half-Zip in Slate from the back: a plain back")])]),
   dict(men=True, handle="relic-denim", title="Relic Denim", type="Bottoms", price="100.00", sizes=WAISTS, size_name="Waist",
        qty={"28": 4, "30": 9, "32": 13, "34": 12, "36": 8, "38": 4},
        desc=["Washed black denim with the Neverhollow script running down the left leg, faded whiskering and frayed hems."],
@@ -115,7 +115,7 @@ P = [
                              (MEDIA+"chapel-04-back.jpg","The Chapel Shorts in Obsidian from the back: a plain back")])]),
 ]
 # newest first (the shop's own order is set in the Drop 001 collection)
-ORDER = ["litany-half-zip", "chapel-shorts", "scripture-sweatpants", "psalm-henley", "cathedral-dress", "sigil-hoodie", "halo-fitted-polo", "requiem-sweatpants", "vesper-polo", "veil-cropped-long-sleeve", "spine-long-sleeve", "relic-denim"]  # feral-zip-hoodie archived
+ORDER = ["seraph-half-zip", "chapel-shorts", "scripture-sweatpants", "psalm-henley", "cathedral-dress", "sigil-hoodie", "halo-fitted-polo", "requiem-sweatpants", "vesper-polo", "veil-cropped-long-sleeve", "spine-long-sleeve", "relic-denim"]  # feral-zip-hoodie archived
 P = [p for h in ORDER for p in P if p["handle"] == h]
 H = ["Title","URL handle","Description","Vendor","Product category","Type","Tags","Published on online store","Status","SKU","Barcode",
      "Option1 name","Option1 value","Option1 LinkedTo","Option2 name","Option2 value","Option2 LinkedTo","Option3 name","Option3 value","Option3 LinkedTo",
