@@ -894,3 +894,8 @@ body.nav-up .site-top { transform: translateY(calc(-100% - var(--joint) - var(--
 .nh-lower body, .nh-lower body *:not(input, textarea), .nh-lower ::placeholder { text-transform: lowercase !important; }
 .nh-lower { --track: 0.03em; }
 .nh-lower :is(.size-table thead th, .gallery-bar, .cursor-tag) { letter-spacing: 0.03em; }
+/* Lowercase letters sit smaller than capitals, so with lowercase on the small labels go up a size
+   (field labels, eyebrows and fact labels 11px → 13px; the smallest tags and table heads 10px → 12px). */
+.nh-lower :is(.label, .caps, .preorder-title, .sum-row dt, .facts dt, .rte th, .marquee-item):not(.text-link) { font-size: 0.8125rem; }
+.nh-lower :is(.spec dt, .preorder-dates dt, .size-table thead th, .offer-eyebrow, .tag, .price-row [data-availability], .lightbox-count, .lightbox-hint, .gallery-bar) { font-size: 0.75rem; }
+.nh-lower .cursor-tag { font-size: 0.6875rem; }
