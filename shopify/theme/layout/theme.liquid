@@ -49,7 +49,9 @@
     {%- endcapture -%}
     {%- if settings.lowercase -%}{%- assign seo_title = seo_title | strip | downcase -%}{%- endif -%}
     <title>{{ seo_title | strip }}</title>
-    <meta name="description" content="{{ page_description | default: settings.seo_description | strip_html | escape }}">
+    {%- assign meta_description = page_description | default: settings.seo_description | strip_html -%}
+    {%- if settings.lowercase -%}{%- assign meta_description = meta_description | downcase -%}{%- endif -%}
+    <meta name="description" content="{{ meta_description | escape }}">
     {% render 'meta-tags', brand: brand %}
 
     {%- comment -%}

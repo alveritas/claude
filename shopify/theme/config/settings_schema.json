@@ -135,7 +135,7 @@
         "type": "text",
         "id": "offer_code",
         "label": "Discount code",
-        "default": "WELCOME25"
+        "default": "welcome25"
       },
       {
         "type": "text",

@@ -7,9 +7,13 @@
   endif
   if settings.lowercase
     assign og_title = og_title | downcase
+    assign brand = brand | downcase
   endif
   assign og_type = 'website'
   assign og_description = page_description | default: settings.seo_description | default: settings.brand_tagline | strip_html
+  if settings.lowercase
+    assign og_description = og_description | downcase
+  endif
   if request.page_type == 'product'
     assign og_type = 'product'
   endif
