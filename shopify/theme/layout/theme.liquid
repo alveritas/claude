@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ request.locale.iso_code }}">
+<html lang="{{ request.locale.iso_code }}"{% if settings.lowercase %} class="nh-lower"{% endif %}>
   <head>
     {%- liquid
       assign brand = settings.brand_name | default: shop.name
@@ -47,6 +47,7 @@
         {{ page_title }}{% if current_tags %} – {{ current_tags | join: ', ' }}{% endif %}{% if current_page != 1 %} – Page {{ current_page }}{% endif %} | {{ brand }}
       {%- endif -%}
     {%- endcapture -%}
+    {%- if settings.lowercase -%}{%- assign seo_title = seo_title | strip | downcase -%}{%- endif -%}
     <title>{{ seo_title | strip }}</title>
     <meta name="description" content="{{ page_description | default: settings.seo_description | strip_html | escape }}">
     {% render 'meta-tags', brand: brand %}

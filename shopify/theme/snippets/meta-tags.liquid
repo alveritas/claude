@@ -5,6 +5,9 @@
   if request.page_type == 'index'
     assign og_title = brand | append: ' | ' | append: settings.brand_tagline
   endif
+  if settings.lowercase
+    assign og_title = og_title | downcase
+  endif
   assign og_type = 'website'
   assign og_description = page_description | default: settings.seo_description | default: settings.brand_tagline | strip_html
   if request.page_type == 'product'

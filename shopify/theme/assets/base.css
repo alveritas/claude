@@ -886,3 +886,11 @@ body.nav-up .site-top { transform: translateY(calc(-100% - var(--joint) - var(--
   .announcement, .site-top, .top-spacer, .site-footer, .sticky-buy, .overlay, .offer, .offer-tab { display: none !important; }
   .js [data-reveal], .js [data-reveal] img:not(.card-img--alt), .js [data-rise] > span, .js [data-ink], .js [data-ink] > * { opacity: 1 !important; transform: none !important; }
 }
+
+/* ── Lowercase (Theme settings → Brand → Write everything in lowercase) ──
+   The brand's own voice: every word on the site in lowercase, the small labels and buttons included.
+   The logo is a drawing and stays as drawn; what people type into a field shows exactly as typed.
+   The small labels keep a little tracking, less than capitals need. */
+.nh-lower body, .nh-lower body *:not(input, textarea), .nh-lower ::placeholder { text-transform: lowercase !important; }
+.nh-lower { --track: 0.03em; }
+.nh-lower :is(.size-table thead th, .gallery-bar, .cursor-tag) { letter-spacing: 0.03em; }
