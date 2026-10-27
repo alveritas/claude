@@ -844,4 +844,113 @@
 
   /* ── Sort menus submit themselves ── */
   $$("[data-autosubmit]").forEach((s) => s.addEventListener("change", () => s.form.submit()));
+
+  /* ── Sign-up offer: a small card in the corner, a quiet tab, and the code once someone joins ── */
+  (() => {
+    const KEY = "nh-offer";
+    const read = () => { try { return JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch { return {}; } };
+    const write = (v) => { try { localStorage.setItem(KEY, JSON.stringify(Object.assign(read(), v))); } catch { /* storage off */ } };
+    const posted = new URLSearchParams(location.search).get("customer_posted") === "true";
+    const offer = $("[data-offer]");
+    const tab = $(".offer-tab");
+    const isCustomer = Boolean(offer && offer.hasAttribute("data-customer"));
+    const code = offer ? offer.dataset.code : (($("[data-apply-code]") || {}).dataset || {}).applyCode;
+
+    // Shopify's discount link saves the code for checkout; only once that worked do the notes say so.
+    const applyCode = async (c) => {
+      if (!c) return;
+      try { if (sessionStorage.getItem("nh-code") === c) { root.classList.add("nh-code-applied"); return; } } catch { /* storage off */ }
+      try {
+        const res = await fetch(`${(NH.routes.root || "/").replace(/\/$/, "")}/discount/${encodeURIComponent(c)}`, { credentials: "same-origin" });
+        if (!res.ok) return;
+        root.classList.add("nh-code-applied");
+        try { sessionStorage.setItem("nh-code", c); } catch { /* storage off */ }
+      } catch { /* offline: the notes keep saying to enter it at checkout */ }
+    };
+
+    // Copy buttons next to the code.
+    document.addEventListener("click", async (e) => {
+      const b = e.target.closest("[data-copy-code]");
+      if (!b) return;
+      try {
+        await navigator.clipboard.writeText(b.dataset.copyCode);
+        b.textContent = "Copied";
+        announce("Code copied");
+        setTimeout(() => (b.textContent = "Copy"), 1800);
+      } catch {
+        const v = b.parentElement && $(".code-value", b.parentElement);
+        if (v) { const r = document.createRange(); r.selectNodeContents(v); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+      }
+    });
+
+    // Signed-in customers with no orders yet: their code goes to checkout too.
+    const own = $("[data-apply-code]");
+    if (own) applyCode(own.dataset.applyCode);
+
+    // Anyone who joined (on any of the sign-up forms) keeps the code and loses the prompts.
+    const joinedNow = posted && $("[data-code-reveal]");
+    if (joinedNow) write({ joined: true });
+    if (read().joined && !isCustomer) { root.classList.add("nh-offer-joined"); applyCode(code); }
+
+    if (!offer) return;
+    const showTab = () => { if (tab && !isCustomer && !read().joined) tab.hidden = false; };
+    let hideTimer = 0;
+    const show = (focus) => {
+      clearTimeout(hideTimer);
+      offer.hidden = false;
+      requestAnimationFrame(() => requestAnimationFrame(() => offer.classList.add("is-open")));
+      if (tab) tab.hidden = true;
+      // Opened on purpose: keyboard and screen-reader users land in the card (the card itself, so no
+      // field grabs the phone keyboard); opened on its own, it never takes focus.
+      if (focus) setTimeout(() => $(".offer-card", offer).focus({ preventScroll: true }), 60);
+    };
+    const hide = () => {
+      offer.classList.remove("is-open");
+      hideTimer = setTimeout(() => (offer.hidden = true), reduceMotion ? 0 : 360);
+      write({ closedAt: Date.now() });
+      showTab();
+    };
+    $("[data-offer-close]", offer).addEventListener("click", hide);
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !offer.hidden && !openPanelEl()) hide(); });
+    document.addEventListener("click", (e) => {
+      const o = e.target.closest("[data-offer-open]");
+      if (!o) return;
+      e.preventDefault();
+      if (openPanelEl()) closePanels();
+      show(true);
+    });
+
+    // Just joined from the card (or from a form that isn't on this page): open on the code.
+    // Joined from the form on the page itself: that form shows the code where they are.
+    const hashTarget = location.hash.length > 1 ? document.getElementById(location.hash.slice(1)) : null;
+    const fromCard = !hashTarget || hashTarget.id === "offer-form";
+    if (joinedNow && fromCard) { show(true); return; }
+    if ($("[data-offer-error]", offer) && location.hash === "#offer-form") { show(true); return; }
+    if (isCustomer || read().joined || posted) return;
+
+    // On its own: once, after a while or some scrolling, never over an open panel; then not again for a while.
+    const state = read();
+    const snoozeMs = (Number(offer.dataset.snooze) || 14) * 864e5;
+    if (!offer.hasAttribute("data-auto") || (state.closedAt && Date.now() - state.closedAt < snoozeMs) || (window.Shopify && window.Shopify.designMode)) {
+      showTab();
+      return;
+    }
+    const delay = Math.max(4, Number(offer.dataset.delay) || 10) * 1000;
+    const t0 = Date.now();
+    let fired = false;
+    const fire = () => {
+      if (fired) return;
+      if (openPanelEl() || document.body.classList.contains("is-locked")) { setTimeout(fire, 3000); return; }
+      fired = true;
+      window.removeEventListener("scroll", onScroll);
+      show(false);
+    };
+    const onScroll = () => {
+      if (Date.now() - t0 < 5000) return;
+      const seen = (window.scrollY + window.innerHeight) / Math.max(1, document.documentElement.scrollHeight);
+      if (seen > 0.55) fire();
+    };
+    setTimeout(fire, delay);
+    window.addEventListener("scroll", onScroll, { passive: true });
+  })();
 })();

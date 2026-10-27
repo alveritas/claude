@@ -1,6 +1,7 @@
 {%- comment -%}
-  "You may also like": more pieces from the same section as this one (a men's piece suggests men's
-  pieces, a women's piece women's), newest first. Rendered with the page, so nothing loads later.
+  Under each piece: what to wear it with first (a top suggests bottoms; bottoms suggest tops and
+  hoodies), then the rest of the same section (Men or Women), in that section's own order.
+  Rendered with the page, so nothing loads later.
 {%- endcomment -%}
 {%- liquid
   assign g = ''
@@ -9,15 +10,61 @@
   elsif product.tags contains 'Women'
     assign g = 'Women'
   endif
-  assign picks = 0
-  for p in collections.all.products
+  assign source = collections.all
+  if g != blank
+    assign g_handle = g | handle
+    if collections[g_handle].products_count > 0
+      assign source = collections[g_handle]
+    endif
+  endif
+
+  assign t = product.type | downcase
+  case t
+    when 'bottoms'
+      assign pair_types = 'tops,hoodies'
+    when 'dresses'
+      assign pair_types = ''
+    else
+      assign pair_types = 'bottoms'
+  endcase
+  assign pairs = pair_types | split: ','
+
+  assign picked = ''
+  assign paired = 0
+  for p in source.products
     if p.id == product.id
       continue
     endif
-    if g == blank or p.tags contains g
-      assign picks = picks | plus: 1
+    if g != blank
+      unless p.tags contains g
+        continue
+      endunless
+    endif
+    assign pt = p.type | downcase
+    if pairs contains pt
+      assign picked = picked | append: p.handle | append: ','
+      assign paired = paired | plus: 1
     endif
   endfor
+  assign handles = picked | split: ','
+  for p in source.products
+    if handles.size >= 4
+      break
+    endif
+    if p.id == product.id
+      continue
+    endif
+    if g != blank
+      unless p.tags contains g
+        continue
+      endunless
+    endif
+    unless handles contains p.handle
+      assign picked = picked | append: p.handle | append: ','
+      assign handles = picked | split: ','
+    endunless
+  endfor
+  assign picks = handles.size
   if picks > 4
     assign picks = 4
   endif
@@ -27,18 +74,19 @@
   elsif picks <= 2
     assign cols = 'grid--2'
   endif
+  assign heading = section.settings.heading
+  if paired > 0 and section.settings.pair_heading != blank
+    assign heading = section.settings.pair_heading
+  endif
 -%}
 {%- if picks > 0 -%}
 <section class="shell recos">
-  <h2 class="section-title recos-title">{{ section.settings.heading | escape }}</h2>
+  <h2 class="section-title recos-title">{{ heading | escape }}</h2>
   <div class="grid {{ cols }} product-grid-list">
-    {%- assign shown = 0 -%}
-    {%- for p in collections.all.products -%}
-      {%- if p.id == product.id -%}{%- continue -%}{%- endif -%}
-      {%- if g != blank -%}{%- unless p.tags contains g -%}{%- continue -%}{%- endunless -%}{%- endif -%}
-      {%- if shown >= 4 -%}{%- break -%}{%- endif -%}
-      <div class="grid-cell">{% render 'product-card', product: p, index: shown, sizes: '(min-width: 1024px) 25vw, 50vw' %}</div>
-      {%- assign shown = shown | plus: 1 -%}
+    {%- for h in handles limit: 4 -%}
+      {%- assign p = all_products[h] -%}
+      {%- if p == blank -%}{%- continue -%}{%- endif -%}
+      <div class="grid-cell">{% render 'product-card', product: p, index: forloop.index0, sizes: '(min-width: 1024px) 25vw, 50vw' %}</div>
     {%- endfor -%}
   </div>
 </section>
@@ -49,7 +97,8 @@
   "name": "Related products",
   "class": "section-recos",
   "settings": [
-    { "type": "text", "id": "heading", "label": "Heading", "default": "You may also like" }
+    { "type": "text", "id": "pair_heading", "label": "Heading when pieces to wear it with are shown", "default": "Wear it with" },
+    { "type": "text", "id": "heading", "label": "Heading otherwise", "default": "You may also like" }
   ]
 }
 {% endschema %}

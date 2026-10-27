@@ -1,0 +1,21 @@
+{%- comment -%}
+  The sign-up code, shown the moment someone joins (Theme settings → Sign-up offer).
+  The theme script adds it to the bag and only then says so (html.nh-code-applied); until that's
+  confirmed, the line tells them to enter it at checkout, which is always true.
+  Accepts: title (the first line; defaults to "You're on the list").
+{%- endcomment -%}
+{%- liquid
+  assign code = settings.offer_code | strip
+  assign amount = settings.offer_amount | default: '25% off'
+-%}
+{%- if settings.offer_enabled and code != blank -%}
+  <div class="code-reveal" data-code-reveal data-code="{{ code | escape }}" role="status">
+    <p class="code-title">{{ title | default: 'You’re on the list.' }}</p>
+    <p class="code-sub">Here’s your code for {{ amount }}:</p>
+    <div class="code-row">
+      <span class="code-value">{{ code | escape }}</span>
+      <button type="button" class="btn btn-line btn-sm code-copy" data-copy-code="{{ code | escape }}">Copy</button>
+    </div>
+    <p class="code-note"><span class="when-not-applied">Enter it at checkout.</span><span class="when-applied">Added for you, so it comes off at checkout.</span></p>
+  </div>
+{%- endif -%}

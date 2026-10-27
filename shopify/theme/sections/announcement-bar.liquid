@@ -50,6 +50,19 @@
         <p class="ann-msg">Ships by {{ po_ship }}</p>
       {%- endif -%}
     {%- endfor -%}
+    {%- liquid
+      assign offer_code = settings.offer_code | strip
+      assign offer_line = false
+      if settings.offer_enabled and offer_code != blank
+        assign offer_line = true
+        if customer and customer.orders_count > 0
+          assign offer_line = false
+        endif
+      endif
+    -%}
+    {%- if offer_line -%}
+      <p class="ann-msg"><a href="#signup-offer" data-offer-open>{{ settings.offer_amount | escape }} your first order when you join the list</a></p>
+    {%- endif -%}
   </div>
 {%- endif -%}
 

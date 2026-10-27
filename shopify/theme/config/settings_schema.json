@@ -112,6 +112,66 @@
     ]
   },
   {
+    "name": "Sign-up offer",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "A small card invites visitors to join the email list. Once they join, it shows the code right away and adds it to their bag, so it's taken off at checkout. Signed-in customers who haven't ordered yet see their code in the bag. The code must exist in Shopify (Discounts)."
+      },
+      {
+        "type": "checkbox",
+        "id": "offer_enabled",
+        "label": "Show the sign-up offer",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "offer_code",
+        "label": "Discount code",
+        "default": "WELCOME25"
+      },
+      {
+        "type": "text",
+        "id": "offer_amount",
+        "label": "What it takes off",
+        "default": "25% off",
+        "info": "Used in short lines, e.g. “25% off your first order”."
+      },
+      {
+        "type": "text",
+        "id": "offer_heading",
+        "label": "Heading",
+        "default": "25% off your first order"
+      },
+      {
+        "type": "textarea",
+        "id": "offer_text",
+        "label": "Text",
+        "default": "Join the list for new drops and restocks. Your code shows up as soon as you join."
+      },
+      {
+        "type": "range",
+        "id": "offer_delay",
+        "label": "Show the card after",
+        "min": 4,
+        "max": 40,
+        "step": 1,
+        "unit": "s",
+        "default": 10
+      },
+      {
+        "type": "range",
+        "id": "offer_snooze",
+        "label": "Once closed, show it again after",
+        "min": 1,
+        "max": 60,
+        "step": 1,
+        "unit": "d",
+        "default": 14
+      }
+    ]
+  },
+  {
     "name": "Free shipping bar",
     "settings": [
       {

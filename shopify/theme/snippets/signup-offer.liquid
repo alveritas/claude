@@ -1,0 +1,59 @@
+{%- comment -%}
+  The sign-up offer (Theme settings → Sign-up offer): a small card in the corner, never a screen-
+  blocking pop-up. The theme script decides when it appears: once per visitor after a short while or
+  some scrolling, never on the bag or account pages, never for signed-in customers, and after it's
+  closed not again for a couple of weeks; a small "25% off" tab stays to bring it back.
+  Joining shows the code at once and adds it to the bag.
+{%- endcomment -%}
+{%- liquid
+  assign code = settings.offer_code | strip
+  assign brand = settings.brand_name | default: shop.name
+  assign auto = true
+  if request.page_type == 'cart' or template contains 'customers/' or request.page_type == 'password' or request.page_type == '404'
+    assign auto = false
+  endif
+-%}
+{%- if settings.offer_enabled and code != blank -%}
+  <div class="offer" id="signup-offer" data-offer data-code="{{ code | escape }}" data-delay="{{ settings.offer_delay | default: 10 }}" data-snooze="{{ settings.offer_snooze | default: 14 }}"{% if auto %} data-auto{% endif %}{% if customer %} data-customer{% endif %} hidden>
+    <div class="offer-card" role="dialog" aria-modal="false" aria-labelledby="offer-title" tabindex="-1">
+      <button type="button" class="icon-btn offer-close" data-offer-close aria-label="Close">{% render 'icon', name: 'close', size: 18 %}</button>
+      <p class="caps offer-eyebrow">The {{ brand }} list</p>
+      <h2 id="offer-title" class="offer-title">{{ settings.offer_heading | escape }}</h2>
+      {%- form 'customer', id: 'offer-form', class: 'nl-form offer-form', novalidate: 'novalidate' -%}
+        <input type="hidden" name="contact[tags]" value="newsletter, welcome-offer">
+        {%- liquid
+          assign taken = false
+          if form.errors and form.errors.messages['email'] contains 'taken'
+            assign taken = true
+          endif
+        -%}
+        {%- if form.posted_successfully? or taken -%}
+          <div data-offer-done>
+            {%- if taken -%}
+              {% render 'offer-code', title: 'You’re already on the list.' %}
+            {%- else -%}
+              {% render 'offer-code' %}
+            {%- endif -%}
+            <a href="{{ routes.all_products_collection_url }}" class="btn btn-solid btn-block offer-shop">Shop the drop</a>
+          </div>
+        {%- else -%}
+          <p class="offer-text">{{ settings.offer_text | escape }}</p>
+          <div class="nl-row">
+            <div class="nl-field">
+              <label class="sr-only" for="offer-form-email">Email address</label>
+              <input class="field" id="offer-form-email" type="email" name="contact[email]" autocomplete="email" inputmode="email" placeholder="Email address" required
+                {% if form.errors %}aria-invalid="true" aria-describedby="offer-form-error" data-offer-error{% endif %}>
+            </div>
+            <button type="submit" class="btn btn-solid">Get {{ settings.offer_amount | escape }}</button>
+          </div>
+          {%- if form.errors -%}<p class="form-error" id="offer-form-error" role="alert">Enter a valid email address.</p>{%- endif -%}
+          <p class="nl-consent nl-consent--compact">By joining you agree to receive emails from {{ brand }} about new drops and restocks. Unsubscribe at any time.</p>
+        {%- endif -%}
+      {%- endform -%}
+      {%- if shop.customer_accounts_enabled and customer == blank -%}
+        <p class="offer-foot">Have an account? <a class="text-link" href="{{ routes.account_login_url }}">Sign in</a></p>
+      {%- endif -%}
+    </div>
+  </div>
+  <button type="button" class="offer-tab" data-offer-open hidden aria-controls="signup-offer">{{ settings.offer_amount | escape }}</button>
+{%- endif -%}

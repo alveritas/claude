@@ -13,6 +13,7 @@
     {%- if item.properties['Pre-order'] != blank -%}{%- assign po_line = item.properties['Pre-order'] -%}{%- endif -%}
   {%- endfor -%}
   {%- if compact != true -%}{% render 'bag-preorder-note' %}{%- endif -%}
+  {% render 'cart-offer' %}
   <form action="{{ routes.cart_url }}" method="post" class="checkout-form">
     <button type="submit" name="checkout" class="btn btn-solid btn-block">Checkout</button>
   </form>

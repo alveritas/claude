@@ -7,8 +7,17 @@
     <div class="footer-brand">
       {%- comment -%} The homepage has its own sign-up section, so the footer doesn't repeat it there. {%- endcomment -%}
       {%- unless request.page_type == 'index' -%}
-        <p class="footer-heading">{{ section.settings.signup_heading }}</p>
-        <p class="muted small">{{ section.settings.signup_text }}</p>
+        {%- liquid
+          assign f_heading = section.settings.signup_heading
+          assign f_text = section.settings.signup_text
+          assign offer_code = settings.offer_code | strip
+          if settings.offer_enabled and offer_code != blank
+            assign f_heading = settings.offer_heading
+            assign f_text = settings.offer_text
+          endif
+        -%}
+        <p class="footer-heading">{{ f_heading | escape }}</p>
+        <p class="muted small">{{ f_text | escape }}</p>
         {% render 'newsletter-form', form_id: 'newsletter-footer', compact: true %}
       {%- else -%}
         <p class="footer-heading">{{ brand }}</p>

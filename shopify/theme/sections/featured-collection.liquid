@@ -1,5 +1,5 @@
 {%- comment -%}
-  A row of pieces from a collection, newest first. With a tag (Men or Women) it shows only that
+  A row of pieces from a collection, in the collection's own order. With a tag (Men or Women) it shows only that
   section's pieces and links to that section; four to a row on larger screens, two on phones.
 {%- endcomment -%}
 {%- liquid
@@ -12,15 +12,21 @@
   endif
   assign tag = section.settings.tag | strip
   assign limit = section.settings.limit
+  # pieces to leave out of this row (e.g. those already in the cover just above)
+  assign skip = section.settings.exclude | map: 'handle'
 
   # the pieces this row may show (all of them, or only those carrying the tag)
   assign total = 0
+  assign showable = 0
   for product in collection.products
     if tag == blank or product.tags contains tag
       assign total = total | plus: 1
+      unless skip contains product.handle
+        assign showable = showable | plus: 1
+      endunless
     endif
   endfor
-  assign n = total
+  assign n = showable
   if n > limit
     assign n = limit
   endif
@@ -49,6 +55,7 @@
       {%- assign shown = 0 -%}
       {%- for product in collection.products -%}
         {%- if tag != blank -%}{%- unless product.tags contains tag -%}{%- continue -%}{%- endunless -%}{%- endif -%}
+        {%- if skip contains product.handle -%}{%- continue -%}{%- endif -%}
         {%- if shown >= limit -%}{%- break -%}{%- endif -%}
         {%- liquid
           assign cls = ''
@@ -82,7 +89,8 @@
     { "type": "text", "id": "subheading", "label": "Subheading" },
     { "type": "collection", "id": "collection", "label": "Collection", "info": "Leave empty for the Drop 001 collection (or all products)." },
     { "type": "text", "id": "tag", "label": "Only pieces tagged", "info": "Men or Women shows just that section, with a link to it. Leave empty for every piece." },
-    { "type": "range", "id": "limit", "label": "Products shown", "min": 2, "max": 12, "step": 1, "default": 8 }
+    { "type": "range", "id": "limit", "label": "Products shown", "min": 2, "max": 12, "step": 1, "default": 8 },
+    { "type": "product_list", "id": "exclude", "label": "Leave out", "limit": 8, "info": "For example the pieces already shown in the cover above, so the page doesn't repeat itself." }
   ],
   "presets": [{ "name": "Featured products" }]
 }

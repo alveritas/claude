@@ -2,7 +2,13 @@
   "sections": {
     "hero": {
       "type": "hero",
-      "settings": {}
+      "settings": {
+        "layout": "lineup",
+        "product_1": "vesper-polo",
+        "product_2": "relic-denim",
+        "product_3": "veil-cropped-long-sleeve",
+        "product_4": "cathedral-dress"
+      }
     },
     "ticker": {
       "type": "marquee",
@@ -22,7 +28,11 @@
       "settings": {
         "heading": "Men",
         "tag": "Men",
-        "limit": 4
+        "limit": 4,
+        "exclude": [
+          "vesper-polo",
+          "relic-denim"
+        ]
       }
     },
     "categories": {

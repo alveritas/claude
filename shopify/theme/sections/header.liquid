@@ -128,7 +128,7 @@
           {% render 'icon', name: 'search' %}
         </button>
         {%- if shop.customer_accounts_enabled -%}
-          <a class="icon-btn desktop-only" href="{{ routes.account_url }}" aria-label="Account">{% render 'icon', name: 'user' %}</a>
+          <a class="icon-btn" href="{{ routes.account_url }}" aria-label="{% if customer %}Account{% else %}Sign in{% endif %}">{% render 'icon', name: 'user' %}</a>
         {%- endif -%}
         <a class="icon-btn bag-btn" href="{{ routes.cart_url }}" data-open="cart" aria-controls="cart-drawer" aria-expanded="false" aria-label="Bag, {{ cart.item_count }} {% if cart.item_count == 1 %}item{% else %}items{% endif %}" data-bag-link>
           {% render 'icon', name: 'bag' %}

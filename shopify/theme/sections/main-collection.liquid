@@ -95,6 +95,60 @@
     </form>
   </div>
 
+  {%- comment -%}
+    All products, in its own order (no sort chosen): Men's pieces, then Women's, each in its section's
+    own order, where every top sits beside a bottom it goes with. Anything in neither section follows.
+  {%- endcomment -%}
+  {%- liquid
+    assign grouped = false
+    if on_all and collection.sort_by == blank and has_men and has_women and collection.products_count <= 48
+      assign grouped = true
+    endif
+  -%}
+  {%- if grouped -%}
+    {%- assign group_handles = 'men,women' | split: ',' -%}
+    {%- assign shown = 0 -%}
+    {%- for gh in group_handles -%}
+      {%- assign gc = collections[gh] -%}
+      <section class="group" aria-labelledby="group-{{ gh }}">
+        <div class="group-head">
+          <h2 id="group-{{ gh }}" class="group-title">{{ gc.title }}</h2>
+          <a class="text-link section-link" href="{{ gc.url }}">Shop all {{ gc.title | downcase }}’s</a>
+        </div>
+        <div class="grid grid--4 product-grid-list">
+          {%- for product in gc.products -%}
+            {%- liquid
+              assign eager = false
+              if shown < 4
+                assign eager = true
+              endif
+            -%}
+            <div class="grid-cell">{% render 'product-card', product: product, eager: eager, index: forloop.index0, heading: 'h3' %}</div>
+            {%- assign shown = shown | plus: 1 -%}
+          {%- endfor -%}
+        </div>
+      </section>
+    {%- endfor -%}
+    {%- liquid
+      assign others = 0
+      for product in collection.products
+        unless product.tags contains 'Men' or product.tags contains 'Women'
+          assign others = others | plus: 1
+        endunless
+      endfor
+    -%}
+    {%- if others > 0 -%}
+      <section class="group" aria-labelledby="group-more">
+        <div class="group-head"><h2 id="group-more" class="group-title">More</h2></div>
+        <div class="grid grid--4 product-grid-list">
+          {%- for product in collection.products -%}
+            {%- if product.tags contains 'Men' or product.tags contains 'Women' -%}{%- continue -%}{%- endif -%}
+            <div class="grid-cell">{% render 'product-card', product: product, index: forloop.index0, heading: 'h3' %}</div>
+          {%- endfor -%}
+        </div>
+      </section>
+    {%- endif -%}
+  {%- else -%}
   {%- paginate collection.products by 24 -%}
     {%- if collection.products.size > 0 -%}
       {%- liquid
@@ -129,6 +183,7 @@
       </nav>
     {%- endif -%}
   {%- endpaginate -%}
+  {%- endif -%}
 </section>
 
 {% schema %}

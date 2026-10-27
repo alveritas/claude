@@ -1,8 +1,17 @@
 <section id="newsletter" class="newsletter" aria-labelledby="nl-{{ section.id }}">
   <div class="shell newsletter-inner">
     <div>
-      <h2 id="nl-{{ section.id }}" class="newsletter-title">{{ section.settings.heading | escape }}</h2>
-      <p class="newsletter-text">{{ section.settings.text | escape }}</p>
+      {%- liquid
+        assign nl_heading = section.settings.heading
+        assign nl_text = section.settings.text
+        assign offer_code = settings.offer_code | strip
+        if settings.offer_enabled and offer_code != blank and section.settings.use_offer
+          assign nl_heading = settings.offer_heading
+          assign nl_text = settings.offer_text
+        endif
+      -%}
+      <h2 id="nl-{{ section.id }}" class="newsletter-title">{{ nl_heading | escape }}</h2>
+      <p class="newsletter-text">{{ nl_text | escape }}</p>
     </div>
     <div class="newsletter-form">
       {% render 'newsletter-form', form_id: 'newsletter-home' %}
@@ -16,7 +25,8 @@
   "class": "section-newsletter",
   "settings": [
     { "type": "text", "id": "heading", "label": "Heading", "default": "Join the mailing list" },
-    { "type": "textarea", "id": "text", "label": "Text", "default": "Hear about new releases and restocks." }
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Hear about new releases and restocks." },
+    { "type": "checkbox", "id": "use_offer", "label": "Use the sign-up offer's heading and text", "default": true, "info": "While the offer is on (Theme settings → Sign-up offer)." }
   ],
   "presets": [{ "name": "Email sign-up" }]
 }

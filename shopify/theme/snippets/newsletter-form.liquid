@@ -1,12 +1,38 @@
 {%- comment -%}
   Email sign-up. Shopify saves each address as a customer who agreed to marketing emails
-  (Customers in the admin), ready for Shopify Email or any email app.
-  Accepts: form_id, compact.
+  (Customers in the admin), ready for Shopify Email or any email app. With the sign-up offer on
+  (Theme settings → Sign-up offer), joining shows the code straight away.
+  Accepts: form_id, compact, button (label).
 {%- endcomment -%}
+{%- liquid
+  assign offer_on = false
+  assign offer_code = settings.offer_code | strip
+  if settings.offer_enabled and offer_code != blank
+    assign offer_on = true
+  endif
+  assign btn_label = button | default: 'Join'
+  if offer_on and button == blank
+    assign btn_label = 'Get ' | append: settings.offer_amount
+  endif
+-%}
 {%- form 'customer', id: form_id, class: 'nl-form', novalidate: 'novalidate' -%}
-  <input type="hidden" name="contact[tags]" value="newsletter">
-  {%- if form.posted_successfully? -%}
-    <p class="nl-done" role="status" tabindex="-1" autofocus>You’re on the list. New drops and restocks reach you first.</p>
+  <input type="hidden" name="contact[tags]" value="newsletter{% if offer_on %}, welcome-offer{% endif %}">
+  {%- liquid
+    assign taken = false
+    if form.errors and form.errors.messages['email'] contains 'taken'
+      assign taken = true
+    endif
+  -%}
+  {%- if form.posted_successfully? or taken -%}
+    {%- if offer_on -%}
+      {%- if taken -%}
+        {% render 'offer-code', title: 'You’re already on the list.' %}
+      {%- else -%}
+        {% render 'offer-code' %}
+      {%- endif -%}
+    {%- else -%}
+      <p class="nl-done" role="status" tabindex="-1">You’re on the list. New drops and restocks reach you first.</p>
+    {%- endif -%}
   {%- else -%}
     <div class="nl-row">
       <div class="nl-field">
@@ -14,12 +40,10 @@
         <input class="field" id="{{ form_id }}-email" type="email" name="contact[email]" autocomplete="email" inputmode="email" placeholder="you@example.com" required
           {% if form.errors %}aria-invalid="true" aria-describedby="{{ form_id }}-error"{% endif %}>
       </div>
-      <button type="submit" class="btn btn-solid">Join</button>
+      <button type="submit" class="btn btn-solid">{{ btn_label | escape }}</button>
     </div>
     {%- if form.errors -%}
-      <p class="form-error" id="{{ form_id }}-error" role="alert">
-        {%- if form.errors.messages['email'] contains 'taken' -%}That email is already on the list.{%- else -%}Enter a valid email address.{%- endif -%}
-      </p>
+      <p class="form-error" id="{{ form_id }}-error" role="alert">Enter a valid email address.</p>
     {%- endif -%}
     <p class="nl-consent{% if compact %} nl-consent--compact{% endif %}">By joining you agree to receive emails from {{ settings.brand_name | default: shop.name }} about new drops and restocks. Unsubscribe at any time.</p>
   {%- endif -%}

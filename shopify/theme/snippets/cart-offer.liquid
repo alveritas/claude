@@ -1,0 +1,22 @@
+{%- comment -%}
+  One quiet line in the bag about the sign-up code (Theme settings → Sign-up offer):
+  - a signed-in customer with no orders yet: their code, added to the bag for them;
+  - someone who joined in this browser: the code, added;
+  - anyone else not signed in: a link that opens the sign-up card.
+  Signed-in customers who have already ordered see nothing. The theme script picks between the last
+  two (it remembers who joined in this browser) and adds the code to the bag.
+{%- endcomment -%}
+{%- liquid
+  assign code = settings.offer_code | strip
+  assign amount = settings.offer_amount | default: '25% off'
+-%}
+{%- if settings.offer_enabled and code != blank -%}
+  {%- if customer -%}
+    {%- if customer.orders_count == 0 -%}
+      <p class="cart-offer" data-apply-code="{{ code | escape }}">Your welcome code <strong>{{ code | escape }}</strong> takes {{ amount }} your first order. <span class="when-not-applied">Enter it at checkout.</span><span class="when-applied">Added for you, so it comes off at checkout.</span></p>
+    {%- endif -%}
+  {%- else -%}
+    <p class="cart-offer cart-offer--joined" data-offer-joined-only>Your code <strong>{{ code | escape }}</strong> takes {{ amount }} your first order. <span class="when-not-applied">Enter it at checkout.</span><span class="when-applied">Added for you, so it comes off at checkout.</span></p>
+    <p class="cart-offer cart-offer--join" data-offer-join-only><button type="button" class="text-link" data-offer-open>Join the list for {{ amount }} your first order</button></p>
+  {%- endif -%}
+{%- endif -%}
