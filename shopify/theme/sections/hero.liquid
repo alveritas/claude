@@ -1,8 +1,9 @@
 {%- comment -%}
   The cover. Two layouts, chosen in the theme editor:
-  - "Line-up" (default): the release, its dates and the way in, then the strongest pieces as their flat
-    lays in one row (two by two on phones), each one a link to its piece.
-  - "Photo": one studio photo beside the words (under them on phones).
+  - "Photo" (default): one big studio photo on white, blending into the page, beside the words
+    (under them on phones).
+  - "Line-up": the release, its dates and the way in, then up to four pieces as their flat lays in
+    one row (two by two on phones), each one a link to its piece.
 {%- endcomment -%}
 {%- liquid
   # Pre-order dates come from Theme settings → Pre-orders; once pre-orders close they stop showing.
@@ -158,10 +159,10 @@
   "class": "section-hero",
   "settings": [
     {
-      "type": "select", "id": "layout", "label": "Layout", "default": "lineup",
+      "type": "select", "id": "layout", "label": "Layout", "default": "photo",
       "options": [
-        { "value": "lineup", "label": "Line-up of flat lays" },
-        { "value": "photo", "label": "One studio photo" }
+        { "value": "photo", "label": "One studio photo" },
+        { "value": "lineup", "label": "Line-up of flat lays" }
       ]
     },
     { "type": "header", "content": "Line-up", "info": "Up to four pieces, shown as their first (flat lay) photo. Empty slots are filled in the Drop 001 collection's order." },

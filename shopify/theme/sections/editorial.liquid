@@ -9,7 +9,7 @@
     <a href="{{ section.settings.link | default: '/pages/about' }}" class="btn btn-line">{{ section.settings.button | escape }}</a>
   </div>
   <div class="editorial-figures" aria-hidden="true">
-    {%- assign defaults = 'ed-vesper-lying,ed-cathedral-seated' | split: ',' -%}
+    {%- assign defaults = 'ed-sigil-standing,ed-cathedral-seated' | split: ',' -%}
     {%- for i in (1..2) -%}
       {%- assign key = 'image_' | append: i -%}
       {%- assign img = section.settings[key] -%}
@@ -35,7 +35,7 @@
     { "type": "textarea", "id": "body", "label": "Text", "default": "NEVERHOLLOW is an independent clothing label built around silhouette, detail, and restraint. We believe the strongest pieces don’t need to compete for attention." },
     { "type": "text", "id": "button", "label": "Button", "default": "Read more" },
     { "type": "url", "id": "link", "label": "Link destination", "info": "Leave empty for the About page." },
-    { "type": "header", "content": "Photos", "info": "Two tall photos. Leave empty to use the Vesper Polo and Cathedral Dress studio photos." },
+    { "type": "header", "content": "Photos", "info": "Two tall photos. Leave empty to use the Sigil Hoodie and Cathedral Dress studio photos." },
     { "type": "image_picker", "id": "image_1", "label": "Photo 1" },
     { "type": "image_picker", "id": "image_2", "label": "Photo 2" }
   ],
