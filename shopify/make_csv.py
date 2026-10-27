@@ -114,6 +114,8 @@ P = [
                              (MEDIA+"chapel-03-seated.jpg","A model in the Chapel Shorts in Obsidian lying on a white floor"),
                              (MEDIA+"chapel-04-back.jpg","The Chapel Shorts in Obsidian from the back: a plain back")])]),
 ]
+# Everything a shopper reads is written in lowercase (the brand look); tags keep their capitals,
+# because the Men and Women rows filter on them.
 # newest first (the shop's own order is set in the Drop 001 collection)
 ORDER = ["vesper-polo", "relic-denim", "veil-cropped-long-sleeve", "requiem-sweatpants", "mnml-half-zip", "scripture-sweatpants", "halo-fitted-polo", "cathedral-dress", "psalm-henley", "chapel-shorts", "spine-long-sleeve", "sigil-hoodie"]  # feral-zip-hoodie archived
 P = [p for h in ORDER for p in P if p["handle"] == h]
@@ -132,18 +134,18 @@ for p in P:
         r={k:"" for k in H}
         r["URL handle"]=p["handle"]
         if i==0:
-            r.update({"Title":p["title"],"Description":body,"Vendor":"NEVERHOLLOW","Type":p["type"],"Tags":f"Drop 001, {p['type']}, pre-order" + (", Women" if p.get("women") else "") + (", Men" if p.get("men") else ""),
+            r.update({"Title":p["title"],"Description":body.lower(),"Vendor":"neverhollow","Type":p["type"].lower(),"Tags":f"Drop 001, {p['type']}, pre-order" + (", Women" if p.get("women") else "") + (", Men" if p.get("men") else ""),
                       "Published on online store":"TRUE","Status":"Active","Gift card":"FALSE",
-                      "SEO title":"","SEO description":p["desc"][0][:300],"Collection":"Drop 001"})
+                      "SEO title":"","SEO description":p["desc"][0][:300].lower(),"Collection":"Drop 001"})
         if i<len(variants):
             c,s,imgs=variants[i]
-            if i==0: r.update({"Option1 name":"Color","Option2 name":p["size_name"]})
-            r.update({"Option1 value":c,"Option2 value":s,"Price":p["price"],"Charge tax":"TRUE",
+            if i==0: r.update({"Option1 name":"color","Option2 name":p["size_name"].lower()})
+            r.update({"Option1 value":c.lower(),"Option2 value":s.lower(),"Price":p["price"],"Charge tax":"TRUE",
                       "Inventory tracker":"shopify" if p["qty"] and s in p["qty"] else "","Inventory quantity":str(p["qty"][s]) if p["qty"] and s in p["qty"] else "","Continue selling when out of stock":"DENY",
                       "Requires shipping":"TRUE","Fulfillment service":"manual","Variant image URL":url(imgs[0][0])})
         if i<len(images):
             f,alt=images[i]
-            r.update({"Product image URL":url(f),"Image position":str(i+1),"Image alt text":alt})
+            r.update({"Product image URL":url(f),"Image position":str(i+1),"Image alt text":alt.lower()})
         rows.append(r)
 with open("neverhollow-products.csv","w",newline="",encoding="utf-8") as fh:
     w=csv.DictWriter(fh, fieldnames=H); w.writeheader(); w.writerows(rows)
