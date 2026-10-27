@@ -45,7 +45,7 @@ P = [
                           (MEDIA+"litany-02-front.jpg","A model in the Seraph Half-Zip in Slate, standing, with the collar up"),
                           (MEDIA+"litany-03-back.jpg","The Seraph Half-Zip in Slate from the back: a plain back")])]),
   dict(men=True, handle="relic-denim", title="Relic Denim", type="Bottoms", price="100.00", sizes=WAISTS, size_name="Waist",
-       qty={"28": 4, "30": 9, "32": 13, "34": 12, "36": 8, "38": 4},
+       qty={"28": 4, "30": 9, "32": 13, "34": 12, "36": 8, "38": 4, "40": 4, "42": 3, "44": 2, "46": 2},
        desc=["Washed black denim with the Neverhollow script running down the left leg, faded whiskering and frayed hems."],
        fit="Wide, straight leg that stacks at the ankle.",
        colors=[("Ash", [(MEDIA+"relic-flat.jpg","Relic Denim in Ash laid flat, with the Neverhollow script running down the left leg"),
