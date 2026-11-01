@@ -1004,3 +1004,12 @@ html:not(.js) .countdown { display: none; }
 .rich--statement .prose--lg { margin-inline: auto; max-width: 30ch; font-size: clamp(1.375rem, 2.6vw, 2rem); line-height: 1.35; letter-spacing: -0.015em; }
 .rich--statement .rte > * + * { margin-top: 0.7em; }
 .rich--statement .rte p:not(:first-child) { color: var(--grey); }
+/* the coming-soon row on the homepage: it continues the release band under the countdown */
+.drop-preview--row { padding-top: 8px; padding-bottom: 72px; background: var(--band); box-shadow: 0 0 0 100vmax var(--band); clip-path: inset(0 -100vmax); }
+.section-drop:has(+ .section-drop-preview .drop-preview--row) .drop { border-bottom: 0; }
+.section-drop:has(+ .section-drop-preview .drop-preview--row) .drop-inner { padding-bottom: 48px; }
+.drop-preview--row + * , .section-drop-preview:has(.drop-preview--row) { border-bottom: 1px solid var(--line); }
+.preview-link { display: grid; color: inherit; }
+@media (hover: hover) { .preview-link:hover .card-title { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; } }
+@media (max-width: 39.99rem) { .drop-preview--row .preview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 64rem) { .drop-preview--row .preview-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }

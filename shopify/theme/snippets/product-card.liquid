@@ -22,7 +22,14 @@
   assign first_media = product.featured_media
   assign second_media = nil
   if settings.flats_only
-    # Laid-flat photos only: the first one in front, a second one (the back) on hover.
+    # Laid-flat photos only: the first one in front, the next one of the same colour (the back) on hover.
+    # A photo that a variant of another colour starts with ends the search, so hover never shows another colour.
+    assign starts = '|'
+    for v in product.variants
+      if v.featured_media
+        assign starts = starts | append: v.featured_media.id | append: '|'
+      endif
+    endfor
     assign flat_n = 0
     for m in product.media
       assign alt_down = m.alt | downcase
@@ -30,7 +37,11 @@
         assign flat_n = flat_n | plus: 1
         if flat_n == 1
           assign first_media = m
-        elsif flat_n == 2
+        else
+          assign key = '|' | append: m.id | append: '|'
+          if starts contains key
+            break
+          endif
           assign second_media = m
           break
         endif

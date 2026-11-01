@@ -25,6 +25,13 @@
       "type": "drop-countdown",
       "settings": {}
     },
+    "drop_pieces": {
+      "type": "drop-preview",
+      "settings": {
+        "link": true,
+        "limit": 6
+      }
+    },
     "new_arrivals": {
       "type": "featured-collection",
       "settings": {
@@ -141,6 +148,7 @@
     "hero_type",
     "featured",
     "drop",
+    "drop_pieces",
     "new_arrivals",
     "collection_001",
     "statement",
