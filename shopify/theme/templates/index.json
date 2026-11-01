@@ -145,10 +145,10 @@
     }
   },
   "order": [
-    "hero_type",
-    "featured",
     "drop",
     "drop_pieces",
+    "hero_type",
+    "featured",
     "new_arrivals",
     "collection_001",
     "statement",

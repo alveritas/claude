@@ -911,6 +911,8 @@
       showTab();
     };
     $("[data-offer-close]", offer).addEventListener("click", hide);
+    // the centred pop-up closes from its backdrop too
+    offer.addEventListener("click", (e) => { if (e.target === offer && offer.classList.contains("offer--modal")) hide(); });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !offer.hidden && !openPanelEl()) hide(); });
     document.addEventListener("click", (e) => {
       const o = e.target.closest("[data-offer-open]");
@@ -935,7 +937,7 @@
       showTab();
       return;
     }
-    const delay = Math.max(4, Number(offer.dataset.delay) || 10) * 1000;
+    const delay = Math.max(0, Number(offer.dataset.delay) || 0) * 1000;
     const t0 = Date.now();
     let fired = false;
     const fire = () => {
@@ -943,7 +945,7 @@
       if (openPanelEl() || document.body.classList.contains("is-locked")) { setTimeout(fire, 3000); return; }
       fired = true;
       window.removeEventListener("scroll", onScroll);
-      show(false);
+      show(offer.classList.contains("offer--modal"));
     };
     const onScroll = () => {
       if (Date.now() - t0 < 5000) return;

@@ -171,6 +171,16 @@
         "default": "Join the list for new drops and restocks. Your code shows up as soon as you join."
       },
       {
+        "type": "select",
+        "id": "offer_style",
+        "label": "How the sign-up offer shows",
+        "default": "modal",
+        "options": [
+          { "value": "modal", "label": "Pop-up in the middle of the screen" },
+          { "value": "corner", "label": "Small card in the corner" }
+        ]
+      },
+      {
         "type": "checkbox",
         "id": "offer_auto",
         "label": "Open the card by itself",
@@ -181,7 +191,7 @@
         "type": "range",
         "id": "offer_delay",
         "label": "Show the card after",
-        "min": 4,
+        "min": 0,
         "max": 40,
         "step": 1,
         "unit": "s",

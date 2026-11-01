@@ -1015,3 +1015,16 @@ html:not(.js) .countdown { display: none; }
 @media (min-width: 64rem) { .drop-preview--row .preview-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
 .preview-desc { grid-column: 1 / -1; font-size: 0.8125rem; line-height: 1.5; color: var(--grey); margin-top: 2px; }
 .preview .card-meta { margin-top: 4px; }
+
+/* ── Sign-up pop-up (Theme settings → Sign-up offer → "Pop-up in the middle of the screen") ── */
+.offer.offer--modal { inset: 0; left: 0; bottom: 0; width: auto; display: grid; place-items: center; padding: 16px; background: rgb(0 0 0 / 0.45); z-index: 80; }
+.offer--modal .offer-card { width: min(440px, 100%); padding: 32px 28px 24px; border: 0; box-shadow: 0 30px 80px rgb(0 0 0 / 0.25); text-align: left; }
+.offer--modal .offer-title { font-size: 1.75rem; }
+.offer--modal .offer-close { top: 8px; right: 8px; }
+@media (max-width: 47.99rem) { .offer.offer--modal { left: 0; right: 0; bottom: 0; } .offer--modal .offer-card { border-width: 0; padding: 28px 22px 22px; box-shadow: 0 20px 60px rgb(0 0 0 / 0.3); } }
+.offer--modal.is-open { transform: none; }
+.nh-dark .offer--modal .offer-card { border: 1px solid var(--line); }
+
+/* the release band leads the homepage in the light look too */
+.template-index main > .section-drop:first-child .drop { border-top: 0; }
+.offer--modal .offer-card:focus-visible { outline: none; }
