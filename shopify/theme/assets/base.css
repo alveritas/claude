@@ -1013,3 +1013,5 @@ html:not(.js) .countdown { display: none; }
 @media (hover: hover) { .preview-link:hover .card-title { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; } }
 @media (max-width: 39.99rem) { .drop-preview--row .preview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 64rem) { .drop-preview--row .preview-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.preview-desc { grid-column: 1 / -1; font-size: 0.8125rem; line-height: 1.5; color: var(--grey); margin-top: 2px; }
+.preview .card-meta { margin-top: 4px; }
