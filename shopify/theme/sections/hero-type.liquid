@@ -1,0 +1,39 @@
+{%- comment -%}
+  The cover without a photo: the official logo (the uploaded mark, drawn by the browser in the page's
+  text colour), a line naming the collection, the brand's three words and one button.
+{%- endcomment -%}
+{%- liquid
+  assign brand = settings.brand_name | default: shop.name
+  assign target = section.settings.collection
+  if target == blank
+    assign target = collections['drop-001']
+  endif
+  assign target_url = target.url | default: routes.all_products_collection_url
+-%}
+<section class="hero-type" aria-labelledby="hero-type-{{ section.id }}">
+  <div class="shell hero-type-inner">
+    <h1 id="hero-type-{{ section.id }}" class="hero-type-title">
+      <span class="brand-mark brand-wordmark hero-type-mark" aria-hidden="true"></span>
+      <span class="sr-only">{{ brand | escape }}</span>
+    </h1>
+    {%- if section.settings.eyebrow != blank -%}<p class="hero-type-eyebrow">{{ section.settings.eyebrow | escape }}</p>{%- endif -%}
+    {%- if section.settings.line != blank -%}<p class="hero-type-line">{{ section.settings.line | escape }}</p>{%- endif -%}
+    {%- if section.settings.button != blank -%}
+      <a class="btn btn-solid hero-type-btn" href="{{ target_url }}">{{ section.settings.button | escape }}</a>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Cover (logo)",
+  "class": "section-hero-type",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Collection line", "default": "Collection 001" },
+    { "type": "text", "id": "line", "label": "Line", "default": "Silhouette. Detail. Restraint." },
+    { "type": "text", "id": "button", "label": "Button", "default": "Shop collection" },
+    { "type": "collection", "id": "collection", "label": "Button opens", "info": "Leave empty for the Drop 001 collection." }
+  ],
+  "presets": [{ "name": "Cover (logo)" }]
+}
+{% endschema %}

@@ -1,0 +1,63 @@
+{%- comment -%}
+  Coming-soon previews for a release, shown only while the release collection has nothing published.
+  Each preview is a "Drop preview" entry (Shopify admin → Content → Metaobjects) with the release id, a name,
+  a price and its laid-flat photos. A preview is not a product: it has no link, no button and no cart form,
+  so nothing here can be bought early. When Shopify publishes the real pieces, this section stops showing
+  and the collection grid takes its place.
+{%- endcomment -%}
+{%- liquid
+  assign target = section.settings.collection | default: collection
+  assign drop_id = section.settings.drop_id | strip
+  assign release = shop.metafields.neverhollow.release_at.value
+  assign date_label = section.settings.date_label
+  if date_label == blank and release != blank
+    assign date_label = release | date: '%m.%d.%y'
+  endif
+  assign entries = metaobjects.drop_preview.values
+-%}
+{%- if target.products_count == 0 -%}
+  {%- assign n = 0 -%}
+  <section class="shell section-pad-bottom drop-preview" aria-label="{{ section.settings.label | escape }}">
+    <ul class="grid grid--4 preview-grid">
+      {%- for e in entries -%}
+        {%- assign e_drop = e.drop_id.value | strip -%}
+        {%- if e_drop != drop_id or e.name.value == blank -%}{%- continue -%}{%- endif -%}
+        {%- assign n = n | plus: 1 -%}
+        <li class="preview" data-reveal style="--d: {{ n | minus: 1 | modulo: 4 | times: 0.08 }}s">
+          <div class="frame card-frame preview-frame">
+            {%- assign front = e.front.value -%}
+            {%- assign back = e.back.value -%}
+            {%- if front -%}
+              {{ front | image_url: width: 1200 | image_tag: widths: '360, 540, 720, 900, 1200', sizes: '(min-width: 1024px) 25vw, 50vw', loading: 'lazy', decoding: 'async', alt: front.alt | default: e.name.value, class: 'card-img card-img--main' }}
+              {%- if back -%}{{ back | image_url: width: 1200 | image_tag: widths: '360, 540, 720, 900, 1200', sizes: '(min-width: 1024px) 25vw, 50vw', loading: 'lazy', decoding: 'async', alt: '', class: 'card-img card-img--alt' }}{%- endif -%}
+            {%- endif -%}
+            <span class="tag preview-tag">{{ section.settings.label | escape }}</span>
+          </div>
+          <div class="card-body">
+            <h2 class="card-title">{{ e.name.value | escape }}</h2>
+            {%- if e.price.value != blank -%}<p class="card-price">{{ e.price.value | times: 100 | money_without_trailing_zeros }}</p>{%- endif -%}
+            <p class="card-meta">{% if e.audience.value != blank %}{{ e.audience.value | escape }} · {% endif %}{{ date_label | escape }}</p>
+          </div>
+        </li>
+      {%- endfor -%}
+    </ul>
+    {%- if n == 0 -%}
+      <p class="muted preview-empty">{{ section.settings.empty_text | escape }}</p>
+    {%- endif -%}
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Release preview",
+  "class": "section-drop-preview",
+  "settings": [
+    { "type": "text", "id": "drop_id", "label": "Release id", "default": "neverhollow-drop-2026-11-13", "info": "Shows the Drop preview entries with this release id." },
+    { "type": "text", "id": "label", "label": "Label on each piece", "default": "Coming soon" },
+    { "type": "text", "id": "date_label", "label": "Date on each piece", "default": "11.13.26", "info": "Leave empty to print the release date." },
+    { "type": "text", "id": "empty_text", "label": "Shown before any preview is added", "default": "The pieces are shown here before the release." },
+    { "type": "collection", "id": "collection", "label": "Release collection", "info": "Leave empty to use the collection this page belongs to." }
+  ],
+  "presets": [{ "name": "Release preview" }]
+}
+{% endschema %}

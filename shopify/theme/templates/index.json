@@ -1,11 +1,70 @@
 {
   "sections": {
+    "hero_type": {
+      "type": "hero-type",
+      "settings": {
+        "eyebrow": "Collection 001",
+        "line": "Silhouette. Detail. Restraint.",
+        "button": "Shop collection"
+      }
+    },
+    "featured": {
+      "type": "featured-collection",
+      "settings": {
+        "heading": "Featured",
+        "picks": [
+          "vesper-polo",
+          "relic-denim",
+          "cathedral-dress",
+          "mnml-half-zip"
+        ],
+        "limit": 4
+      }
+    },
+    "drop": {
+      "type": "drop-countdown",
+      "settings": {}
+    },
+    "new_arrivals": {
+      "type": "featured-collection",
+      "settings": {
+        "heading": "New arrivals",
+        "all_products": true,
+        "sort": "newest",
+        "limit": 4,
+        "exclude": [
+          "vesper-polo",
+          "relic-denim",
+          "cathedral-dress",
+          "mnml-half-zip"
+        ]
+      }
+    },
+    "collection_001": {
+      "type": "collection-cta",
+      "settings": {
+        "heading": "Collection 001"
+      }
+    },
+    "statement": {
+      "type": "rich-text",
+      "settings": {
+        "large": true,
+        "text": "<p>NEVERHOLLOW is built on the idea that clothing should speak through its construction, silhouette, and presence.</p><p>No unnecessary noise. No forced identity.</p><p>Just considered pieces designed to exist beyond a moment.</p>",
+        "statement": true
+      }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {}
+    },
     "hero": {
       "type": "hero",
       "settings": {
         "layout": "photo",
         "look": "vesper"
-      }
+      },
+      "disabled": true
     },
     "ticker": {
       "type": "marquee",
@@ -18,7 +77,8 @@
         "heading": "Women",
         "tag": "Women",
         "limit": 4
-      }
+      },
+      "disabled": true
     },
     "featured_men": {
       "type": "featured-collection",
@@ -26,7 +86,8 @@
         "heading": "Men",
         "tag": "Men",
         "limit": 4
-      }
+      },
+      "disabled": true
     },
     "categories": {
       "type": "category-tiles",
@@ -67,26 +128,29 @@
     },
     "editorial": {
       "type": "editorial",
-      "settings": {}
+      "settings": {},
+      "disabled": true
     },
     "spotlight": {
       "type": "spotlight",
       "settings": {},
       "disabled": true
-    },
-    "newsletter": {
-      "type": "newsletter",
-      "settings": {}
     }
   },
   "order": [
+    "hero_type",
+    "featured",
+    "drop",
+    "new_arrivals",
+    "collection_001",
+    "statement",
+    "newsletter",
     "hero",
     "ticker",
     "featured_men",
     "featured_women",
     "categories",
     "editorial",
-    "spotlight",
-    "newsletter"
+    "spotlight"
   ]
 }

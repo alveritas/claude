@@ -954,3 +954,63 @@
     window.addEventListener("scroll", onScroll, { passive: true });
   })();
 })();
+
+/* ── Friday the 13th countdown. It only counts down to the release time (from the shop metafield, printed
+   into data-release as seconds). At zero it asks the store whether the release collection has anything
+   published and shows that: "shop the drop" once pieces are live, otherwise a publishing note that keeps
+   checking. It never unlocks anything; the pieces become buyable only when Shopify publishes them. ── */
+(function () {
+  const drops = document.querySelectorAll("[data-drop]");
+  if (!drops.length) return;
+  const pad = (n) => String(n).padStart(2, "0");
+  drops.forEach((root) => {
+    const at = Number(root.dataset.release) * 1000;
+    const box = root.querySelector("[data-countdown]");
+    const status = root.querySelector("[data-drop-status]");
+    const btn = root.querySelector("[data-drop-btn]");
+    const url = root.dataset.dropUrl;
+    const cells = {};
+    if (box) box.querySelectorAll("[data-cd]").forEach((el) => (cells[el.dataset.cd] = el));
+    let tries = 0, timer = null;
+
+    const goLive = () => {
+      root.dataset.state = "live";
+      if (box) box.hidden = true;
+      if (status) status.hidden = true;
+      if (btn) { btn.textContent = btn.dataset.liveLabel || btn.textContent; btn.classList.remove("btn-line"); btn.classList.add("btn-solid"); }
+      if (root.classList.contains("drop--page") && !document.querySelector("[data-product-grid], .product-grid-list")) {
+        // on the release page itself, reload once so the published pieces replace the previews
+        try { if (!sessionStorage.getItem("nh-drop-reloaded")) { sessionStorage.setItem("nh-drop-reloaded", "1"); location.reload(); } } catch (e) {}
+      }
+    };
+    const check = () => {
+      if (!url) return;
+      fetch(url.replace(/\/$/, "") + "/products.json?limit=1", { headers: { Accept: "application/json" }, cache: "no-store" })
+        .then((r) => (r.ok ? r.json() : { products: [] }))
+        .then((d) => {
+          if (d && d.products && d.products.length) return goLive();
+          root.dataset.state = "publishing";
+          if (box) box.hidden = true;
+          if (status) status.hidden = false;
+          // keep checking for 15 minutes, every 20 seconds
+          if (++tries < 45) setTimeout(check, 20000);
+        })
+        .catch(() => { if (++tries < 45) setTimeout(check, 20000); });
+    };
+    const tick = () => {
+      const left = at - Date.now();
+      if (left <= 0) { clearInterval(timer); check(); return; }
+      const s = Math.floor(left / 1000);
+      if (cells.d) cells.d.textContent = pad(Math.floor(s / 86400));
+      if (cells.h) cells.h.textContent = pad(Math.floor((s % 86400) / 3600));
+      if (cells.m) cells.m.textContent = pad(Math.floor((s % 3600) / 60));
+      if (cells.s) cells.s.textContent = pad(s % 60);
+    };
+    if (root.dataset.state === "live") return;
+    if (!at) { if (box) box.hidden = true; return; }
+    if (root.dataset.state === "publishing" || Date.now() >= at) { check(); return; }
+    if (box) box.hidden = false;
+    tick();
+    timer = setInterval(tick, 1000);
+  });
+})();

@@ -1,0 +1,71 @@
+{%- comment -%}
+  A way into a whole collection: its name and piece count, a men's and a women's tile (each the
+  laid-flat photo of a piece from that side), and a button for everything.
+{%- endcomment -%}
+{%- liquid
+  assign c = section.settings.collection | default: collections['drop-001']
+  if c == blank
+    assign c = collections.all
+  endif
+  assign men_p = section.settings.men_product
+  assign women_p = section.settings.women_product
+  for p in c.products
+    if men_p == blank and p.tags contains 'Men'
+      assign men_p = p
+    endif
+    if women_p == blank and p.tags contains 'Women'
+      assign women_p = p
+    endif
+  endfor
+  assign men_url = collections['men'].url | default: routes.all_products_collection_url
+  assign women_url = collections['women'].url | default: routes.all_products_collection_url
+-%}
+<section class="shell section-pad cta" aria-labelledby="cta-{{ section.id }}">
+  <div class="section-head">
+    <div>
+      <h2 id="cta-{{ section.id }}" class="section-title">{{ section.settings.heading | escape }}</h2>
+      <p class="section-sub muted">{{ c.products_count }} {% if c.products_count == 1 %}piece{% else %}pieces{% endif %}</p>
+    </div>
+    <a class="btn btn-line btn-sm" href="{{ c.url }}">{{ section.settings.button | escape }}</a>
+  </div>
+  <div class="cta-tiles">
+    {%- for side in (1..2) -%}
+      {%- liquid
+        if side == 1
+          assign p = men_p
+          assign url = men_url
+          assign label = section.settings.men_label
+        else
+          assign p = women_p
+          assign url = women_url
+          assign label = section.settings.women_label
+        endif
+      -%}
+      {%- if p != blank -%}
+        <a class="cta-tile" href="{{ url }}">
+          <span class="frame card-frame cta-frame">
+            {%- render 'flat-image', product: p, width: 1400, widths: '540, 720, 900, 1200, 1400', sizes: '(min-width: 768px) 50vw, 100vw', alt: '', class: 'card-img' -%}
+          </span>
+          <span class="cta-label"><span class="card-title">{{ label | escape }}</span><span class="muted small" aria-hidden="true">&rarr;</span></span>
+        </a>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Shop a collection",
+  "class": "section-cta",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Collection 001" },
+    { "type": "collection", "id": "collection", "label": "Collection", "info": "Leave empty for Drop 001." },
+    { "type": "text", "id": "button", "label": "Button", "default": "Shop all" },
+    { "type": "text", "id": "men_label", "label": "Men's tile", "default": "Shop men" },
+    { "type": "product", "id": "men_product", "label": "Men's tile piece", "info": "Leave empty for the collection's first men's piece." },
+    { "type": "text", "id": "women_label", "label": "Women's tile", "default": "Shop women" },
+    { "type": "product", "id": "women_product", "label": "Women's tile piece", "info": "Leave empty for the collection's first women's piece." }
+  ],
+  "presets": [{ "name": "Shop a collection" }]
+}
+{% endschema %}

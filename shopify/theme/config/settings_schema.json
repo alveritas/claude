@@ -31,6 +31,20 @@
         "info": "The brand's look: every word on the site in lowercase, labels and buttons included. The logo stays as drawn, and what people type into a field shows as typed."
       },
       {
+        "type": "checkbox",
+        "id": "dark_mode",
+        "label": "Dark look",
+        "default": true,
+        "info": "Near-black pages with off-white type. Product photos keep their white backgrounds. Turn off to go back to the white studio look."
+      },
+      {
+        "type": "checkbox",
+        "id": "flats_only",
+        "label": "Show only laid-flat photos",
+        "default": true,
+        "info": "Cards, product pages, search and the bag show only photos whose alt text says \"laid flat\". Worn photos stay in Shopify, just hidden. A piece with no laid-flat photo still shows all of its photos."
+      },
+      {
         "type": "textarea",
         "id": "seo_description",
         "label": "Search and share description",
@@ -155,6 +169,13 @@
         "id": "offer_text",
         "label": "Text",
         "default": "Join the list for new drops and restocks. Your code shows up as soon as you join."
+      },
+      {
+        "type": "checkbox",
+        "id": "offer_auto",
+        "label": "Open the card by itself",
+        "default": false,
+        "info": "Off: only the small tab in the corner shows, and the card opens when someone taps it."
       },
       {
         "type": "range",

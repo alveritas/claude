@@ -1,0 +1,26 @@
+{
+  "sections": {
+    "drop": {
+      "type": "drop-countdown",
+      "settings": {
+        "page_title": true,
+        "show_button": false
+      }
+    },
+    "preview": {
+      "type": "drop-preview",
+      "settings": {}
+    },
+    "main": {
+      "type": "main-collection",
+      "settings": {
+        "hide_when_empty": true
+      }
+    }
+  },
+  "order": [
+    "drop",
+    "preview",
+    "main"
+  ]
+}

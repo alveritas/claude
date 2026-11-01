@@ -82,19 +82,43 @@
 
   <div class="shell product-grid">
     {%- comment -%} Gallery: every photo; with colours, only the chosen colour's photos show. {%- endcomment -%}
+    {%- liquid
+      # "Show only laid-flat photos": worn photos stay attached in Shopify but are left out here.
+      assign show_n = product.media.size
+      assign flats_here = false
+      if settings.flats_only
+        assign flat_count = 0
+        for m in product.media
+          assign ma = m.alt | downcase
+          if ma contains 'laid flat'
+            assign flat_count = flat_count | plus: 1
+          endif
+        endfor
+        if flat_count > 0
+          assign flats_here = true
+          assign show_n = flat_count
+        endif
+      endif
+      assign shown = 0
+    -%}
     <div class="gallery" data-gallery>
       <div class="gallery-track" data-gallery-track tabindex="0" aria-label="Product photos">
         {%- for media in product.media -%}
-          <figure class="gallery-slide frame" data-media-id="{{ media.id }}"{% if forloop.first %} style="view-transition-name: nh-product"{% endif %}>
-            <button type="button" class="gallery-zoom" data-zoom aria-label="Open photo {{ forloop.index }} full screen">
-              {%- if forloop.first -%}
+          {%- if flats_here -%}
+            {%- assign ma = media.alt | downcase -%}
+            {%- unless ma contains 'laid flat' -%}{%- continue -%}{%- endunless -%}
+          {%- endif -%}
+          {%- assign shown = shown | plus: 1 -%}
+          <figure class="gallery-slide frame" data-media-id="{{ media.id }}"{% if shown == 1 %} style="view-transition-name: nh-product"{% endif %}>
+            <button type="button" class="gallery-zoom" data-zoom aria-label="Open photo {{ shown }} full screen">
+              {%- if shown == 1 -%}
                 {{ media.preview_image | image_url: width: 1800 | image_tag: widths: '540, 720, 900, 1200, 1500, 1800', sizes: '(min-width: 768px) 54vw, 100vw', loading: 'eager', fetchpriority: 'high', alt: media.alt, class: 'gallery-img' }}
               {%- else -%}
                 {{ media.preview_image | image_url: width: 1800 | image_tag: widths: '540, 720, 900, 1200, 1500, 1800', sizes: '(min-width: 768px) 27vw, 100vw', loading: 'lazy', decoding: 'async', alt: media.alt, class: 'gallery-img' }}
               {%- endif -%}
             </button>
           </figure>
-          {%- if forloop.first -%}
+          {%- if shown == 1 -%}
             {%- comment -%}
               Arriving from a product card, the card's photo (already loaded) sits behind this one, so the
               photo that travels across from the card lands on a picture rather than an empty frame.
@@ -116,9 +140,9 @@
           <figure class="gallery-slide frame">{{ 'product-apparel-1' | placeholder_svg_tag: 'placeholder' }}</figure>
         {%- endfor -%}
       </div>
-      {%- if product.media.size > 1 -%}
+      {%- if show_n > 1 -%}
         <div class="gallery-bar">
-          <span class="muted small" data-gallery-count>1 / {{ product.media.size }}</span>
+          <span class="muted small" data-gallery-count>1 / {{ show_n }}</span>
           <div class="gallery-arrows">
             <button type="button" class="icon-btn" data-gallery-prev aria-label="Previous photo">{% render 'icon', name: 'chevron-left' %}</button>
             <button type="button" class="icon-btn" data-gallery-next aria-label="Next photo">{% render 'icon', name: 'chevron-right' %}</button>
@@ -325,7 +349,8 @@
       "name": {{ product.title | json }},
       "url": {{ request.origin | append: product.url | json }},
       {%- if product.featured_media -%}
-      "image": [{% for media in product.media limit: 6 %}{{ media.preview_image | image_url: width: 1200 | prepend: 'https:' | json }}{% unless forloop.last %},{% endunless %}{% endfor %}],
+      {%- capture ld_imgs -%}{% for media in product.media limit: 10 %}{% if flats_here %}{% assign ma = media.alt | downcase %}{% unless ma contains 'laid flat' %}{% continue %}{% endunless %}{% endif %}{{ media.preview_image | image_url: width: 1200 | prepend: 'https:' | json }},{% endfor %}{%- endcapture -%}
+      "image": [{{ ld_imgs | strip | remove_last: ',' }}],
       {%- endif -%}
       "description": {{ product.description | strip_html | strip | json }},
       "brand": { "@type": "Brand", "name": {{ settings.brand_name | default: product.vendor | json }} },

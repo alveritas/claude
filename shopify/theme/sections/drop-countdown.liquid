@@ -1,0 +1,87 @@
+{%- comment -%}
+  The Friday the 13th release. The release time is read from one place, the shop metafield
+  neverhollow.release_at (Shopify admin → Settings → Custom data → Shop), so the countdown, the page and the
+  scheduled publishing all agree; the section's own field is only a fallback.
+  The countdown only counts down to that moment. It never decides what is on sale: the pieces become buyable
+  when Shopify publishes them. At zero the page checks the collection itself and says what it finds, live or
+  still publishing, instead of assuming.
+{%- endcomment -%}
+{%- liquid
+  assign release = shop.metafields.neverhollow.release_at.value | default: section.settings.release_at
+  assign target = section.settings.collection
+  if target == blank
+    assign target = collections['friday-the-13th']
+  endif
+  assign target_url = target.url | default: '/collections/friday-the-13th'
+  assign live = false
+  if target.products_count > 0
+    assign live = true
+  endif
+  assign release_s = release | date: '%s' | plus: 0
+  assign now_s = 'now' | date: '%s' | plus: 0
+  assign passed = false
+  if release != blank and now_s >= release_s
+    assign passed = true
+  endif
+  assign date_label = section.settings.date_label
+  if date_label == blank and release != blank
+    assign date_label = release | date: '%m.%d.%y'
+  endif
+  assign tag = 'h2'
+  if section.settings.page_title
+    assign tag = 'h1'
+  endif
+-%}
+<section class="drop{% if section.settings.page_title %} drop--page{% endif %}" data-drop
+  data-release="{% if release != blank %}{{ release_s }}{% endif %}" data-drop-url="{{ target_url }}" data-state="{% if live %}live{% elsif passed %}publishing{% else %}pre{% endif %}"
+  aria-labelledby="drop-{{ section.id }}">
+  <div class="shell drop-inner">
+    <{{ tag }} id="drop-{{ section.id }}" class="drop-title">{{ section.settings.title | escape }}</{{ tag }}>
+    {%- if date_label != blank -%}<p class="drop-date tabular">{{ date_label | escape }}</p>{%- endif -%}
+    <p class="drop-line">{{ section.settings.line | escape }}</p>
+
+    {%- unless live -%}
+      <div class="countdown" data-countdown role="timer" aria-label="{{ section.settings.countdown_label | escape }}"{% if passed or release == blank %} hidden{% endif %}>
+        <p class="countdown-label">{{ section.settings.countdown_label | escape }}</p>
+        <div class="countdown-cells tabular">
+          <span class="cd"><span class="cd-n" data-cd="d">00</span><span class="cd-u">Days</span></span>
+          <span class="cd-sep" aria-hidden="true">:</span>
+          <span class="cd"><span class="cd-n" data-cd="h">00</span><span class="cd-u">Hours</span></span>
+          <span class="cd-sep" aria-hidden="true">:</span>
+          <span class="cd"><span class="cd-n" data-cd="m">00</span><span class="cd-u">Minutes</span></span>
+          <span class="cd-sep" aria-hidden="true">:</span>
+          <span class="cd"><span class="cd-n" data-cd="s">00</span><span class="cd-u">Seconds</span></span>
+        </div>
+      </div>
+    {%- endunless -%}
+
+    <p class="drop-status" data-drop-status aria-live="polite"{% unless passed and live == false %} hidden{% endunless %}>{{ section.settings.publishing_text | escape }}</p>
+
+    {%- if section.settings.show_button -%}
+      <a class="btn {% if live %}btn-solid{% else %}btn-line{% endif %} drop-btn" href="{{ target_url }}" data-drop-btn data-live-label="{{ section.settings.button_live | escape }}">
+        {%- if live -%}{{ section.settings.button_live | escape }}{%- else -%}{{ section.settings.button_pre | escape }}{%- endif -%}
+      </a>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Friday the 13th",
+  "class": "section-drop",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Heading", "default": "Friday the 13th." },
+    { "type": "text", "id": "date_label", "label": "Date line", "default": "11.13.26", "info": "Leave empty to print the release date as month.day.year." },
+    { "type": "text", "id": "line", "label": "Line", "default": "New pieces incoming." },
+    { "type": "text", "id": "countdown_label", "label": "Countdown label", "default": "Friday the 13th — new pieces incoming" },
+    { "type": "text", "id": "publishing_text", "label": "Shown after the release time while the pieces are still being published", "default": "Release time reached. The pieces are being published — this page updates by itself." },
+    { "type": "checkbox", "id": "show_button", "label": "Show button", "default": true },
+    { "type": "text", "id": "button_pre", "label": "Button before release", "default": "Preview the drop" },
+    { "type": "text", "id": "button_live", "label": "Button once live", "default": "Shop the drop" },
+    { "type": "collection", "id": "collection", "label": "Release collection", "info": "Leave empty for /collections/friday-the-13th." },
+    { "type": "text", "id": "release_at", "label": "Fallback release time", "default": "2026-11-13T00:00:00-05:00", "info": "Used only if the shop metafield neverhollow.release_at is missing. Format: 2026-11-13T00:00:00-05:00." },
+    { "type": "checkbox", "id": "page_title", "label": "Page heading (first section on the page)", "default": false }
+  ],
+  "presets": [{ "name": "Friday the 13th" }]
+}
+{% endschema %}

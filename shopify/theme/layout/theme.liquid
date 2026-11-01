@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ request.locale.iso_code }}"{% if settings.lowercase %} class="nh-lower"{% endif %}>
+<html lang="{{ request.locale.iso_code }}" class="{% if settings.lowercase %}nh-lower{% endif %}{% if settings.dark_mode %} nh-dark{% endif %}{% if settings.flats_only %} nh-flats{% endif %}">
   <head>
     {%- liquid
       assign brand = settings.brand_name | default: shop.name
@@ -7,8 +7,8 @@
     -%}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#ffffff">
-    <meta name="color-scheme" content="only light">
+    <meta name="theme-color" content="{% if settings.dark_mode %}#0a0a0a{% else %}#ffffff{% endif %}">
+    <meta name="color-scheme" content="{% if settings.dark_mode %}only dark{% else %}only light{% endif %}">
     <script>
       // Motion only runs with the theme script; if it hasn't started within 4s, show everything as is.
       (function () {

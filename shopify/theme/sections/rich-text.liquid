@@ -4,7 +4,7 @@
     <div class="rte prose{% if section.settings.large %} prose--lg{% endif %}">{{ section.settings.text }}</div>
   </section>
 {%- else -%}
-  <section class="shell rich rich--split">
+  <section class="shell rich rich--split{% if section.settings.statement %} rich--statement{% endif %}">
     {%- if section.settings.heading != blank -%}<h2 class="rich-heading">{{ section.settings.heading | escape }}</h2>{%- endif -%}
     <div class="rte prose{% if section.settings.large %} prose--lg{% endif %}">{{ section.settings.text }}</div>
   </section>
@@ -17,7 +17,8 @@
     { "type": "text", "id": "heading", "label": "Heading" },
     { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Tell your story here.</p>" },
     { "type": "checkbox", "id": "first", "label": "Page heading (first section on the page)", "default": false },
-    { "type": "checkbox", "id": "large", "label": "Larger text", "default": false }
+    { "type": "checkbox", "id": "large", "label": "Larger text", "default": false },
+    { "type": "checkbox", "id": "statement", "label": "Centred statement", "default": false }
   ],
   "presets": [{ "name": "Text" }]
 }

@@ -8,7 +8,8 @@
 {%- liquid
   assign code = settings.offer_code | strip
   assign brand = settings.brand_name | default: shop.name
-  assign auto = true
+  # The card opens by itself only if "Open the card by itself" is on; otherwise only the small tab shows.
+  assign auto = settings.offer_auto
   if request.page_type == 'cart' or template contains 'customers/' or request.page_type == 'password' or request.page_type == '404'
     assign auto = false
   endif

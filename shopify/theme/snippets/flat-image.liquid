@@ -1,0 +1,30 @@
+{%- comment -%}
+  The photo for a piece in small places (search, menu, bag): its first laid-flat photo when the
+  "Show only laid-flat photos" setting is on, otherwise its featured photo. A chosen variant's own photo
+  wins when it is itself laid flat. Accepts: product, variant (optional), width, widths, sizes, alt, class.
+{%- endcomment -%}
+{%- liquid
+  assign pick = product.featured_media
+  if settings.flats_only
+    assign found = false
+    if variant and variant.featured_media
+      assign va = variant.featured_media.alt | downcase
+      if va contains 'laid flat'
+        assign pick = variant.featured_media
+        assign found = true
+      endif
+    endif
+    unless found
+      for m in product.media
+        assign ma = m.alt | downcase
+        if ma contains 'laid flat'
+          assign pick = m
+          break
+        endif
+      endfor
+    endunless
+  elsif variant and variant.featured_media
+    assign pick = variant.featured_media
+  endif
+-%}
+{%- if pick -%}{{ pick.preview_image | image_url: width: width | image_tag: loading: 'lazy', decoding: 'async', sizes: sizes, widths: widths, alt: alt, class: class }}{%- endif -%}

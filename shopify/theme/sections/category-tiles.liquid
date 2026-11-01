@@ -42,7 +42,7 @@
         {%- if img == blank -%}
           {%- for p in collections.all.products -%}
             {%- if p.type == t -%}
-              {%- assign pick = p.media[1] | default: p.featured_media -%}
+              {%- if settings.flats_only -%}{%- assign pick = p.featured_media -%}{%- else -%}{%- assign pick = p.media[1] | default: p.featured_media -%}{%- endif -%}
               {%- assign img = pick.preview_image -%}
             {%- endif -%}
           {%- endfor -%}
@@ -67,7 +67,7 @@
           {%- assign img = nil -%}
           {%- for p in collections.all.products -%}
             {%- if p.type == t -%}
-              {%- assign pick = p.media[1] | default: p.featured_media -%}
+              {%- if settings.flats_only -%}{%- assign pick = p.featured_media -%}{%- else -%}{%- assign pick = p.media[1] | default: p.featured_media -%}{%- endif -%}
               {%- assign img = pick.preview_image -%}
             {%- endif -%}
           {%- endfor -%}

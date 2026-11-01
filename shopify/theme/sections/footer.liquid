@@ -32,6 +32,7 @@
           <li><a href="{{ routes.all_products_collection_url }}">All products</a></li>
           {%- if collections['men'].products_count > 0 -%}<li><a href="{{ collections['men'].url }}">Men</a></li>{%- endif -%}
           {%- if collections['women'].products_count > 0 -%}<li><a href="{{ collections['women'].url }}">Women</a></li>{%- endif -%}
+          <li><a href="{{ routes.collections_url }}">Collections</a></li>
         </ul>
       </div>
 
@@ -84,7 +85,7 @@
   "settings": [
     { "type": "text", "id": "signup_heading", "label": "Sign-up heading", "default": "Mailing list" },
     { "type": "text", "id": "signup_text", "label": "Sign-up text", "default": "New releases and restocks, by email." },
-    { "type": "textarea", "id": "brand_text", "label": "Brand line (homepage)", "default": "An independent clothing label. Drop 001 is made to order in one production run." }
+    { "type": "textarea", "id": "brand_text", "label": "Brand line (homepage)", "default": "An independent clothing label." }
   ]
 }
 {% endschema %}

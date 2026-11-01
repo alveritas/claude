@@ -58,7 +58,7 @@
 
       <nav class="header-nav desktop-only" aria-label="Main">
         <div class="nav-item has-mega" data-mega>
-          <a class="nav-link{% if on_shop %} is-active{% endif %}" href="{{ routes.all_products_collection_url }}"{% if on_shop %} aria-current="true"{% endif %}>Shop</a>
+          <a class="nav-link{% if on_shop %} is-active{% endif %}" href="{{ routes.all_products_collection_url }}"{% if on_shop %} aria-current="true"{% endif %}>Shop all</a>
           <div class="mega" data-mega-panel>
             <div class="shell mega-inner">
               <div class="mega-cols">
@@ -92,7 +92,7 @@
                   {%- if p.featured_media -%}
                     <li>
                       <a class="mega-feature" href="{{ p.url }}">
-                        <span class="frame mega-img">{{ p.featured_media.preview_image | image_url: width: 480 | image_tag: loading: 'lazy', decoding: 'async', sizes: '180px', widths: '240, 360, 480', alt: '' }}</span>
+                        <span class="frame mega-img">{%- render 'flat-image', product: p, width: 480, widths: '240, 360, 480', sizes: '180px', alt: '' -%}</span>
                         <span class="mega-name">{{ p.title }}</span>
                         <span class="mega-price">{{ p.price | money_without_trailing_zeros }}</span>
                       </a>
@@ -114,8 +114,8 @@
             <a class="nav-link{% if link.active %} is-active{% endif %}" href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title }}</a>
           {%- endfor -%}
         {%- else -%}
-          <a class="nav-link{% if page.handle == 'about' %} is-active{% endif %}" href="/pages/about"{% if page.handle == 'about' %} aria-current="page"{% endif %}>About</a>
-          <a class="nav-link{% if page.handle == 'faq' %} is-active{% endif %}" href="/pages/faq"{% if page.handle == 'faq' %} aria-current="page"{% endif %}>FAQ</a>
+          {%- assign on_cols = false -%}{%- if request.page_type == 'list-collections' -%}{%- assign on_cols = true -%}{%- endif -%}
+          <a class="nav-link{% if on_cols %} is-active{% endif %}" href="{{ routes.collections_url }}"{% if on_cols %} aria-current="page"{% endif %}>Collections</a>
         {%- endif -%}
       </nav>
 
@@ -127,9 +127,6 @@
         <button type="button" class="icon-btn" data-open="search" aria-label="Search" aria-controls="search-panel" aria-expanded="false">
           {% render 'icon', name: 'search' %}
         </button>
-        {%- if shop.customer_accounts_enabled -%}
-          <a class="icon-btn" href="{{ routes.account_url }}" aria-label="{% if customer %}Account{% else %}Sign in{% endif %}">{% render 'icon', name: 'user' %}</a>
-        {%- endif -%}
         <a class="icon-btn bag-btn" href="{{ routes.cart_url }}" data-open="cart" aria-controls="cart-drawer" aria-expanded="false" aria-label="Bag, {{ cart.item_count }} {% if cart.item_count == 1 %}item{% else %}items{% endif %}" data-bag-link>
           {% render 'icon', name: 'bag' %}
           <span class="badge" data-cart-count aria-hidden="true" {% if cart.item_count == 0 %}hidden{% endif %}>{{ cart.item_count }}</span>
@@ -198,9 +195,10 @@
           <li style="--i: {{ n }}"><a href="{{ link.url }}">{{ link.title }}</a></li>
         {%- endfor -%}
       {%- else -%}
-        <li style="--i: {{ n | plus: 1 }}"><a href="/pages/about">About</a></li>
-        <li style="--i: {{ n | plus: 2 }}"><a href="/pages/faq">FAQ</a></li>
-        <li style="--i: {{ n | plus: 3 }}"><a href="/pages/contact">Contact</a></li>
+        <li style="--i: {{ n | plus: 1 }}"><a href="{{ routes.collections_url }}">Collections</a></li>
+        <li class="sub" style="--i: {{ n | plus: 2 }}"><a href="/pages/about">About</a></li>
+        <li class="sub" style="--i: {{ n | plus: 3 }}"><a href="/pages/faq">FAQ</a></li>
+        <li class="sub" style="--i: {{ n | plus: 4 }}"><a href="/pages/contact">Contact</a></li>
       {%- endif -%}
     </ul>
     <div class="drawer-foot drawer-foot--menu">
@@ -219,7 +217,7 @@
       "type": "link_list",
       "id": "menu",
       "label": "Extra menu links",
-      "info": "Shown after Shop. Leave empty to show About and FAQ."
+      "info": "Shown after Women. Leave empty to show Collections."
     }
   ]
 }

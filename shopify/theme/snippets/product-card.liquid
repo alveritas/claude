@@ -20,22 +20,39 @@
   endfor
 
   assign first_media = product.featured_media
-  if feature
+  assign second_media = nil
+  if settings.flats_only
+    # Laid-flat photos only: the first one in front, a second one (the back) on hover.
+    assign flat_n = 0
     for m in product.media
       assign alt_down = m.alt | downcase
-      if alt_down contains 'worn' or alt_down contains 'model'
-        assign first_media = m
+      if alt_down contains 'laid flat'
+        assign flat_n = flat_n | plus: 1
+        if flat_n == 1
+          assign first_media = m
+        elsif flat_n == 2
+          assign second_media = m
+          break
+        endif
+      endif
+    endfor
+  else
+    if feature
+      for m in product.media
+        assign alt_down = m.alt | downcase
+        if alt_down contains 'worn' or alt_down contains 'model'
+          assign first_media = m
+          break
+        endif
+      endfor
+    endif
+    for m in product.media
+      if m.id != first_media.id
+        assign second_media = m
         break
       endif
     endfor
   endif
-  assign second_media = nil
-  for m in product.media
-    if m.id != first_media.id
-      assign second_media = m
-      break
-    endif
-  endfor
 
   assign po_tag = false
   if product.available and settings.preorder_enabled and settings.preorder_tag != blank and product.tags contains settings.preorder_tag

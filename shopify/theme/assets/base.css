@@ -899,3 +899,108 @@ body.nav-up .site-top { transform: translateY(calc(-100% - var(--joint) - var(--
 .nh-lower :is(.label, .caps, .preorder-title, .sum-row dt, .facts dt, .rte th, .marquee-item):not(.text-link) { font-size: 0.8125rem; }
 .nh-lower :is(.spec dt, .preorder-dates dt, .size-table thead th, .offer-eyebrow, .tag, .price-row [data-availability], .lightbox-count, .lightbox-hint, .gallery-bar) { font-size: 0.75rem; }
 .nh-lower .cursor-tag { font-size: 0.6875rem; }
+
+/* ══ Dark look (Theme settings → Brand → Dark look). The page turns near-black with off-white type; every
+   product photo keeps its own white backdrop, so the pieces sit on white tiles. The tokens above keep their
+   names (--white is "the page", --black is "the ink"), so every rule above follows without being rewritten. ══ */
+.nh-dark {
+  --white: #0a0a0a;          /* page */
+  --black: #f2f0ec;          /* ink */
+  --band: #141414;           /* secondary surface */
+  --mist: #1c1c1c;           /* elevated surface, hover fills */
+  --line: #303030;
+  --line-mid: #3d3d3d;
+  --grey: #a6a6a6;           /* secondary text, 8.3:1 on the page */
+  --grey-soft: #8c8c8c;
+  --grey-on-black: #a6a6a6;
+  --line-on-black: #303030;
+  --danger: #ff8a7a;
+  --tile: #ffffff;           /* photos stay on white */
+  --scrim: rgb(0 0 0 / 0.62);
+  --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none' stroke='%23f2f0ec' stroke-width='1.4'%3E%3Cpath d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+  color-scheme: only dark;
+}
+.nh-dark ::selection { background: #f2f0ec; color: #0a0a0a; }
+.nh-dark .site-header { background: rgb(10 10 10 / 0.9); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+.nh-dark .announcement { background: var(--band); color: var(--grey); border-bottom: 1px solid var(--line); }
+.nh-dark .ann-msg a { color: var(--black); }
+.nh-dark .slab { background: var(--band); color: var(--black); }
+@media (hover: hover) {
+  .nh-dark .btn-solid:hover { background-color: #d9d6d0; border-color: #d9d6d0; }
+  .nh-dark .offer-tab:hover { background: #d9d6d0; }
+}
+.nh-dark .tag { background: #0a0a0a; color: #f2f0ec; }
+.nh-dark .dot { box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.38); }
+.nh-dark .offer-card { box-shadow: 0 18px 50px rgb(0 0 0 / 0.5); }
+.nh-dark .offer-tab { box-shadow: none; }
+.nh-dark .sticky-buy { background: rgb(10 10 10 / 0.94); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-top: 1px solid var(--line); }
+.nh-dark .lightbox { background: #0a0a0a; }
+.nh-dark .lightbox .icon-btn { background: rgb(10 10 10 / 0.8); }
+.nh-dark .field, .nh-dark .boxed, .nh-dark .select, .nh-dark .qty, .nh-dark .opt, .nh-dark .check { background-color: var(--band); }
+.nh-dark .opt[aria-checked="true"] { background: var(--black); color: #0a0a0a; }
+.nh-dark .opt.is-unavailable { background: transparent; border-color: var(--line); color: var(--grey-soft); }
+.nh-dark .newsletter { background: var(--band); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.nh-dark .site-footer { background: #0a0a0a; }
+.nh-dark .dynamic-checkout .shopify-payment-button__button--unbranded { color: var(--black); border-color: var(--black); }
+/* product tiles: 4:5, white, the garment whole */
+.nh-dark .card-frame { aspect-ratio: 4 / 5; }
+.nh-dark .card-img, .nh-dark .search-hit-img img, .nh-dark .mega-img img, .nh-dark .cart-thumb img { object-fit: cover; }
+.nh-dark .card-body { padding-top: 14px; }
+.nh-dark .card-title { font-size: 0.875rem; color: var(--black); }
+.nh-dark .card-price { color: var(--grey); }
+@media (hover: hover) { .nh-dark .card-link:hover .card-img { transform: scale(1.02); } }
+
+/* ── Cover with the logo ── */
+.hero-type { border-bottom: 1px solid var(--line); }
+.hero-type-inner { min-height: clamp(420px, calc(78svh - var(--top-h)), 760px); display: grid; align-content: center; justify-items: center; gap: 14px; text-align: center; padding-top: 56px; padding-bottom: 64px; }
+.hero-type-title { width: min(84vw, 760px); margin: 0 0 6px; }
+.hero-type-mark { width: 100%; color: var(--black); }
+.hero-type-eyebrow { font-size: 0.8125rem; color: var(--grey); letter-spacing: 0.08em; }
+.hero-type-line { font-size: clamp(1.125rem, 2.2vw, 1.5rem); letter-spacing: -0.01em; line-height: 1.3; }
+.hero-type-btn { margin-top: 18px; min-width: 200px; }
+.js .hero-type-inner > * { animation: rise-in 1s var(--ease-out) both; }
+.js .hero-type-inner > :nth-child(2) { animation-delay: 0.12s; }
+.js .hero-type-inner > :nth-child(3) { animation-delay: 0.2s; }
+.js .hero-type-inner > :nth-child(4) { animation-delay: 0.28s; }
+
+/* ── Friday the 13th ── */
+.drop { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--band); }
+.drop--page { border-top: 0; }
+.drop-inner { display: grid; justify-items: center; text-align: center; gap: 10px; padding-top: 72px; padding-bottom: 76px; }
+@media (min-width: 48rem) { .drop-inner { padding-top: 104px; padding-bottom: 108px; } }
+.drop-title { font-size: clamp(2.25rem, 6vw, 4.5rem); font-weight: 400; letter-spacing: -0.035em; line-height: 1; }
+.drop-date { font-size: clamp(1rem, 1.6vw, 1.25rem); letter-spacing: 0.16em; color: var(--grey); }
+.drop-line { font-size: 1rem; color: var(--black); }
+.countdown { margin-top: 26px; display: grid; gap: 12px; justify-items: center; }
+.countdown-label { font-size: 0.75rem; letter-spacing: 0.08em; color: var(--grey); }
+.countdown-cells { display: flex; align-items: flex-start; gap: clamp(8px, 2vw, 20px); }
+.cd { display: grid; justify-items: center; gap: 6px; min-width: 3.4ch; }
+.cd-n { font-size: clamp(2rem, 6vw, 3.75rem); font-weight: 300; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.cd-u { font-size: 0.6875rem; letter-spacing: 0.08em; color: var(--grey); }
+.cd-sep { font-size: clamp(1.5rem, 4.5vw, 2.75rem); font-weight: 300; line-height: 1.1; color: var(--line-mid); }
+.drop-status { max-width: 44ch; margin-top: 18px; font-size: 0.875rem; color: var(--grey); }
+.drop-btn { margin-top: 26px; min-width: 200px; }
+html:not(.js) .countdown { display: none; }
+/* release page previews: the photos, the name and price, a coming-soon label, no link and no button */
+.preview-grid { list-style: none; padding: 0; margin: 0; }
+.preview .card-body { padding-top: 14px; }
+.preview-tag { left: 10px; top: 10px; }
+@media (hover: hover) { .preview:hover .card-img--alt { opacity: 1; } .preview:hover .card-frame:has(.card-img--alt) .card-img--main { opacity: 0; } }
+.preview-empty { padding: 40px 0; text-align: center; }
+
+/* ── Shop a collection ── */
+.cta-tiles { display: grid; gap: 8px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 48rem) { .cta-tiles { gap: 12px; } }
+.cta-tile { display: grid; gap: 12px; }
+.cta-label { display: flex; justify-content: space-between; align-items: baseline; }
+@media (hover: hover) { .cta-tile:hover .card-img { transform: scale(1.02); } .cta-tile:hover .card-title { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; } }
+.cta .card-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1.4s var(--ease-out); }
+/* the two collection tiles: wide white frames, the garment whole in the middle */
+.cta-frame { aspect-ratio: 16 / 11; }
+.cta .cta-frame .card-img { object-fit: contain; padding: 6% 0 4%; background: var(--tile); }
+@media (max-width: 47.99rem) { .cta-frame { aspect-ratio: 4 / 5; } .cta .cta-frame .card-img { object-fit: cover; padding: 0; } }
+/* the brand statement on the homepage */
+.rich.rich--statement { display: block; text-align: center; padding-top: 96px; padding-bottom: 104px; border-top: 0; }
+.rich--statement .prose--lg { margin-inline: auto; max-width: 30ch; font-size: clamp(1.375rem, 2.6vw, 2rem); line-height: 1.35; letter-spacing: -0.015em; }
+.rich--statement .rte > * + * { margin-top: 0.7em; }
+.rich--statement .rte p:not(:first-child) { color: var(--grey); }
