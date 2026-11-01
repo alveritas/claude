@@ -6,7 +6,8 @@
         "eyebrow": "Collection 001",
         "line": "Silhouette. Detail. Restraint.",
         "button": "Shop collection"
-      }
+      },
+      "disabled": true
     },
     "featured": {
       "type": "featured-collection",
@@ -30,7 +31,8 @@
       "settings": {
         "link": true,
         "limit": 6
-      }
+      },
+      "disabled": true
     },
     "new_arrivals": {
       "type": "featured-collection",
@@ -146,13 +148,13 @@
   },
   "order": [
     "drop",
-    "drop_pieces",
-    "hero_type",
     "featured",
     "new_arrivals",
     "collection_001",
     "statement",
     "newsletter",
+    "drop_pieces",
+    "hero_type",
     "hero",
     "ticker",
     "featured_men",
