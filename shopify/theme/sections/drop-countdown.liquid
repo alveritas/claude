@@ -32,9 +32,14 @@
     assign tag = 'h1'
   endif
 -%}
-<section class="drop{% if section.settings.page_title %} drop--page{% endif %}" data-drop
+<section class="drop{% if section.settings.page_title %} drop--page{% endif %}{% if section.settings.image != blank %} drop--cover{% endif %}" data-drop
   data-release="{% if release != blank %}{{ release_s }}{% endif %}" data-drop-url="{{ target_url }}" data-state="{% if live %}live{% elsif passed %}publishing{% else %}pre{% endif %}"
   aria-labelledby="drop-{{ section.id }}">
+  {%- if section.settings.image != blank -%}
+    <div class="drop-photo">
+      {{ section.settings.image | image_url: width: 1600 | image_tag: widths: '540, 720, 900, 1200, 1600', sizes: '(min-width: 64rem) 50vw, 100vw', loading: 'eager', fetchpriority: 'high', alt: section.settings.image.alt, class: 'drop-img' }}
+    </div>
+  {%- endif -%}
   <div class="shell drop-inner">
     <{{ tag }} id="drop-{{ section.id }}" class="drop-title">{{ section.settings.title | escape }}</{{ tag }}>
     {%- if section.settings.show_date and date_label != blank -%}<p class="drop-date tabular">{{ date_label | escape }}</p>{%- endif -%}
@@ -81,6 +86,7 @@
     { "type": "text", "id": "button_live", "label": "Button once live", "default": "Shop the drop" },
     { "type": "collection", "id": "collection", "label": "Release collection", "info": "Leave empty for /collections/friday-the-13th." },
     { "type": "text", "id": "release_at", "label": "Fallback release time", "default": "2026-11-13T00:00:00-05:00", "info": "Used only if the shop metafield neverhollow.release_at is missing. Format: 2026-11-13T00:00:00-05:00." },
+    { "type": "image_picker", "id": "image", "label": "Cover photo", "info": "Shown beside the countdown on larger screens, above it on phones." },
     { "type": "checkbox", "id": "page_title", "label": "Page heading (first section on the page)", "default": false }
   ],
   "presets": [{ "name": "Friday the 13th" }]

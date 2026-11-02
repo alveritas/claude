@@ -1016,3 +1016,22 @@
     timer = setInterval(tick, 1000);
   });
 })();
+
+/* ── Product photos: a quiet "worn" switch between the laid-flat photos and the photos on a person. ── */
+(function () {
+  document.querySelectorAll("[data-worn-toggle]").forEach((btn) => {
+    const gallery = btn.closest("[data-gallery]");
+    const track = gallery && gallery.querySelector("[data-gallery-track]");
+    if (!track) return;
+    btn.addEventListener("click", () => {
+      const worn = btn.getAttribute("aria-pressed") !== "true";
+      track.querySelectorAll(".gallery-slide").forEach((s) => { s.hidden = s.hasAttribute("data-worn") ? !worn : worn; });
+      btn.setAttribute("aria-pressed", String(worn));
+      btn.textContent = worn ? btn.dataset.on : btn.dataset.off;
+      gallery.classList.toggle("is-worn-view", worn);
+      track.scrollTo({ left: 0 });
+      const count = gallery.querySelector("[data-gallery-count]");
+      if (count) count.textContent = "1 / " + track.querySelectorAll(".gallery-slide:not([hidden])").length;
+    });
+  });
+})();

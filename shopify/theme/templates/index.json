@@ -19,7 +19,7 @@
           "cathedral-dress",
           "mnml-half-zip"
         ],
-        "limit": 4
+        "limit": 3
       }
     },
     "drop": {
@@ -30,7 +30,8 @@
         "button_pre": "Preview",
         "button_live": "Shop",
         "title": "Friday the 13th",
-        "show_date": false
+        "show_date": false,
+        "image": "shopify://shop_images/nh-cover-nocturnal.jpg"
       }
     },
     "drop_pieces": {
@@ -47,7 +48,7 @@
         "heading": "Latest",
         "all_products": true,
         "sort": "newest",
-        "limit": 4,
+        "limit": 3,
         "exclude": [
           "vesper-polo",
           "relic-denim",
