@@ -27,8 +27,8 @@
         "type": "checkbox",
         "id": "lowercase",
         "label": "Write everything in lowercase",
-        "default": true,
-        "info": "The brand's look: every word on the site in lowercase, labels and buttons included. The logo stays as drawn, and what people type into a field shows as typed."
+        "default": false,
+        "info": "Off: text shows as written (sentence case, product names in Title Case). On: every word on the site in lowercase. The logo stays as drawn either way."
       },
       {
         "type": "font_picker",

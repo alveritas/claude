@@ -48,7 +48,7 @@
             <h3 class="card-title">{% if has_name %}{{ e.name.value | escape }}{% else %}{{ section.settings.label | escape }}{% endif %}</h3>
             {%- if e.price.value != blank -%}<p class="card-price">{{ e.price.value | times: 100 | money_without_trailing_zeros }}</p>{%- endif -%}
             {%- unless link -%}{%- if e.description.value != blank -%}<p class="preview-desc">{{ e.description.value | escape }}</p>{%- endif -%}{%- endunless -%}
-            <p class="card-meta">{% if e.audience.value != blank %}{{ e.audience.value | escape }} · {% endif %}{{ date_label | escape }}</p>
+            <p class="card-meta">{% if e.audience.value != blank %}{{ e.audience.value | capitalize | escape }} · {% endif %}{{ date_label | escape }}</p>
           </div>
           {%- if link -%}</a>{%- endif -%}
         </li>
