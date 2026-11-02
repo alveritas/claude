@@ -607,10 +607,8 @@ body:has(.sticky-buy.is-visible) .offer-tab { bottom: calc(80px + env(safe-area-
 .qty--sm { height: 34px; }
 .qty--sm button { width: 32px; }
 .qty-value { min-width: 22px; text-align: center; font-size: 0.8125rem; font-variant-numeric: tabular-nums; }
-.dynamic-checkout .shopify-payment-button__button { min-height: 48px; border-radius: 0; }
-.dynamic-checkout .shopify-payment-button__button--unbranded { background: transparent; color: var(--black); border: 1px solid var(--black); font-size: 0.875rem; font-weight: 500; }
-@media (hover: hover) { .dynamic-checkout .shopify-payment-button__button--unbranded:hover:not([disabled]) { background: var(--black); color: var(--white); } }
-.dynamic-checkout .shopify-payment-button__more-options { font-size: 0.75rem; color: var(--black); text-decoration: underline; text-underline-offset: 3px; margin-top: 10px; }
+/* Add to bag, under Buy now: same height, outlined */
+.buy-add { min-height: 52px; }
 .restock { margin-top: 20px; border: 1px solid var(--line); background: var(--white); padding: 16px; }
 .restock-form { display: grid; gap: 12px; }
 .restock-row { display: flex; }
@@ -941,7 +939,6 @@ body.nav-up .site-top { transform: translateY(calc(-100% - var(--joint) - var(--
 .nh-dark .opt.is-unavailable { background: transparent; border-color: var(--line); color: var(--grey-soft); }
 .nh-dark .newsletter { background: var(--band); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .nh-dark .site-footer { background: #0a0a0a; }
-.nh-dark .dynamic-checkout .shopify-payment-button__button--unbranded { color: var(--black); border-color: var(--black); }
 /* product tiles: 4:5, white, the garment whole */
 .nh-dark .card-frame { aspect-ratio: 4 / 5; }
 .nh-dark .card-img, .nh-dark .search-hit-img img, .nh-dark .mega-img img, .nh-dark .cart-thumb img { object-fit: cover; }

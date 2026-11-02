@@ -32,10 +32,12 @@
       endif
     endif
   endif
+  # The main button goes straight to checkout; Add to bag stays underneath for people building an order.
+  assign buy_label = 'Buy now'
   assign add_label = 'Add to bag'
   assign avail_text = 'Available'
   if po
-    assign add_label = 'Pre-order'
+    assign buy_label = 'Pre-order now'
     assign avail_text = 'Pre-order'
   endif
   # On pre-order pieces, "final" applies once the order ships (pre-orders can be refunded before then).
@@ -241,14 +243,15 @@
               <button type="button" data-qty-plus aria-label="Increase quantity">{% render 'icon', name: 'plus', size: 14 %}</button>
             </div>
             {%- endunless -%}
-            <button type="submit" name="add" class="btn btn-solid btn-block" data-add {% unless can_buy %}disabled{% endunless %}>
-              <span data-add-label>{% if po_closed %}Pre-orders closed{% elsif current.available %}{{ add_label }}{% else %}Sold out{% endif %}</span>
-              <span class="btn-price" data-add-price>{{ current.price | money_without_trailing_zeros }}</span>
+            {%- comment -%} Without the theme script, return_to sends the shopper from /cart/add straight to checkout. {%- endcomment -%}
+            <button type="submit" name="return_to" value="/checkout" class="btn btn-solid btn-block" data-buy-now {% unless can_buy %}disabled{% endunless %}>
+              <span data-buy-label>{% if po_closed %}Pre-orders closed{% elsif current.available %}{{ buy_label }}{% else %}Sold out{% endif %}</span>
+              <span class="btn-price" data-buy-price>{{ current.price | money_without_trailing_zeros }}</span>
             </button>
           </div>
-          <div class="dynamic-checkout" data-dynamic-checkout {% unless can_buy %}hidden{% endunless %}>
-            {{ form | payment_button }}
-          </div>
+          <button type="submit" name="add" class="btn btn-line btn-block buy-add" data-add {% unless can_buy %}disabled hidden{% endunless %}>
+            <span data-add-label>{{ add_label }}</span>
+          </button>
           <p class="form-error" role="alert" data-form-error hidden></p>
         </div>
       {%- endform -%}
@@ -349,11 +352,11 @@
       <p class="truncate">{{ product.title }}</p>
       <p class="muted micro" data-sticky-meta>{{ current.price | money_without_trailing_zeros }}{% unless single_default %}, {{ current.title }}{% endunless %}</p>
     </div>
-    <button type="button" class="btn btn-solid" data-sticky-add tabindex="-1">{% if po_closed %}Pre-orders closed{% else %}{{ add_label }}{% endif %}</button>
+    <button type="button" class="btn btn-solid" data-sticky-add tabindex="-1">{% if po_closed %}Pre-orders closed{% else %}{{ buy_label }}{% endif %}</button>
   </div>
 
   <script type="application/json" data-product-json>{{ product | json }}</script>
-  <script type="application/json" data-product-meta>{"colorIndex": {{ color_index | json }}, "singleDefault": {{ single_default | json }}, "addLabel": {{ add_label | json }}, "availText": {{ avail_text | json }}, "closed": {{ po_closed | json }}}</script>
+  <script type="application/json" data-product-meta>{"colorIndex": {{ color_index | json }}, "singleDefault": {{ single_default | json }}, "addLabel": {{ add_label | json }}, "buyLabel": {{ buy_label | json }}, "availText": {{ avail_text | json }}, "closed": {{ po_closed | json }}}</script>
 
   <script type="application/ld+json">
     {

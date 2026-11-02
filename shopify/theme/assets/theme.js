@@ -326,8 +326,10 @@
     const input = $("[data-variant-input]", root);
     const groups = $$("[data-option]", root);
     const colorIdx = meta.colorIndex;
-    // Pre-order pieces say "Pre-order"; after the last pre-order day the button stays off.
+    // The main button goes straight to checkout (Buy now, or Pre-order now); Add to bag sits under it.
+    // After the last pre-order day both stay off.
     const ADD = meta.addLabel || "Add to bag";
+    const BUY = meta.buyLabel || "Buy now";
     const AVAIL = meta.availText || "Available";
     const CLOSED = Boolean(meta.closed);
     const CLOSED_TEXT = "Pre-orders closed";
@@ -412,11 +414,21 @@
       updateCount();
     };
 
+    const buyBtn = $("[data-buy-now]", root);
+    const buyLabel = $("[data-buy-label]", root);
+    const buyPrice = $("[data-buy-price]", root);
     const addBtn = $("[data-add]", root);
     const addLabel = $("[data-add-label]", root);
-    const addPrice = $("[data-add-price]", root);
     const restock = $("[data-restock]", root);
-    const dyn = $("[data-dynamic-checkout]", root);
+    // Both buttons follow the same state; the main one carries the label and price, Add to bag hides
+    // whenever there's nothing to add (sold out, pre-orders closed).
+    const setButtons = (off, label, price, priceHidden, addHidden) => {
+      if (buyBtn) buyBtn.disabled = off;
+      if (buyLabel) buyLabel.textContent = label;
+      if (buyPrice) { if (price !== null) buyPrice.textContent = price; buyPrice.hidden = priceHidden; }
+      if (addBtn) { addBtn.disabled = off; addBtn.hidden = addHidden; }
+      if (addLabel) addLabel.textContent = ADD;
+    };
     const availability = $("[data-availability]", root);
     const priceEl = $("[data-price]", root);
     const err = $("[data-form-error]", root);
@@ -454,10 +466,7 @@
       });
       if (missing().length) {
         // Nothing to buy until every choice is made; pressing the button says what's missing.
-        if (addBtn) addBtn.disabled = CLOSED;
-        if (addLabel) addLabel.textContent = CLOSED ? CLOSED_TEXT : ADD;
-        if (addPrice) addPrice.hidden = CLOSED;
-        if (dyn) dyn.hidden = true;
+        setButtons(CLOSED, CLOSED ? CLOSED_TEXT : BUY, null, CLOSED, CLOSED);
         if (restock) restock.hidden = true;
         if (availability) { availability.textContent = CLOSED ? CLOSED_TEXT : AVAIL; availability.hidden = !CLOSED; }
         const stickyMeta = $("[data-sticky-meta]", root);
@@ -466,9 +475,7 @@
         return;
       }
       if (!v) {
-        if (addBtn) addBtn.disabled = true;
-        if (addLabel) addLabel.textContent = "Unavailable";
-        if (addPrice) addPrice.hidden = true;
+        setButtons(true, "Unavailable", null, true, true);
         return;
       }
       input.value = v.id;
@@ -476,10 +483,7 @@
       const buyable = v.available && !CLOSED;
       // The badge by the price only speaks up when something is wrong: sold out, or pre-orders closed.
       if (availability) { availability.textContent = CLOSED ? CLOSED_TEXT : v.available ? AVAIL : "Sold out"; availability.hidden = !CLOSED && v.available; }
-      if (addBtn) addBtn.disabled = !buyable;
-      if (addLabel) addLabel.textContent = CLOSED ? CLOSED_TEXT : v.available ? ADD : "Sold out";
-      if (addPrice) { addPrice.textContent = money(v.price); addPrice.hidden = !buyable; }
-      if (dyn) dyn.hidden = !buyable;
+      setButtons(!buyable, CLOSED ? CLOSED_TEXT : v.available ? BUY : "Sold out", money(v.price), !buyable, !buyable);
       if (restock) {
         restock.hidden = v.available || CLOSED;
         const opt = $("[data-restock-option]", restock);
@@ -545,12 +549,31 @@
     if (minus) minus.addEventListener("click", () => (qtyInput.value = clampQty(Number(qtyInput.value) - 1)));
     if (plus) plus.addEventListener("click", () => (qtyInput.value = clampQty(Number(qtyInput.value) + 1)));
     if (qtyInput) qtyInput.addEventListener("change", () => (qtyInput.value = clampQty(Number(qtyInput.value))));
+    // Enter in the quantity box only sets the number; it never sends anyone to checkout.
+    if (qtyInput) qtyInput.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); qtyInput.value = clampQty(Number(qtyInput.value)); } });
 
-    // Add to bag without leaving the page; the bag opens with the piece in it.
+    // Buy now: the piece goes into the bag and the shopper goes straight to Shopify's checkout.
+    // Add to bag: the piece goes into the bag without leaving the page, and the bag opens.
+    // Which button sent the form: e.submitter, or the last one pressed on browsers without it.
+    let pressed = null;
+    [buyBtn, addBtn].forEach((b) => b && b.addEventListener("click", () => (pressed = b)));
+    const CHECKOUT = "/checkout";
+    // Coming back from checkout with the browser's back button shows the page as it was left: reset it.
+    window.addEventListener("pageshow", (ev) => {
+      if (!ev.persisted) return;
+      [buyBtn, addBtn].forEach((b) => b && b.removeAttribute("aria-busy"));
+      update("restore");
+    });
     if (form) {
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        if (!addBtn || addBtn.disabled || addBtn.getAttribute("aria-busy") === "true") return;
+        const sender = e.submitter || pressed;
+        pressed = null;
+        const buyNow = Boolean(buyBtn && sender === buyBtn);
+        const btn = buyNow ? buyBtn : addBtn;
+        const lab = buyNow ? buyLabel : addLabel;
+        const idle = buyNow ? BUY : ADD;
+        if (!btn || btn.disabled || btn.getAttribute("aria-busy") === "true") return;
         if (missing().length) {
           if (err) { err.textContent = `Choose a ${missing()[0].toLowerCase()} first.`; err.hidden = false; }
           const g = groups.find((x) => selected[Number(x.dataset.option)] === null);
@@ -562,40 +585,48 @@
           return;
         }
         // While adding, the button keeps its look and says so (no flash of the disabled style).
-        addBtn.setAttribute("aria-busy", "true");
-        if (addLabel) addLabel.textContent = "Adding…";
+        btn.setAttribute("aria-busy", "true");
+        if (lab) lab.textContent = buyNow ? "Going to checkout…" : "Adding…";
+        if (err) err.hidden = true;
         let added = false;
         try {
           const body = new FormData(form);
-          body.append("sections", "cart-drawer");
+          if (!buyNow) body.append("sections", "cart-drawer");
           const res = await fetch(`${NH.routes.cartAdd}.js`, { method: "POST", headers: { Accept: "application/json", "X-Requested-With": "XMLHttpRequest" }, body });
           const data = await res.json();
           if (!res.ok) throw new Error(data.description || data.message || "This size couldn’t be added. Try again.");
+          added = true;
+          if (buyNow) { window.location.assign(CHECKOUT); return; }
           if (data.sections && data.sections["cart-drawer"]) renderDrawer(data.sections["cart-drawer"], true);
           else await refreshDrawer(true);
           announce(`${product.title} added to bag`);
-          added = true;
           if (addLabel) { addLabel.textContent = "Added to bag"; setTimeout(() => (addLabel.textContent = ADD), 1800); }
         } catch (ex) {
           if (err) { err.textContent = ex.message; err.hidden = false; }
         } finally {
-          addBtn.removeAttribute("aria-busy");
-          if (!added && addLabel) addLabel.textContent = ADD;
-          const v = findVariant(selected);
-          addBtn.disabled = CLOSED || (Boolean(v) && !v.available);
+          // On the way to checkout the button keeps saying so until the page changes.
+          if (!(buyNow && added)) {
+            btn.removeAttribute("aria-busy");
+            if (!added && lab) lab.textContent = idle;
+            const v = findVariant(selected);
+            const off = CLOSED || (Boolean(v) && !v.available);
+            if (buyBtn) buyBtn.disabled = off;
+            if (addBtn) addBtn.disabled = off;
+          }
         }
       });
     }
 
     // Phones: a buy bar while the real button is off screen.
     const sticky = $("[data-sticky-buy]", root);
-    if (sticky && addBtn) {
+    const buyBox = $("[data-buy]", root);
+    if (sticky && buyBtn && buyBox) {
       const stickyAdd = $("[data-sticky-add]", sticky);
       // Checked on scroll rather than by watching the button, so a fast fling past it still shows the bar.
       let shown = null, queued = false;
       const check = () => {
         queued = false;
-        const show = addBtn.getBoundingClientRect().bottom < 0;
+        const show = buyBox.getBoundingClientRect().bottom < 0;
         if (show === shown) return;
         shown = show;
         sticky.classList.toggle("is-visible", show);
@@ -606,7 +637,7 @@
       window.addEventListener("resize", check);
       check();
       if (stickyAdd) stickyAdd.addEventListener("click", () => {
-        if (!addBtn.disabled && !missing().length) form.requestSubmit ? form.requestSubmit() : form.submit();
+        if (!buyBtn.disabled && !missing().length) buyBtn.click();
         else {
           form.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
           if (missing().length && err) { err.textContent = `Choose a ${missing()[0].toLowerCase()} first.`; err.hidden = false; }
