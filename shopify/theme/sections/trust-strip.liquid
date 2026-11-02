@@ -1,0 +1,38 @@
+{%- comment -%}
+  The facts people check before buying, in one quiet row under the cover: shipping, timing, checkout, contact.
+  Each block is a short heading and one line. Keep them true: they're promises.
+{%- endcomment -%}
+<section class="trust" aria-label="{{ section.settings.label | escape }}">
+  <ul class="shell trust-list">
+    {%- for block in section.blocks -%}
+      <li class="trust-item" {{ block.shopify_attributes }}>
+        <p class="trust-title">{{ block.settings.title | escape }}</p>
+        <p class="trust-text">
+          {%- if block.settings.text == '[email]' and settings.contact_email != blank -%}
+            <a class="text-link" href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a>
+          {%- else -%}
+            {{ block.settings.text | escape }}
+          {%- endif -%}
+        </p>
+      </li>
+    {%- endfor -%}
+  </ul>
+</section>
+
+{% schema %}
+{
+  "name": "Trust strip",
+  "class": "section-trust",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Label for screen readers", "default": "Shipping and checkout" }
+  ],
+  "blocks": [
+    { "type": "item", "name": "Item", "settings": [
+      { "type": "text", "id": "title", "label": "Heading" },
+      { "type": "text", "id": "text", "label": "Line", "info": "Write [email] to show the contact email from Theme settings." }
+    ] }
+  ],
+  "max_blocks": 4,
+  "presets": [{ "name": "Trust strip" }]
+}
+{% endschema %}

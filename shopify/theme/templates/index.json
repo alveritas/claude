@@ -12,26 +12,24 @@
     "featured": {
       "type": "featured-collection",
       "settings": {
-        "heading": "Now",
-        "picks": [
-          "vesper-polo",
-          "relic-denim",
-          "cathedral-dress",
-          "mnml-half-zip"
-        ],
-        "limit": 3
+        "heading": "Collection 001",
+        "limit": 6,
+        "subheading": ""
       }
     },
     "drop": {
       "type": "drop-countdown",
       "settings": {
-        "line": "",
+        "line": "Five new pieces.",
         "countdown_label": "",
-        "button_pre": "Preview",
-        "button_live": "Shop",
+        "button_pre": "Preview the drop",
+        "button_live": "Shop the drop",
         "title": "Friday the 13th",
-        "show_date": false,
-        "image": "shopify://shop_images/nh-cover-nocturnal.jpg"
+        "show_date": true,
+        "image": "shopify://shop_images/nh-cover-nocturnal.jpg",
+        "date_label": "11.13.26 · midnight ET",
+        "button2_label": "Shop collection 001",
+        "button2_link": "shopify://collections/drop-001"
       }
     },
     "drop_pieces": {
@@ -45,7 +43,7 @@
     "new_arrivals": {
       "type": "featured-collection",
       "settings": {
-        "heading": "Latest",
+        "heading": "New arrivals",
         "all_products": true,
         "sort": "newest",
         "limit": 3,
@@ -60,18 +58,19 @@
     "collection_001": {
       "type": "collection-cta",
       "settings": {
-        "heading": "001",
-        "button": "All",
-        "men_label": "Men",
-        "women_label": "Women"
+        "heading": "Men & women",
+        "button": "Shop all",
+        "men_label": "Shop men",
+        "women_label": "Shop women"
       }
     },
     "statement": {
       "type": "rich-text",
       "settings": {
         "large": true,
-        "text": "<p>No unnecessary noise.</p>",
-        "statement": true
+        "text": "<p>Neverhollow is built on the idea that clothing should speak through its construction, silhouette, and presence.</p><p>No unnecessary noise. No forced identity. Just considered pieces designed to exist beyond a moment.</p><p><a href=\"/pages/about\">Our story</a></p>",
+        "statement": true,
+        "heading": ""
       }
     },
     "newsletter": {
@@ -111,40 +110,11 @@
     },
     "categories": {
       "type": "category-tiles",
-      "settings": {},
-      "blocks": {
-        "tops": {
-          "type": "category",
-          "settings": {
-            "title": "Tops"
-          }
-        },
-        "hoodies": {
-          "type": "category",
-          "settings": {
-            "title": "Hoodies"
-          }
-        },
-        "bottoms": {
-          "type": "category",
-          "settings": {
-            "title": "Bottoms"
-          }
-        },
-        "footwear": {
-          "type": "category",
-          "settings": {
-            "title": "Footwear"
-          }
-        }
+      "settings": {
+        "heading": "Shop by category"
       },
-      "block_order": [
-        "tops",
-        "hoodies",
-        "bottoms",
-        "footwear"
-      ],
-      "disabled": true
+      "blocks": {},
+      "block_order": []
     },
     "editorial": {
       "type": "editorial",
@@ -155,11 +125,53 @@
       "type": "spotlight",
       "settings": {},
       "disabled": true
+    },
+    "trust": {
+      "type": "trust-strip",
+      "settings": {},
+      "blocks": {
+        "ship": {
+          "type": "item",
+          "settings": {
+            "title": "Ships worldwide",
+            "text": "US $8, free over $100. Everywhere else $35."
+          }
+        },
+        "time": {
+          "type": "item",
+          "settings": {
+            "title": "Ships within 3 weeks",
+            "text": "Tracking is emailed as soon as your order ships."
+          }
+        },
+        "pay": {
+          "type": "item",
+          "settings": {
+            "title": "Secure checkout",
+            "text": "Encrypted checkout through Shopify. Card details never reach this site."
+          }
+        },
+        "help": {
+          "type": "item",
+          "settings": {
+            "title": "Questions",
+            "text": "[email]"
+          }
+        }
+      },
+      "block_order": [
+        "ship",
+        "time",
+        "pay",
+        "help"
+      ]
     }
   },
   "order": [
     "drop",
+    "trust",
     "featured",
+    "categories",
     "new_arrivals",
     "collection_001",
     "statement",
@@ -170,7 +182,6 @@
     "ticker",
     "featured_men",
     "featured_women",
-    "categories",
     "editorial",
     "spotlight"
   ]

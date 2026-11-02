@@ -1131,3 +1131,32 @@ body.template-index:not(.is-scrolled) .site-header::after { opacity: 0; }
 /* a hairline between the sign-up and the footer now that they share the wall colour */
 .newsletter + .shopify-section .site-footer, .section-newsletter + .section-footer .site-footer { border-top: 1px solid var(--line-mid); }
 .shopify-section:has(.newsletter) { border-bottom: 1px solid var(--line-mid); }
+
+/* ══ Established: clear headings, real information, a trust row — the gothic stays in the photo, the
+   script and the stone palette. ══ */
+.section-title { font-size: 1.375rem; letter-spacing: -0.01em; font-weight: 400; }
+@media (min-width: 48rem) { .section-title { font-size: 1.75rem; } }
+.section-link { font-size: 0.875rem; color: var(--black); }
+.card-title, .card-price { font-size: 0.875rem; letter-spacing: 0; }
+.card-price { color: var(--black); }
+.card-meta .card-dots { display: flex; }
+.card-meta:not(:has(.card-flag)) { display: flex; }
+/* the cover: a date line and one more way in */
+.drop-date { letter-spacing: 0.08em; }
+.drop--cover .drop-line { color: var(--grey); }
+.drop-btn--2 { margin-top: 8px; min-height: auto; padding: 6px 0 2px; border: 0; background: none; text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 1px; }
+.drop-btn--2:hover { background: none !important; color: inherit !important; opacity: 0.6; }
+@media (max-width: 63.99rem) { .drop--cover .drop-line { color: rgb(255 255 255 / 0.85); } .drop--cover .drop-btn--2 { color: #fff; } }
+/* trust row */
+.trust { border-bottom: 1px solid var(--line); }
+.trust-list { list-style: none; margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 20px; padding-top: 28px; padding-bottom: 28px; }
+@media (min-width: 64rem) { .trust-list { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px; padding-top: 36px; padding-bottom: 36px; } }
+.trust-title { font-size: 0.875rem; font-weight: 500; margin-bottom: 4px; }
+.trust-text { font-size: 0.8125rem; line-height: 1.5; color: var(--grey); }
+/* categories: four small tiles in a row */
+@media (min-width: 64rem) { .cat-grid.grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 16px; } }
+.cat-frame { aspect-ratio: 4 / 5; }
+/* brand section */
+.rich--statement .rte a { font-size: 0.9375rem; }
+.rich--statement .prose--lg p:last-child { margin-top: 1.4em; }
+.cat-label .muted { display: none; }

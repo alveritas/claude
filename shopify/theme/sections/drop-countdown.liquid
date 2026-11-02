@@ -67,6 +67,9 @@
         {%- if live -%}{{ section.settings.button_live | escape }}{%- else -%}{{ section.settings.button_pre | escape }}{%- endif -%}
       </a>
     {%- endif -%}
+    {%- if section.settings.button2_label != blank and section.settings.button2_link != blank -%}
+      <a class="btn btn-line drop-btn drop-btn--2" href="{{ section.settings.button2_link }}">{{ section.settings.button2_label | escape }}</a>
+    {%- endif -%}
   </div>
 </section>
 
@@ -84,6 +87,8 @@
     { "type": "checkbox", "id": "show_button", "label": "Show button", "default": true },
     { "type": "text", "id": "button_pre", "label": "Button before release", "default": "Preview the drop" },
     { "type": "text", "id": "button_live", "label": "Button once live", "default": "Shop the drop" },
+    { "type": "text", "id": "button2_label", "label": "Second button" },
+    { "type": "url", "id": "button2_link", "label": "Second button link" },
     { "type": "collection", "id": "collection", "label": "Release collection", "info": "Leave empty for /collections/friday-the-13th." },
     { "type": "text", "id": "release_at", "label": "Fallback release time", "default": "2026-11-13T00:00:00-05:00", "info": "Used only if the shop metafield neverhollow.release_at is missing. Format: 2026-11-13T00:00:00-05:00." },
     { "type": "image_picker", "id": "image", "label": "Cover photo", "info": "Shown beside the countdown on larger screens, above it on phones." },
