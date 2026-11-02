@@ -37,7 +37,7 @@
   aria-labelledby="drop-{{ section.id }}">
   <div class="shell drop-inner">
     <{{ tag }} id="drop-{{ section.id }}" class="drop-title">{{ section.settings.title | escape }}</{{ tag }}>
-    {%- if date_label != blank -%}<p class="drop-date tabular">{{ date_label | escape }}</p>{%- endif -%}
+    {%- if section.settings.show_date and date_label != blank -%}<p class="drop-date tabular">{{ date_label | escape }}</p>{%- endif -%}
     <p class="drop-line">{{ section.settings.line | escape }}</p>
 
     {%- unless live -%}
@@ -71,6 +71,7 @@
   "class": "section-drop",
   "settings": [
     { "type": "text", "id": "title", "label": "Heading", "default": "Friday the 13th." },
+    { "type": "checkbox", "id": "show_date", "label": "Show the date line", "default": true },
     { "type": "text", "id": "date_label", "label": "Date line", "default": "11.13.26", "info": "Leave empty to print the release date as month.day.year." },
     { "type": "text", "id": "line", "label": "Line", "default": "New pieces incoming." },
     { "type": "text", "id": "countdown_label", "label": "Countdown label", "default": "Friday the 13th — new pieces incoming" },

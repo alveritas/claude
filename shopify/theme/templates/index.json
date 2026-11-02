@@ -28,7 +28,9 @@
         "line": "",
         "countdown_label": "",
         "button_pre": "Preview",
-        "button_live": "Shop"
+        "button_live": "Shop",
+        "title": "Friday the 13th",
+        "show_date": false
       }
     },
     "drop_pieces": {

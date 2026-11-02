@@ -71,6 +71,8 @@
         font-display: swap;
       }
       :root { --mark-wordmark: url("{{ 'nh-logo.svg' | asset_url }}"); }
+      {{ settings.accent_font | font_face: font_display: 'swap' }}
+      :root { --accent-font: {{ settings.accent_font.family }}, {{ settings.accent_font.fallback_families }}; --accent-style: {{ settings.accent_font.style }}; --accent-weight: {{ settings.accent_font.weight }}; }
     </style>
     {{ 'base.css' | asset_url | stylesheet_tag }}
     <script>

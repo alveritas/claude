@@ -31,6 +31,13 @@
         "info": "The brand's look: every word on the site in lowercase, labels and buttons included. The logo stays as drawn, and what people type into a field shows as typed."
       },
       {
+        "type": "font_picker",
+        "id": "accent_font",
+        "label": "Calligraphic accent",
+        "default": "cormorant_i4",
+        "info": "Used for headings, piece names and the countdown. Everything else stays in the plain sans."
+      },
+      {
         "type": "checkbox",
         "id": "dark_mode",
         "label": "Dark look",

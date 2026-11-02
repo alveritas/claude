@@ -6,7 +6,9 @@
         "page_title": true,
         "show_button": false,
         "line": "",
-        "countdown_label": ""
+        "countdown_label": "",
+        "title": "Friday the 13th",
+        "show_date": false
       }
     },
     "preview": {
