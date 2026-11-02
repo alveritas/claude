@@ -1094,3 +1094,40 @@ html:not(.js) .countdown { display: none; }
   .drop--cover .drop-btn.btn-solid { background: #fff; color: #000; }
   .drop--cover :focus-visible { outline-color: #fff; }
 }
+
+/* ══ Palette, light look: white where you shop, the cover's concrete grey where the brand speaks, soft black
+   for type. The grey is sampled from the cover photo's wall, so the photo dissolves into the page. ══ */
+:root:not(.nh-dark) {
+  --black: #111111;          /* type, buttons */
+  --grey: #66635e;           /* secondary text, warm, 5.9:1 on white */
+  --grey-soft: #8a8782;
+  --line: #e4e2de;
+  --line-mid: #cfccc6;
+  --band: #e8e7e4;           /* the wall in the cover photo */
+  --mist: #f2f1ee;
+}
+:root:not(.nh-dark) ::selection { background: #111; color: #fff; }
+
+/* the cover, desktop: photo on the left fades into a panel of its own wall colour; the words sit on that wall */
+.drop--cover { background: var(--band); }
+.site-footer, .newsletter { background: var(--band); }
+.site-footer { border-top: 0; }
+body.template-index:not(.is-scrolled) .site-header { background: var(--band); }
+body.template-index:not(.is-scrolled) .site-header::after { opacity: 0; }
+@media (min-width: 64rem) {
+  .drop--cover .drop-photo { background: var(--band); }
+  .drop--cover .drop-photo::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background:
+      linear-gradient(to right, rgb(232 231 228 / 0) 52%, rgb(232 231 228 / 0.55) 78%, rgb(232 231 228 / 1) 100%),
+      linear-gradient(to bottom, rgb(232 231 228 / 0.9) 0%, rgb(232 231 228 / 0) 9%),
+      linear-gradient(to top, rgb(232 231 228 / 0.8) 0%, rgb(232 231 228 / 0) 10%);
+  }
+  .drop--cover .drop-inner { padding-left: 0; }
+  .drop--cover .drop-inner::before { opacity: 0.07; color: #111; }
+  .drop--cover .drop-btn { background: transparent; }
+  .drop--cover .drop-btn:hover { background: #111; color: #fff; }
+}
+/* a hairline between the sign-up and the footer now that they share the wall colour */
+.newsletter + .shopify-section .site-footer, .section-newsletter + .section-footer .site-footer { border-top: 1px solid var(--line-mid); }
+.shopify-section:has(.newsletter) { border-bottom: 1px solid var(--line-mid); }
