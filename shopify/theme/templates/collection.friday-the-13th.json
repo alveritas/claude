@@ -4,7 +4,9 @@
       "type": "drop-countdown",
       "settings": {
         "page_title": true,
-        "show_button": false
+        "show_button": false,
+        "line": "",
+        "countdown_label": ""
       }
     },
     "preview": {

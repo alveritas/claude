@@ -12,7 +12,7 @@
     "featured": {
       "type": "featured-collection",
       "settings": {
-        "heading": "Featured",
+        "heading": "Now",
         "picks": [
           "vesper-polo",
           "relic-denim",
@@ -24,7 +24,12 @@
     },
     "drop": {
       "type": "drop-countdown",
-      "settings": {}
+      "settings": {
+        "line": "",
+        "countdown_label": "",
+        "button_pre": "Preview",
+        "button_live": "Shop"
+      }
     },
     "drop_pieces": {
       "type": "drop-preview",
@@ -37,7 +42,7 @@
     "new_arrivals": {
       "type": "featured-collection",
       "settings": {
-        "heading": "New arrivals",
+        "heading": "Latest",
         "all_products": true,
         "sort": "newest",
         "limit": 4,
@@ -52,14 +57,17 @@
     "collection_001": {
       "type": "collection-cta",
       "settings": {
-        "heading": "Collection 001"
+        "heading": "001",
+        "button": "All",
+        "men_label": "Men",
+        "women_label": "Women"
       }
     },
     "statement": {
       "type": "rich-text",
       "settings": {
         "large": true,
-        "text": "<p>NEVERHOLLOW is built on the idea that clothing should speak through its construction, silhouette, and presence.</p><p>No unnecessary noise. No forced identity.</p><p>Just considered pieces designed to exist beyond a moment.</p>",
+        "text": "<p>No unnecessary noise.</p>",
         "statement": true
       }
     },

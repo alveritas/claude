@@ -1028,3 +1028,5 @@ html:not(.js) .countdown { display: none; }
 /* the release band leads the homepage in the light look too */
 .template-index main > .section-drop:first-child .drop { border-top: 0; }
 .offer--modal .offer-card:focus-visible { outline: none; }
+/* quiet: lines left empty in the editor simply don't show */
+.drop-line:empty, .countdown-label:empty { display: none; }

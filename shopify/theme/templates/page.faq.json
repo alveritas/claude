@@ -10,7 +10,7 @@
           "type": "question",
           "settings": {
             "question": "When will my order ship?",
-            "answer": "<p>As soon as your order ships, you get an email with the carrier and a tracking link.</p>"
+            "answer": "<p>Orders ship within 3 weeks of purchase. You get an email with tracking once yours ships.</p>"
           }
         },
         "q2": {

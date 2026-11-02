@@ -41,7 +41,7 @@
     <p class="drop-line">{{ section.settings.line | escape }}</p>
 
     {%- unless live -%}
-      <div class="countdown" data-countdown role="timer" aria-label="{{ section.settings.countdown_label | escape }}"{% if passed or release == blank %} hidden{% endif %}>
+      <div class="countdown" data-countdown role="timer" aria-label="{{ section.settings.countdown_label | default: 'time until release' | escape }}"{% if passed or release == blank %} hidden{% endif %}>
         <p class="countdown-label">{{ section.settings.countdown_label | escape }}</p>
         <div class="countdown-cells tabular">
           <span class="cd"><span class="cd-n" data-cd="d">00</span><span class="cd-u">Days</span></span>
