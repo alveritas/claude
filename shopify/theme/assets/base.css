@@ -1077,3 +1077,20 @@ html:not(.js) .countdown { display: none; }
 .gallery-worn[aria-pressed="true"] { background: #000; color: #fff; border-color: #000; }
 @media (min-width: 48rem) { .is-worn-view .gallery-slide.is-worn { grid-column: span 2; aspect-ratio: 4 / 5; } }
 .gallery-slide.is-worn .gallery-img { object-fit: cover; }
+
+/* ── Phones and tablets: the countdown sits over the cover photo, in white, on a soft fade at the bottom ── */
+@media (max-width: 63.99rem) {
+  .drop--cover { position: relative; }
+  .drop--cover .drop-photo { aspect-ratio: auto; height: calc(100svh - var(--top-h)); min-height: 520px; max-height: 920px; }
+  .drop--cover .drop-img { object-position: 45% 30%; }
+  .drop--cover .drop-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgb(0 0 0 / 0.62) 0%, rgb(0 0 0 / 0.32) 30%, rgb(0 0 0 / 0) 58%); pointer-events: none; }
+  .drop--cover .drop-inner { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; padding-top: 0; padding-bottom: calc(32px + env(safe-area-inset-bottom)); color: #fff; }
+  .drop--cover .drop-inner::before { display: none; }
+  .drop--cover .drop-title, .drop--cover .drop-line, .drop--cover .cd-n { color: #fff; }
+  .drop--cover .cd-sep { color: rgb(255 255 255 / 0.45); }
+  .drop--cover .cd-u, .drop--cover .countdown-label, .drop--cover .drop-status, .drop--cover .drop-date { color: rgb(255 255 255 / 0.78); }
+  .drop--cover .countdown { margin-top: 14px; }
+  .drop--cover .drop-btn { margin-top: 18px; color: #fff; border-color: #fff; background: transparent; }
+  .drop--cover .drop-btn.btn-solid { background: #fff; color: #000; }
+  .drop--cover :focus-visible { outline-color: #fff; }
+}
