@@ -9,7 +9,7 @@
         <p class="trust-title">{{ block.settings.title | escape }}</p>
         <p class="trust-text">
           {%- if block.settings.text == '[email]' and settings.contact_email != blank -%}
-            <a class="text-link" href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a>
+            <a class="text-link" href="mailto:{{ settings.contact_email }}" title="{{ settings.contact_email | escape }}">{{ section.settings.email_label | default: 'Email us' | escape }}</a>
           {%- else -%}
             {{ block.settings.text | escape }}
           {%- endif -%}
@@ -24,7 +24,8 @@
   "name": "Trust strip",
   "class": "section-trust",
   "settings": [
-    { "type": "text", "id": "label", "label": "Label for screen readers", "default": "Shipping and checkout" }
+    { "type": "text", "id": "label", "label": "Label for screen readers", "default": "Shipping and checkout" },
+    { "type": "text", "id": "email_label", "label": "Email link text", "default": "Email us", "info": "Shown where a line says [email]. The link opens an email to the contact address in Theme settings." }
   ],
   "blocks": [
     { "type": "item", "name": "Item", "settings": [

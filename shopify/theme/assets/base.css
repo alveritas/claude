@@ -1160,3 +1160,20 @@ body.template-index:not(.is-scrolled) .site-header::after { opacity: 0; }
 .rich--statement .rte a { font-size: 0.9375rem; }
 .rich--statement .prose--lg p:last-child { margin-top: 1.4em; }
 .cat-label .muted { display: none; }
+
+/* ══ Cover legibility: nothing behind the numbers. The faint script mark is gone from behind the countdown;
+   on phones and tablets, where the words sit on the photo, a deeper scrim darkens the lower part of the
+   photo and the type gets a touch more weight and a soft shadow. ══ */
+.drop--cover .drop-inner::before { display: none; }
+@media (max-width: 63.99rem) {
+  .drop--cover .drop-photo::after {
+    background: linear-gradient(to top, rgb(0 0 0 / 0.82) 0%, rgb(0 0 0 / 0.74) 34%, rgb(0 0 0 / 0.56) 54%, rgb(0 0 0 / 0.22) 68%, rgb(0 0 0 / 0) 82%);
+  }
+  .drop--cover .drop-inner { text-shadow: 0 1px 2px rgb(0 0 0 / 0.35), 0 2px 16px rgb(0 0 0 / 0.4); }
+  .drop--cover .drop-btn { text-shadow: none; }
+  .drop--cover .cd-n { font-weight: 400; }
+  .drop--cover .drop-line { color: #fff; }
+  .drop--cover .drop-date, .drop--cover .cd-u, .drop--cover .countdown-label, .drop--cover .drop-status { color: rgb(255 255 255 / 0.92); }
+  .drop--cover .cd-u { font-weight: 500; }
+  .drop--cover .cd-sep { color: rgb(255 255 255 / 0.6); }
+}
