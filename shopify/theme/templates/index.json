@@ -1,44 +1,53 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero_type": {
       "type": "hero-type",
+      "disabled": true,
       "settings": {
-        "eyebrow": "Collection 001",
+        "eyebrow": "Drop 001",
         "line": "Silhouette. Detail. Restraint.",
-        "button": "Shop collection"
-      },
-      "disabled": true
+        "button": "Shop Drop 001"
+      }
     },
     "featured": {
       "type": "featured-collection",
       "settings": {
-        "heading": "Collection 001",
-        "limit": 6,
-        "subheading": ""
+        "heading": "Drop 001",
+        "subheading": "",
+        "limit": 6
       }
     },
     "drop": {
       "type": "drop-countdown",
       "settings": {
+        "title": "Friday the 13th",
+        "show_date": true,
+        "date_label": "11.13.26 · midnight ET",
         "line": "Five new pieces.",
         "countdown_label": "",
         "button_pre": "Preview the drop",
         "button_live": "Shop the drop",
-        "title": "Friday the 13th",
-        "show_date": true,
-        "image": "shopify://shop_images/nh-cover-nocturnal.jpg",
-        "date_label": "11.13.26 · midnight ET",
-        "button2_label": "Shop collection 001",
-        "button2_link": "shopify://collections/drop-001"
+        "button2_label": "Shop Drop 001",
+        "button2_link": "shopify://collections/drop-001",
+        "image": "shopify://shop_images/nh-cover-nocturnal.jpg"
       }
     },
     "drop_pieces": {
       "type": "drop-preview",
+      "disabled": true,
       "settings": {
         "link": true,
         "limit": 6
-      },
-      "disabled": true
+      }
     },
     "new_arrivals": {
       "type": "featured-collection",
@@ -67,10 +76,10 @@
     "statement": {
       "type": "rich-text",
       "settings": {
+        "heading": "",
+        "text": "<p>NEVERHOLLOW is an independent clothing label making men’s and women’s pieces in black, bone and washed grey.</p><p>Each piece starts with its silhouette, then the script or NH monogram that finishes it.</p><p><a href=\"/pages/about\">About the label</a></p>",
         "large": true,
-        "text": "<p>Neverhollow is built on the idea that clothing should speak through its construction, silhouette, and presence.</p><p>No unnecessary noise. No forced identity. Just considered pieces designed to exist beyond a moment.</p><p><a href=\"/pages/about\">Our story</a></p>",
-        "statement": true,
-        "heading": ""
+        "statement": true
       }
     },
     "newsletter": {
@@ -79,56 +88,53 @@
     },
     "hero": {
       "type": "hero",
+      "disabled": true,
       "settings": {
         "layout": "photo",
         "look": "vesper"
-      },
-      "disabled": true
+      }
     },
     "ticker": {
       "type": "marquee",
-      "settings": {},
-      "disabled": true
+      "disabled": true,
+      "settings": {}
     },
     "featured_women": {
       "type": "featured-collection",
+      "disabled": true,
       "settings": {
         "heading": "Women",
         "tag": "Women",
         "limit": 4
-      },
-      "disabled": true
+      }
     },
     "featured_men": {
       "type": "featured-collection",
+      "disabled": true,
       "settings": {
         "heading": "Men",
         "tag": "Men",
         "limit": 4
-      },
-      "disabled": true
+      }
     },
     "categories": {
       "type": "category-tiles",
       "settings": {
         "heading": "Shop by category"
-      },
-      "blocks": {},
-      "block_order": []
+      }
     },
     "editorial": {
       "type": "editorial",
-      "settings": {},
-      "disabled": true
+      "disabled": true,
+      "settings": {}
     },
     "spotlight": {
       "type": "spotlight",
-      "settings": {},
-      "disabled": true
+      "disabled": true,
+      "settings": {}
     },
     "trust": {
       "type": "trust-strip",
-      "settings": {},
       "blocks": {
         "ship": {
           "type": "item",
@@ -148,7 +154,7 @@
           "type": "item",
           "settings": {
             "title": "Secure checkout",
-            "text": "Encrypted checkout through Shopify. Card details never reach this site."
+            "text": "Encrypted checkout through Shopify."
           }
         },
         "help": {
@@ -164,17 +170,18 @@
         "time",
         "pay",
         "help"
-      ]
+      ],
+      "settings": {}
     }
   },
   "order": [
     "drop",
-    "trust",
     "featured",
     "categories",
     "new_arrivals",
     "collection_001",
     "statement",
+    "trust",
     "newsletter",
     "drop_pieces",
     "hero_type",

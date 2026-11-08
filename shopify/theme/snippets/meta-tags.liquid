@@ -11,6 +11,9 @@
   endif
   assign og_type = 'website'
   assign og_description = page_description | default: settings.seo_description | default: settings.brand_tagline | strip_html
+  if request.page_type == 'index' and settings.seo_description != blank
+    assign og_description = settings.seo_description | strip_html
+  endif
   if settings.lowercase
     assign og_description = og_description | downcase
   endif

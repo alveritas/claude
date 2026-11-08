@@ -50,6 +50,7 @@
     {%- if settings.lowercase -%}{%- assign seo_title = seo_title | strip | downcase -%}{%- endif -%}
     <title>{{ seo_title | strip }}</title>
     {%- assign meta_description = page_description | default: settings.seo_description | strip_html -%}
+    {%- if request.page_type == 'index' and settings.seo_description != blank -%}{%- assign meta_description = settings.seo_description | strip_html -%}{%- endif -%}
     {%- if settings.lowercase -%}{%- assign meta_description = meta_description | downcase -%}{%- endif -%}
     <meta name="description" content="{{ meta_description | escape }}">
     {% render 'meta-tags', brand: brand %}

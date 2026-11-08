@@ -1,1 +1,37 @@
-{"current":"Default","presets":{"Default":{"brand_tagline":"Official store","contact_email":"neverhollowonline@gmail.com","instagram_url":"https://www.instagram.com/neverhollow.online/","shipping_summary":"Calculated at checkout.","returns_note":"All sales are final. No returns or exchanges. Damaged or incorrect items are replaced or refunded.","preorder_enabled":false,"preorder_ship":"2027-01-15","intro_enabled":false,"free_shipping_threshold":0,"photo_outline":false,"dark_mode":false,"flats_only":true,"offer_auto":true,"offer_delay":8,"offer_style":"modal","processing_time":"Ships within 3 weeks.","offer_heading":"25% off your first order","offer_text":"Join the list for early access to every drop.","lowercase":true}}}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "current": "Default",
+  "presets": {
+    "Default": {
+      "brand_name": "NEVERHOLLOW",
+      "brand_tagline": "Independent clothing label",
+      "seo_description": "NEVERHOLLOW is an independent clothing label making men’s and women’s pieces in black, bone and washed grey, finished with its signature script and NH monogram.",
+      "contact_email": "neverhollowonline@gmail.com",
+      "instagram_url": "https://www.instagram.com/neverhollow.online/",
+      "shipping_summary": "Ships worldwide. United States $8, free over $100. Everywhere else $35.",
+      "returns_note": "All sales are final. No returns or exchanges. Damaged or incorrect items are replaced or refunded.",
+      "preorder_enabled": false,
+      "preorder_ship": "2027-01-15",
+      "intro_enabled": false,
+      "free_shipping_threshold": 0,
+      "photo_outline": false,
+      "dark_mode": false,
+      "flats_only": true,
+      "offer_auto": true,
+      "offer_delay": 15,
+      "offer_style": "corner",
+      "processing_time": "Ships within 3 weeks.",
+      "offer_heading": "25% off your first order",
+      "offer_text": "Join the list for new drops and restocks. Your code shows up as soon as you join.",
+      "lowercase": false
+    }
+  }
+}
