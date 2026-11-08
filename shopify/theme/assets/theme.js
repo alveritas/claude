@@ -1075,7 +1075,7 @@
   });
 })();
 
-/* ── Atmosphere (Theme settings → Atmosphere): the torch-lit cover, headings that decode, the ticker that
+/* ── Atmosphere (Theme settings → Atmosphere): the torch-lit cover, the ticker that
    follows the scroll, the statement that lights up word by word, and a "View" label on product photos.
    None of it runs for visitors who ask for less motion, and none of it touches buying. ── */
 (function () {
@@ -1119,44 +1119,6 @@
     }
     raf = requestAnimationFrame(frame);
   });
-
-  /* Headings decode letter by letter the first time they come into view; nav links do it on hover. */
-  const UP = "ABCDEFGHKNOPRSTUVXYZ0123456789";
-  const LO = "abcdeghknopqrsuvxyz";
-  const scramble = (el, dur) => {
-    if (el.dataset.scrambling || el.children.length) return;
-    const txt = el.dataset.text || (el.dataset.text = el.textContent);
-    if (!txt.trim()) return;
-    const set = getComputedStyle(el).textTransform === "uppercase" ? UP : LO;
-    const n = txt.length, tail = 5, start = performance.now();
-    el.dataset.scrambling = "1";
-    el.setAttribute("aria-label", txt.trim());
-    const step = (now) => {
-      const p = Math.min(1, (now - start) / dur);
-      const settled = Math.floor(p * (n + tail)) - tail;
-      let out = "";
-      for (let i = 0; i < n; i++) {
-        const c = txt[i];
-        out += (p >= 1 || i < settled || /\s/.test(c)) ? c : set[(Math.random() * set.length) | 0];
-      }
-      el.textContent = out;
-      if (p < 1) requestAnimationFrame(step);
-      else { el.textContent = txt; delete el.dataset.scrambling; el.removeAttribute("aria-label"); }
-    };
-    requestAnimationFrame(step);
-  };
-  if (html.classList.contains("nh-gfx")) {
-    const heads = document.querySelectorAll(".section-title, .drop-title, .rich-heading, :is(.template-collection, .template-list-collections) .page-title");
-    if ("IntersectionObserver" in window) {
-      const io = new IntersectionObserver((es) => es.forEach((e) => {
-        if (!e.isIntersecting) return;
-        io.unobserve(e.target);
-        scramble(e.target, 650 + Math.min(700, e.target.textContent.length * 28));
-      }), { threshold: 0.6 });
-      heads.forEach((el) => io.observe(el));
-    }
-    if (fine) document.querySelectorAll(".nav-link").forEach((a) => a.addEventListener("mouseenter", () => scramble(a, 380)));
-  }
 
   /* The large ticker moves with the scroll: faster as you scroll, and the other way when you scroll up. */
   if (html.classList.contains("nh-scrollfx")) {
@@ -1222,8 +1184,8 @@
   }
 })();
 
-/* ── Atmosphere, second layer: the line that tracks the page, the cover heading that thins where the cursor
-   passes, category photos and product photos that follow the cursor, and buttons that lean toward it.
+/* ── Atmosphere, second layer: the line that tracks the page, category photos and product photos that
+   follow the cursor, and buttons that lean toward it. Headings stay still.
    Cursor effects run only with a mouse or trackpad; nothing here runs for visitors who ask for less motion,
    except the progress line, which only mirrors their own scrolling. ── */
 (function () {
@@ -1252,101 +1214,6 @@
   }
 
   if (reduce) return;
-
-  /* Cover heading: split into letters (whole words never break), lines fixed where they fall, then a
-     thinning wave runs through it once; afterwards the letters near the cursor thin out and recover. */
-  if (html.classList.contains("nh-gfx")) {
-    document.querySelectorAll(".drop-title").forEach((h) => {
-      const txt = h.textContent.trim();
-      if (!txt || h.children.length) return;
-      const base = parseFloat(getComputedStyle(h).fontWeight) || 800;
-      const low = Math.max(400, base - 420);
-      if (base - low < 100) return;
-      h.textContent = "";
-      const sr = document.createElement("span"); sr.className = "sr-only"; sr.textContent = txt;
-      const vis = document.createElement("span"); vis.className = "dt"; vis.setAttribute("aria-hidden", "true");
-      const L = [];
-      txt.split(/(\s+)/).forEach((part) => {
-        if (!part) return;
-        if (/^\s+$/.test(part)) { vis.appendChild(document.createTextNode(" ")); return; }
-        const w = document.createElement("span"); w.className = "dt-w";
-        for (const ch of part) {
-          const s = document.createElement("span"); s.className = "dt-l"; s.textContent = ch;
-          w.appendChild(s); L.push({ el: s, cur: base, tgt: base, x: 0, y: 0 });
-        }
-        vis.appendChild(w);
-      });
-      h.append(sr, vis);
-
-      const paint = (o, v) => { const r = Math.round(v); if (r !== o.shown) { o.shown = r; o.el.style.fontWeight = r; } };
-      let fs = 0;
-      const layout = () => {
-        L.forEach((o) => { o.cur = o.tgt = base; paint(o, base); });
-        vis.querySelectorAll("br").forEach((b) => b.remove());
-        h.classList.remove("is-set");
-        let top = null;
-        vis.querySelectorAll(".dt-w").forEach((w) => {
-          const t = w.offsetTop;
-          if (top !== null && t > top + 2) w.before(document.createElement("br"));
-          top = t;
-        });
-        h.classList.add("is-set");
-        const hb = h.getBoundingClientRect();
-        fs = parseFloat(getComputedStyle(h).fontSize) || 80;
-        L.forEach((o) => { const b = o.el.getBoundingClientRect(); o.x = b.left - hb.left + b.width / 2; o.y = b.top - hb.top + b.height / 2; });
-      };
-      layout();
-      let rw = 0;
-      window.addEventListener("resize", () => { clearTimeout(rw); rw = setTimeout(layout, 150); }, { passive: true });
-      // lines are set where they fall in the real font, so measure again once it has loaded
-      if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (!waving) layout(); else setTimeout(layout, 2400); });
-
-      let raf = 0, waving = true, px = -1e4, py = -1e4, near = false;
-      const settle = () => {
-        raf = 0;
-        let moving = false;
-        L.forEach((o) => {
-          o.cur += (o.tgt - o.cur) * 0.2;
-          if (Math.abs(o.tgt - o.cur) > 0.6) moving = true; else o.cur = o.tgt;
-          paint(o, o.cur);
-        });
-        if (moving || near) raf = requestAnimationFrame(settle);
-      };
-      const aim = () => {
-        const hb = h.getBoundingClientRect(), R = fs * 1.7;
-        L.forEach((o) => {
-          const d = Math.hypot(px - hb.left - o.x, py - hb.top - o.y);
-          const f = d < R ? Math.pow(1 - d / R, 1.6) : 0;
-          o.tgt = base - (base - low) * f;
-        });
-        if (!raf) raf = requestAnimationFrame(settle);
-      };
-      if (hover) {
-        const zone = h.closest(".drop-inner") || h;
-        zone.addEventListener("pointermove", (e) => { px = e.clientX; py = e.clientY; near = true; if (!waving) aim(); }, { passive: true });
-        zone.addEventListener("pointerleave", () => { near = false; px = py = -1e4; if (!waving) aim(); });
-      }
-      const wave = () => {
-        const t0 = performance.now(), span = 720, gap = 42, total = span + gap * L.length;
-        const step = (now) => {
-          const t = now - t0;
-          L.forEach((o, i) => {
-            const ph = (t - i * gap) / span;
-            const f = ph > 0 && ph < 1 ? Math.sin(Math.PI * ph) : 0;
-            o.cur = o.tgt = base - (base - low) * 0.9 * f;
-            paint(o, o.cur);
-          });
-          if (t < total) requestAnimationFrame(step);
-          else { waving = false; L.forEach((o) => { o.cur = o.tgt = base; paint(o, base); }); if (near) aim(); }
-        };
-        requestAnimationFrame(step);
-      };
-      if ("IntersectionObserver" in window) {
-        const io = new IntersectionObserver((es) => { if (es[0].isIntersecting) { io.disconnect(); setTimeout(wave, 250); } }, { threshold: 0.5 });
-        io.observe(h);
-      } else waving = false;
-    });
-  }
 
   if (!hover) return;
 

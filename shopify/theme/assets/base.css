@@ -1217,9 +1217,6 @@ body.template-index:not(.is-scrolled) .site-header::after { opacity: 0; }
 .nh-gfx .drop-title { font-weight: 800; font-stretch: 62%; text-transform: uppercase; letter-spacing: -0.012em; line-height: 0.86; font-size: clamp(3rem, 8.2vw, 7.25rem); }
 .nh-gfx .cd-n { font-stretch: 62%; font-weight: 700; font-size: clamp(2.5rem, 6.6vw, 4.75rem); letter-spacing: 0; }
 .nh-gfx .rich-heading { font-stretch: 62%; font-weight: 800; text-transform: uppercase; letter-spacing: 0; }
-/* letters being decoded keep their place, so the heading never jumps */
-[data-scrambling] { font-variant-numeric: tabular-nums; }
-.scr-glyph { opacity: 0.55; }
 
 /* Countdown digits roll in as they change. */
 .cd-n { display: inline-block; overflow: hidden; vertical-align: top; }
@@ -1251,8 +1248,6 @@ body.template-index:not(.is-scrolled) .site-header::after { opacity: 0; }
 .nh-gfx .footer-mark .footer-logo { width: 100%; }
 .nh-gfx .footer-mark { padding-top: 24px; padding-bottom: 28px; }
 
-/* Nav links decode on hover. */
-.nh-gfx .nav-link { font-variant-numeric: tabular-nums; }
 
 /* Phones skip the full-page grain (it costs smooth scrolling there); the cover keeps a grain of its own. */
 @media (hover: none), (pointer: coarse) { .grain { display: none; } }
@@ -1276,8 +1271,8 @@ body.template-index:not(.is-scrolled) .site-header::after { opacity: 0; }
   .nh-gfx.js [data-reveal].card-frame { clip-path: none !important; }
 }
 
-/* ══ Atmosphere, second layer: type you can touch. Large index lists, split panels, a heading that
-   reacts to the cursor, photos and buttons that follow it, and a line that tracks the page. ══ */
+/* ══ Atmosphere, second layer: large index lists, split panels, photos and buttons that follow the
+   cursor, and a line that tracks the page. ══ */
 
 /* Real piece counts sit beside the large headings, like a footnote. */
 .nh-gfx .section-title[data-count]::after {
@@ -1361,9 +1356,6 @@ body.template-index:not(.is-scrolled) .site-header::after { opacity: 0; }
 .cta-go span:last-child { transform: translateX(-5px); transition: transform 0.5s var(--ease-out); }
 .nh-dark .cta-split:has(.cta-half:hover) .cta-half:not(:hover) .cta-word { -webkit-text-stroke-color: var(--white); }
 
-/* The cover heading, split into letters by the script (the full heading stays readable to screen readers). */
-.dt-w { display: inline-block; white-space: nowrap; }
-.drop-title.is-set { white-space: nowrap; }
 
 /* Product photos drift a little with the cursor. */
 @media (hover: hover) and (pointer: fine) {

@@ -114,7 +114,7 @@
         "id": "fx_type",
         "label": "Graphic headings",
         "default": true,
-        "info": "Section headings set large in condensed capitals that decode letter by letter as they come into view."
+        "info": "Section and product headings set large in condensed capitals, with the real piece count beside them."
       },
       {
         "type": "checkbox",
@@ -128,7 +128,7 @@
         "id": "fx_hover",
         "label": "Cursor effects",
         "default": true,
-        "info": "On computers: the cover heading thins where the cursor passes, product photos drift with the cursor, main buttons lean toward it, and category photos follow it. Phones are unaffected."
+        "info": "On computers: product photos drift with the cursor, main buttons lean toward it, and category photos follow it. Phones are unaffected."
       },
       {
         "type": "checkbox",
