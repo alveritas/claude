@@ -1221,3 +1221,193 @@
     }, { passive: true });
   }
 })();
+
+/* ── Atmosphere, second layer: the line that tracks the page, the cover heading that thins where the cursor
+   passes, category photos and product photos that follow the cursor, and buttons that lean toward it.
+   Cursor effects run only with a mouse or trackpad; nothing here runs for visitors who ask for less motion,
+   except the progress line, which only mirrors their own scrolling. ── */
+(function () {
+  const html = document.documentElement;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const hover = fine && html.classList.contains("nh-hoverfx");
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+  /* Progress line: only on pages long enough to need it. */
+  const line = document.querySelector("[data-scroll-line]");
+  if (line) {
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const max = html.scrollHeight - window.innerHeight;
+      const on = max > window.innerHeight * 0.6;
+      line.classList.toggle("is-on", on);
+      line.style.transform = "scaleX(" + (on ? clamp(window.scrollY / max, 0, 1).toFixed(4) : 0) + ")";
+    };
+    const ask = () => { if (!raf) raf = requestAnimationFrame(update); };
+    window.addEventListener("scroll", ask, { passive: true });
+    window.addEventListener("resize", ask, { passive: true });
+    window.addEventListener("load", ask);
+    update();
+  }
+
+  if (reduce) return;
+
+  /* Cover heading: split into letters (whole words never break), lines fixed where they fall, then a
+     thinning wave runs through it once; afterwards the letters near the cursor thin out and recover. */
+  if (html.classList.contains("nh-gfx")) {
+    document.querySelectorAll(".drop-title").forEach((h) => {
+      const txt = h.textContent.trim();
+      if (!txt || h.children.length) return;
+      const base = parseFloat(getComputedStyle(h).fontWeight) || 800;
+      const low = Math.max(400, base - 420);
+      if (base - low < 100) return;
+      h.textContent = "";
+      const sr = document.createElement("span"); sr.className = "sr-only"; sr.textContent = txt;
+      const vis = document.createElement("span"); vis.className = "dt"; vis.setAttribute("aria-hidden", "true");
+      const L = [];
+      txt.split(/(\s+)/).forEach((part) => {
+        if (!part) return;
+        if (/^\s+$/.test(part)) { vis.appendChild(document.createTextNode(" ")); return; }
+        const w = document.createElement("span"); w.className = "dt-w";
+        for (const ch of part) {
+          const s = document.createElement("span"); s.className = "dt-l"; s.textContent = ch;
+          w.appendChild(s); L.push({ el: s, cur: base, tgt: base, x: 0, y: 0 });
+        }
+        vis.appendChild(w);
+      });
+      h.append(sr, vis);
+
+      const paint = (o, v) => { const r = Math.round(v); if (r !== o.shown) { o.shown = r; o.el.style.fontWeight = r; } };
+      let fs = 0;
+      const layout = () => {
+        L.forEach((o) => { o.cur = o.tgt = base; paint(o, base); });
+        vis.querySelectorAll("br").forEach((b) => b.remove());
+        h.classList.remove("is-set");
+        let top = null;
+        vis.querySelectorAll(".dt-w").forEach((w) => {
+          const t = w.offsetTop;
+          if (top !== null && t > top + 2) w.before(document.createElement("br"));
+          top = t;
+        });
+        h.classList.add("is-set");
+        const hb = h.getBoundingClientRect();
+        fs = parseFloat(getComputedStyle(h).fontSize) || 80;
+        L.forEach((o) => { const b = o.el.getBoundingClientRect(); o.x = b.left - hb.left + b.width / 2; o.y = b.top - hb.top + b.height / 2; });
+      };
+      layout();
+      let rw = 0;
+      window.addEventListener("resize", () => { clearTimeout(rw); rw = setTimeout(layout, 150); }, { passive: true });
+      // lines are set where they fall in the real font, so measure again once it has loaded
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (!waving) layout(); else setTimeout(layout, 2400); });
+
+      let raf = 0, waving = true, px = -1e4, py = -1e4, near = false;
+      const settle = () => {
+        raf = 0;
+        let moving = false;
+        L.forEach((o) => {
+          o.cur += (o.tgt - o.cur) * 0.2;
+          if (Math.abs(o.tgt - o.cur) > 0.6) moving = true; else o.cur = o.tgt;
+          paint(o, o.cur);
+        });
+        if (moving || near) raf = requestAnimationFrame(settle);
+      };
+      const aim = () => {
+        const hb = h.getBoundingClientRect(), R = fs * 1.7;
+        L.forEach((o) => {
+          const d = Math.hypot(px - hb.left - o.x, py - hb.top - o.y);
+          const f = d < R ? Math.pow(1 - d / R, 1.6) : 0;
+          o.tgt = base - (base - low) * f;
+        });
+        if (!raf) raf = requestAnimationFrame(settle);
+      };
+      if (hover) {
+        const zone = h.closest(".drop-inner") || h;
+        zone.addEventListener("pointermove", (e) => { px = e.clientX; py = e.clientY; near = true; if (!waving) aim(); }, { passive: true });
+        zone.addEventListener("pointerleave", () => { near = false; px = py = -1e4; if (!waving) aim(); });
+      }
+      const wave = () => {
+        const t0 = performance.now(), span = 720, gap = 42, total = span + gap * L.length;
+        const step = (now) => {
+          const t = now - t0;
+          L.forEach((o, i) => {
+            const ph = (t - i * gap) / span;
+            const f = ph > 0 && ph < 1 ? Math.sin(Math.PI * ph) : 0;
+            o.cur = o.tgt = base - (base - low) * 0.9 * f;
+            paint(o, o.cur);
+          });
+          if (t < total) requestAnimationFrame(step);
+          else { waving = false; L.forEach((o) => { o.cur = o.tgt = base; paint(o, base); }); if (near) aim(); }
+        };
+        requestAnimationFrame(step);
+      };
+      if ("IntersectionObserver" in window) {
+        const io = new IntersectionObserver((es) => { if (es[0].isIntersecting) { io.disconnect(); setTimeout(wave, 250); } }, { threshold: 0.5 });
+        io.observe(h);
+      } else waving = false;
+    });
+  }
+
+  if (!hover) return;
+
+  /* Shop by category (index): the hovered row's photo follows the cursor, a little behind it and tilting with
+     its speed; it opens like a shutter and closes when the cursor leaves the list. */
+  document.querySelectorAll("[data-cat-index]").forEach((sec) => {
+    const fl = sec.querySelector("[data-cat-float]"), list = sec.querySelector(".cat-index");
+    if (!fl || !list) return;
+    sec.classList.add("has-float");
+    const imgs = Array.from(fl.querySelectorAll("[data-cat-img]"));
+    imgs.forEach((s) => { const i = s.querySelector("img"); if (i) i.loading = "eager"; });
+    let x = 0, y = 0, tx = 0, ty = 0, raf = 0, on = false, fw = 0, fh = 0;
+    const measure = () => { const b = fl.getBoundingClientRect(); fw = b.width; fh = b.height; };
+    const frame = () => {
+      raf = 0;
+      const dx = tx - x;
+      x += dx * 0.14; y += (ty - y) * 0.14;
+      const rot = clamp(dx * 0.05, -7, 7);
+      fl.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) rotate(${rot.toFixed(2)}deg)`;
+      if (on || Math.abs(dx) > 0.5 || Math.abs(ty - y) > 0.5) raf = requestAnimationFrame(frame);
+    };
+    const target = (cx, cy) => {
+      if (!fw) measure();
+      tx = clamp(cx + 28, 8, window.innerWidth - fw - 8);
+      ty = clamp(cy - fh / 2, 8, window.innerHeight - fh - 8);
+    };
+    sec.querySelectorAll("[data-cat-row]").forEach((row) => {
+      row.addEventListener("pointerenter", (e) => {
+        const i = row.dataset.catRow;
+        imgs.forEach((s) => s.classList.toggle("is-on", s.dataset.catImg === i));
+        target(e.clientX, e.clientY);
+        if (!on) { x = tx; y = ty; }
+        on = true; fl.classList.add("is-on");
+        if (!raf) raf = requestAnimationFrame(frame);
+      });
+    });
+    list.addEventListener("pointermove", (e) => { target(e.clientX, e.clientY); if (!raf) raf = requestAnimationFrame(frame); }, { passive: true });
+    list.addEventListener("pointerleave", () => { on = false; fl.classList.remove("is-on"); });
+    window.addEventListener("resize", measure, { passive: true });
+  });
+
+  /* Product photos drift slightly against the cursor inside their frame. */
+  document.addEventListener("pointermove", (e) => {
+    const a = e.target.closest && e.target.closest(".card-link");
+    if (!a) return;
+    const f = a.querySelector(".card-frame");
+    if (!f) return;
+    const b = f.getBoundingClientRect();
+    const rx = clamp((e.clientX - b.left) / b.width - 0.5, -0.5, 0.5), ry = clamp((e.clientY - b.top) / b.height - 0.5, -0.5, 0.5);
+    f.style.setProperty("--px", (-rx * 14).toFixed(1) + "px");
+    f.style.setProperty("--py", (-ry * 14).toFixed(1) + "px");
+  }, { passive: true });
+
+  /* Main buttons lean toward the cursor (never the buying buttons on a product page). */
+  document.querySelectorAll(".drop-btn:not(.drop-btn--2), .cta .btn, .newsletter .btn-solid, .section-head .btn").forEach((btn) => {
+    btn.classList.add("is-magnet");
+    btn.addEventListener("pointermove", (e) => {
+      const b = btn.getBoundingClientRect();
+      const dx = e.clientX - (b.left + b.width / 2), dy = e.clientY - (b.top + b.height / 2);
+      btn.style.transform = `translate(${clamp(dx * 0.2, -9, 9).toFixed(1)}px, ${clamp(dy * 0.3, -6, 6).toFixed(1)}px)`;
+    }, { passive: true });
+    btn.addEventListener("pointerleave", () => { btn.style.transform = ""; });
+  });
+})();

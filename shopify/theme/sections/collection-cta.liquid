@@ -23,31 +23,44 @@
 <section class="shell section-pad cta" aria-labelledby="cta-{{ section.id }}">
   <div class="section-head">
     <div>
-      <h2 id="cta-{{ section.id }}" class="section-title">{{ section.settings.heading | escape }}</h2>
+      <h2 id="cta-{{ section.id }}" class="section-title" data-count="{{ c.products_count }}">{{ section.settings.heading | escape }}</h2>
       <p class="section-sub muted">{{ c.products_count }} {% if c.products_count == 1 %}piece{% else %}pieces{% endif %}</p>
     </div>
     <a class="btn btn-line btn-sm" href="{{ c.url }}">{{ section.settings.button | escape }}</a>
   </div>
-  <div class="cta-tiles">
+  {%- assign split = false -%}{%- if section.settings.style == 'split' -%}{%- assign split = true -%}{%- endif -%}
+  <div class="{% if split %}cta-split{% else %}cta-tiles{% endif %}"{% if split %} data-cta-split{% endif %}>
     {%- for side in (1..2) -%}
       {%- liquid
         if side == 1
           assign p = men_p
           assign url = men_url
           assign label = section.settings.men_label
+          assign word = section.settings.men_word | default: 'Men'
         else
           assign p = women_p
           assign url = women_url
           assign label = section.settings.women_label
+          assign word = section.settings.women_word | default: 'Women'
         endif
       -%}
       {%- if p != blank -%}
-        <a class="cta-tile" href="{{ url }}">
-          <span class="frame card-frame cta-frame">
-            {%- render 'flat-image', product: p, width: 1400, widths: '540, 720, 900, 1200, 1400', sizes: '(min-width: 768px) 50vw, 100vw', alt: '', class: 'card-img' -%}
-          </span>
-          <span class="cta-label"><span class="card-title">{{ label | escape }}</span><span class="muted small" aria-hidden="true">&rarr;</span></span>
-        </a>
+        {%- if split -%}
+          <a class="cta-half" href="{{ url }}">
+            <span class="frame cta-half-frame">
+              {%- render 'flat-image', product: p, width: 1400, widths: '540, 720, 900, 1200, 1400', sizes: '(min-width: 768px) 58vw, 50vw', alt: '', class: 'cta-half-img' -%}
+            </span>
+            <span class="cta-word" aria-hidden="true">{{ word | escape }}</span>
+            <span class="cta-go"><span>{{ label | escape }}</span><span aria-hidden="true">&rarr;</span></span>
+          </a>
+        {%- else -%}
+          <a class="cta-tile" href="{{ url }}">
+            <span class="frame card-frame cta-frame">
+              {%- render 'flat-image', product: p, width: 1400, widths: '540, 720, 900, 1200, 1400', sizes: '(min-width: 768px) 50vw, 100vw', alt: '', class: 'card-img' -%}
+            </span>
+            <span class="cta-label"><span class="card-title">{{ label | escape }}</span><span class="muted small" aria-hidden="true">&rarr;</span></span>
+          </a>
+        {%- endif -%}
       {%- endif -%}
     {%- endfor -%}
   </div>
@@ -61,6 +74,12 @@
     { "type": "text", "id": "heading", "label": "Heading", "default": "Collection 001" },
     { "type": "collection", "id": "collection", "label": "Collection", "info": "Leave empty for Drop 001." },
     { "type": "text", "id": "button", "label": "Button", "default": "Shop all" },
+    {
+      "type": "select", "id": "style", "label": "Style", "default": "tiles",
+      "options": [{ "value": "tiles", "label": "Two photo tiles" }, { "value": "split", "label": "Split panels with large words" }]
+    },
+    { "type": "text", "id": "men_word", "label": "Men's large word", "default": "Men", "info": "Split panels only." },
+    { "type": "text", "id": "women_word", "label": "Women's large word", "default": "Women", "info": "Split panels only." },
     { "type": "text", "id": "men_label", "label": "Men's tile", "default": "Shop men" },
     { "type": "product", "id": "men_product", "label": "Men's tile piece", "info": "Leave empty for the collection's first men's piece." },
     { "type": "text", "id": "women_label", "label": "Women's tile", "default": "Shop women" },

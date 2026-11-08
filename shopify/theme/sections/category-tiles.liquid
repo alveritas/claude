@@ -1,10 +1,13 @@
 {%- comment -%}
-  One tile per category. Each tile uses its own photo if one is chosen, otherwise a worn photo
-  of a piece in that category.
+  One entry per category: as photo tiles, or as an index (large names in a list, with a photo that
+  follows the cursor on computers and a small one in each row on phones). Each uses its own photo if
+  one is chosen, otherwise a photo of a piece in that category. Counts are the real number of pieces
+  of that type on sale.
 {%- endcomment -%}
 {%- liquid
-  # Only categories with a piece on sale get a tile, so no tile opens an empty page.
+  # Only categories with a piece on sale get an entry, so none opens an empty page.
   assign live_types = collections.all.products | map: 'type' | uniq | sort
+  assign layout = section.settings.layout | default: 'tiles'
   assign count = 0
   if section.blocks.size > 0
     for block in section.blocks
@@ -25,13 +28,15 @@
   elsif count == 2
     assign grid_class = 'grid--2'
   endif
+  assign n = 0
+  assign floats = ''
 -%}
-<section class="shell section-pad-bottom" aria-labelledby="cats-{{ section.id }}">
+<section class="shell section-pad-bottom{% if layout == 'index' %} cat-index-sec{% endif %}" aria-labelledby="cats-{{ section.id }}"{% if layout == 'index' %} data-cat-index{% endif %}>
   <div class="section-head">
     <h2 id="cats-{{ section.id }}" class="section-title">{{ section.settings.heading | escape }}</h2>
     <a class="text-link caps" href="{{ routes.all_products_collection_url }}">Shop all</a>
   </div>
-  <div class="grid joints cat-grid {{ grid_class }}">
+  {%- if layout == 'index' -%}<ul class="cat-index" role="list">{%- else -%}<div class="grid joints cat-grid {{ grid_class }}">{%- endif -%}
     {%- if section.blocks.size > 0 -%}
       {%- for block in section.blocks -%}
         {%- assign t = block.settings.title -%}
@@ -39,51 +44,46 @@
         {%- assign link = block.settings.link | default: '' -%}
         {%- if link == blank -%}{%- assign link = t | url_for_type -%}{%- endif -%}
         {%- assign img = block.settings.image -%}
-        {%- if img == blank -%}
-          {%- for p in collections.all.products -%}
-            {%- if p.type == t -%}
+        {%- assign pieces = 0 -%}
+        {%- for p in collections.all.products -%}
+          {%- if p.type == t -%}
+            {%- assign pieces = pieces | plus: 1 -%}
+            {%- if block.settings.image == blank -%}
               {%- if settings.flats_only -%}{%- assign pick = p.featured_media -%}{%- else -%}{%- assign pick = p.media[1] | default: p.featured_media -%}{%- endif -%}
               {%- assign img = pick.preview_image -%}
             {%- endif -%}
-          {%- endfor -%}
+          {%- endif -%}
+        {%- endfor -%}
+        {% render 'cat-item', layout: layout, title: t, link: link, img: img, count: pieces, n: n, attrs: block.shopify_attributes %}
+        {%- if layout == 'index' and img != blank -%}
+          {%- capture floats -%}{{ floats }}<span class="cat-float-img" data-cat-img="{{ n }}">{{ img | image_url: width: 900 | image_tag: widths: '540, 720, 900', sizes: '22rem', loading: 'lazy', decoding: 'async', alt: '' }}</span>{%- endcapture -%}
         {%- endif -%}
-        <a class="cat-tile" href="{{ link }}" {{ block.shopify_attributes }}>
-          <span class="frame cat-frame">
-            {%- if img != blank -%}
-              {{ img | image_url: width: 900 | image_tag: widths: '360, 540, 720, 900', sizes: '(min-width: 1024px) 25vw, 50vw', loading: 'lazy', decoding: 'async', alt: '', class: 'cat-img' }}
-            {%- else -%}
-              {{ 'collection-1' | placeholder_svg_tag: 'placeholder' }}
-            {%- endif -%}
-          </span>
-          <span class="cat-label">
-            <span class="card-title">{{ t | escape }}</span>
-            <span class="muted small">Shop now</span>
-          </span>
-        </a>
+        {%- assign n = n | plus: 1 -%}
       {%- endfor -%}
     {%- else -%}
       {%- for t in live_types -%}
-        {%- if t != blank -%}
-          {%- assign img = nil -%}
-          {%- for p in collections.all.products -%}
-            {%- if p.type == t -%}
-              {%- if settings.flats_only -%}{%- assign pick = p.featured_media -%}{%- else -%}{%- assign pick = p.media[1] | default: p.featured_media -%}{%- endif -%}
-              {%- assign img = pick.preview_image -%}
-            {%- endif -%}
-          {%- endfor -%}
-          <a class="cat-tile" href="{{ t | url_for_type }}">
-            <span class="frame cat-frame">
-              {%- if img -%}{{ img | image_url: width: 900 | image_tag: widths: '360, 540, 720, 900', sizes: '(min-width: 1024px) 25vw, 50vw', loading: 'lazy', decoding: 'async', alt: '', class: 'cat-img' }}{%- endif -%}
-            </span>
-            <span class="cat-label">
-              <span class="card-title">{{ t }}</span>
-              <span class="muted small">Shop now</span>
-            </span>
-          </a>
+        {%- if t == blank -%}{%- continue -%}{%- endif -%}
+        {%- assign img = nil -%}
+        {%- assign pieces = 0 -%}
+        {%- for p in collections.all.products -%}
+          {%- if p.type == t -%}
+            {%- assign pieces = pieces | plus: 1 -%}
+            {%- if settings.flats_only -%}{%- assign pick = p.featured_media -%}{%- else -%}{%- assign pick = p.media[1] | default: p.featured_media -%}{%- endif -%}
+            {%- assign img = pick.preview_image -%}
+          {%- endif -%}
+        {%- endfor -%}
+        {%- assign link = t | url_for_type -%}
+        {% render 'cat-item', layout: layout, title: t, link: link, img: img, count: pieces, n: n %}
+        {%- if layout == 'index' and img != blank -%}
+          {%- capture floats -%}{{ floats }}<span class="cat-float-img" data-cat-img="{{ n }}">{{ img | image_url: width: 900 | image_tag: widths: '540, 720, 900', sizes: '22rem', loading: 'lazy', decoding: 'async', alt: '' }}</span>{%- endcapture -%}
         {%- endif -%}
+        {%- assign n = n | plus: 1 -%}
       {%- endfor -%}
     {%- endif -%}
-  </div>
+  {%- if layout == 'index' -%}</ul>{%- else -%}</div>{%- endif -%}
+  {%- if layout == 'index' and floats != blank -%}
+    <div class="cat-float" aria-hidden="true" data-cat-float><div class="cat-float-in">{{ floats }}</div></div>
+  {%- endif -%}
 </section>
 
 {% schema %}
@@ -92,7 +92,11 @@
   "class": "section-categories",
   "max_blocks": 8,
   "settings": [
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Shop by category" }
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Shop by category" },
+    {
+      "type": "select", "id": "layout", "label": "Layout", "default": "tiles",
+      "options": [{ "value": "tiles", "label": "Photo tiles" }, { "value": "index", "label": "Index (large names, photo follows the cursor)" }]
+    }
   ],
   "blocks": [
     {

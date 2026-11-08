@@ -1275,3 +1275,112 @@ body.template-index:not(.is-scrolled) .site-header::after { opacity: 0; }
   .is-wordlit .w { opacity: 1 !important; }
   .nh-gfx.js [data-reveal].card-frame { clip-path: none !important; }
 }
+
+/* ══ Atmosphere, second layer: type you can touch. Large index lists, split panels, a heading that
+   reacts to the cursor, photos and buttons that follow it, and a line that tracks the page. ══ */
+
+/* Real piece counts sit beside the large headings, like a footnote. */
+.nh-gfx .section-title[data-count]::after {
+  content: "(" attr(data-count) ")"; content: "(" attr(data-count) ")" / "";
+  display: inline-block; vertical-align: top; margin: 0.12em 0 0 0.3em;
+  font-size: max(0.75rem, 0.2em); font-weight: 500; font-stretch: 100%; letter-spacing: 0.04em; line-height: 1;
+}
+
+/* Product page: the name in the same condensed capitals. */
+.nh-gfx .product-info .page-title {
+  font-size: clamp(2rem, 3.1vw, 2.875rem); font-weight: 800; font-stretch: 62%; text-transform: uppercase;
+  letter-spacing: -0.01em; line-height: 0.9; text-wrap: balance;
+}
+
+/* Shop by category as an index: number, name, count. Photos follow the cursor on computers; phones (and
+   anyone with cursor effects off) get a small photo in each row. */
+.cat-index { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.cat-index-item { border-bottom: 1px solid var(--line); }
+.cat-row {
+  display: grid; grid-template-columns: 3rem minmax(0, 1fr) auto auto auto; align-items: center;
+  column-gap: clamp(12px, 2vw, 32px); padding: clamp(10px, 1.4vw, 20px) 0; color: inherit; text-decoration: none;
+  transition: opacity 0.45s var(--ease);
+}
+.cat-num { align-self: start; padding-top: 0.6em; font-size: 0.75rem; letter-spacing: 0.08em; color: var(--grey); }
+.cat-name {
+  font-size: clamp(2.5rem, 8vw, 7.5rem); font-weight: 800; font-stretch: 62%; text-transform: uppercase;
+  letter-spacing: -0.012em; line-height: 0.86; transition: transform 0.7s var(--ease-out);
+}
+.cat-count { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--grey); white-space: nowrap; }
+.cat-thumb { position: relative; display: block; width: clamp(48px, 6vw, 72px); aspect-ratio: 4 / 5; overflow: hidden; background: var(--tile); }
+.cat-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.cat-go { font-size: clamp(1.125rem, 2vw, 1.75rem); line-height: 1; transition: transform 0.6s var(--ease-out); }
+@media (hover: hover) {
+  .cat-index:has(.cat-row:hover) .cat-row:not(:hover) { opacity: 0.22; }
+  .cat-row:hover .cat-name { transform: translateX(clamp(10px, 1.6vw, 24px)); }
+  .cat-row:hover .cat-go { transform: translateX(4px) rotate(-45deg); }
+}
+.has-float .cat-thumb { display: none; }
+@media (max-width: 47.99rem) {
+  .cat-row { grid-template-columns: 1.75rem minmax(0, 1fr) auto; grid-template-areas: "num name thumb" "num count thumb"; row-gap: 6px; }
+  .cat-num { grid-area: num; padding-top: 0.35em; }
+  .cat-name { grid-area: name; font-size: clamp(2.25rem, 11.5vw, 3.75rem); }
+  .cat-count { grid-area: count; }
+  .cat-thumb { grid-area: thumb; width: 64px; }
+  .cat-go { display: none; }
+}
+.cat-float { display: none; }
+.has-float .cat-float {
+  display: block; position: fixed; left: 0; top: 0; z-index: 30; pointer-events: none;
+  width: clamp(13rem, 19vw, 21rem); aspect-ratio: 4 / 5; will-change: transform;
+}
+.cat-float-in { position: absolute; inset: 0; overflow: hidden; background: var(--tile); clip-path: inset(50% 0 50% 0); transition: clip-path 0.6s var(--ease-out); }
+.cat-float-in::after { content: ""; position: absolute; inset: 0; z-index: 1; box-shadow: inset 0 0 0 1px var(--line); }
+.no-photo-outline .cat-float-in::after { content: none; }
+.cat-float.is-on .cat-float-in { clip-path: inset(0 0 0 0); }
+.cat-float-img { position: absolute; inset: 0; opacity: 0; transform: scale(1.08); transition: opacity 0.35s var(--ease), transform 0.9s var(--ease-out); }
+.cat-float-img.is-on { opacity: 1; transform: none; }
+.cat-float-img img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Men & women as split panels: a large word under each photo. The panel you point at widens and its word
+   grows with it (scaled, so nothing below the panels moves); the other word thins to an outline. */
+.cta-split { display: flex; gap: clamp(8px, 1vw, 12px); container-type: inline-size; }
+.cta-half { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; overflow: hidden; color: inherit; text-decoration: none; transition: flex-grow 0.9s var(--ease-out); }
+.cta-half:focus-visible { outline-offset: -2px; }
+.cta-half-frame { height: clamp(15rem, 34vw, 32rem); background: var(--tile); }
+.cta-half-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 7% 5% 5%; transition: transform 1.4s var(--ease-out); }
+.cta-word {
+  position: relative; z-index: 2; display: block; margin-top: 0.08em; white-space: nowrap; transform-origin: 0 100%;
+  font-size: clamp(2.5rem, 12vw, 11rem); font-size: 15.2cqi; font-weight: 800; font-stretch: 62%; text-transform: uppercase;
+  letter-spacing: -0.02em; line-height: 0.82; transition: color 0.5s var(--ease), transform 0.9s var(--ease-out);
+}
+.cta-go { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 0.8125rem; }
+@media (hover: hover) {
+  .cta-split:has(.cta-half:hover) .cta-half { flex-grow: 0.72; }
+  .cta-split:has(.cta-half:hover) .cta-half:hover { flex-grow: 1.28; }
+  .cta-split:has(.cta-half:hover) .cta-half:not(:hover) .cta-word { color: transparent; -webkit-text-stroke: 1px var(--black); transform: scale(0.72); }
+  .cta-split .cta-half:hover .cta-word { transform: scale(1.28); }
+  .cta-half:hover .cta-half-img { transform: scale(1.04); }
+  .cta-half:hover .cta-go span:last-child { transform: none; }
+}
+.cta-go span:last-child { transform: translateX(-5px); transition: transform 0.5s var(--ease-out); }
+.nh-dark .cta-split:has(.cta-half:hover) .cta-half:not(:hover) .cta-word { -webkit-text-stroke-color: var(--white); }
+
+/* The cover heading, split into letters by the script (the full heading stays readable to screen readers). */
+.dt-w { display: inline-block; white-space: nowrap; }
+.drop-title.is-set { white-space: nowrap; }
+
+/* Product photos drift a little with the cursor. */
+@media (hover: hover) and (pointer: fine) {
+  .nh-hoverfx.js .card-link:hover [data-reveal].is-in .card-img { transform: translate3d(var(--px, 0px), var(--py, 0px), 0) scale(1.06); }
+}
+/* Main buttons lean toward the cursor. */
+.btn.is-magnet { transition: background-color 0.35s var(--ease), color 0.35s var(--ease), border-color 0.35s var(--ease), transform 0.5s var(--ease-out); }
+
+/* A hairline across the top of the screen fills as you scroll; it reads on black and white alike. */
+.scroll-line {
+  position: fixed; left: 0; right: 0; top: 0; height: 2px; z-index: 96; pointer-events: none;
+  background: #fff; mix-blend-mode: difference; transform: scaleX(0); transform-origin: 0 50%; opacity: 0; transition: opacity 0.4s var(--ease);
+}
+.scroll-line.is-on { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cat-row, .cat-name, .cat-go, .cta-half, .cta-half-img, .cta-word, .btn.is-magnet { transition: none !important; }
+  .cat-row:hover .cat-name, .cat-row:hover .cat-go { transform: none !important; }
+}
+@media (prefers-reduced-motion: reduce) { .cta-split .cta-half { flex-grow: 1 !important; } .cta-split .cta-word { transform: none !important; } }

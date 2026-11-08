@@ -35,7 +35,9 @@
       "fx_grain": true,
       "fx_lantern": true,
       "fx_type": true,
-      "fx_scroll": true
+      "fx_scroll": true,
+      "fx_hover": true,
+      "fx_progress": true
     }
   }
 }

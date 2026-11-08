@@ -69,8 +69,11 @@
       "settings": {
         "heading": "Men & women",
         "button": "Shop all",
+        "style": "split",
         "men_label": "Shop men",
-        "women_label": "Shop women"
+        "women_label": "Shop women",
+        "men_word": "Men",
+        "women_word": "Women"
       }
     },
     "statement": {
@@ -122,7 +125,8 @@
     "categories": {
       "type": "category-tiles",
       "settings": {
-        "heading": "Shop by category"
+        "heading": "Shop by category",
+        "layout": "index"
       }
     },
     "editorial": {

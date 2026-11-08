@@ -1,0 +1,33 @@
+{%- comment -%}
+  One category in "Shop by category". As a tile: a photo with the name under it. As a row of the index:
+  number, name in large capitals, a real count of the pieces of that type, and a small photo on phones
+  (on computers the photo follows the cursor instead; see the section).
+  Accepts: layout ('tiles' or 'index'), title, link, img, count, n (position), attrs (theme editor hooks).
+{%- endcomment -%}
+{%- if layout == 'index' -%}
+  <li class="cat-index-item"{% if attrs != blank %} {{ attrs }}{% endif %}>
+    <a class="cat-row" href="{{ link }}" data-cat-row="{{ n }}">
+      <span class="cat-num tabular" aria-hidden="true">{{ n | plus: 1 | prepend: '0' | slice: -2, 2 }}</span>
+      <span class="cat-name">{{ title | escape }}</span>
+      {%- if count > 0 -%}<span class="cat-count tabular">{{ count }} {% if count == 1 %}piece{% else %}pieces{% endif %}</span>{%- endif -%}
+      {%- if img != blank -%}
+        <span class="cat-thumb" aria-hidden="true">{{ img | image_url: width: 240 | image_tag: widths: '120, 240', sizes: '64px', loading: 'lazy', decoding: 'async', alt: '' }}</span>
+      {%- endif -%}
+      <span class="cat-go" aria-hidden="true">&rarr;</span>
+    </a>
+  </li>
+{%- else -%}
+  <a class="cat-tile" href="{{ link }}"{% if attrs != blank %} {{ attrs }}{% endif %}>
+    <span class="frame cat-frame">
+      {%- if img != blank -%}
+        {{ img | image_url: width: 900 | image_tag: widths: '360, 540, 720, 900', sizes: '(min-width: 1024px) 25vw, 50vw', loading: 'lazy', decoding: 'async', alt: '', class: 'cat-img' }}
+      {%- else -%}
+        {{ 'collection-1' | placeholder_svg_tag: 'placeholder' }}
+      {%- endif -%}
+    </span>
+    <span class="cat-label">
+      <span class="card-title">{{ title | escape }}</span>
+      <span class="muted small">Shop now</span>
+    </span>
+  </a>
+{%- endif -%}

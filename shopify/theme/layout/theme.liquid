@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ request.locale.iso_code }}" class="{% if settings.lowercase %}nh-lower{% endif %}{% if settings.dark_mode %} nh-dark{% endif %}{% if settings.flats_only %} nh-flats{% endif %}{% if settings.fx_type %} nh-gfx{% endif %}{% if settings.fx_scroll %} nh-scrollfx{% endif %}">
+<html lang="{{ request.locale.iso_code }}" class="{% if settings.lowercase %}nh-lower{% endif %}{% if settings.dark_mode %} nh-dark{% endif %}{% if settings.flats_only %} nh-flats{% endif %}{% if settings.fx_type %} nh-gfx{% endif %}{% if settings.fx_scroll %} nh-scrollfx{% endif %}{% if settings.fx_hover %} nh-hoverfx{% endif %}">
   <head>
     {%- liquid
       assign brand = settings.brand_name | default: shop.name
@@ -115,6 +115,7 @@
     {% render 'signup-offer' %}
     <p class="sr-only" aria-live="polite" data-announcer></p>
     {%- if settings.fx_grain -%}<div class="grain" aria-hidden="true"></div>{%- endif -%}
+    {%- if settings.fx_progress -%}<div class="scroll-line" aria-hidden="true" data-scroll-line></div>{%- endif -%}
 
     {%- if request.page_type == 'index' -%}
       {%- liquid

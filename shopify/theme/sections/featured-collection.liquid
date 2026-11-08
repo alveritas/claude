@@ -55,7 +55,6 @@
 <section class="shell section-pad featured" aria-labelledby="featured-{{ section.id }}">
   <div class="section-head">
     <div>
-      <h2 id="featured-{{ section.id }}" class="section-title">{{ section.settings.heading | escape }}</h2>
       {%- liquid
         assign hide_count = false
         if section.settings.subheading == blank
@@ -64,6 +63,7 @@
           endif
         endif
       -%}
+      <h2 id="featured-{{ section.id }}" class="section-title"{% unless hide_count %} data-count="{{ total }}"{% endunless %}>{{ section.settings.heading | escape }}</h2>
       {%- unless hide_count -%}
       <p class="section-sub muted">{% if section.settings.subheading != blank %}{{ section.settings.subheading | escape }}{% else %}{{ total }} {% if total == 1 %}piece{% else %}pieces{% endif %}{% if settings.preorder_enabled %}, made to order{% endif %}{% endif %}</p>
       {%- endunless -%}
