@@ -36,8 +36,12 @@
   data-release="{% if release != blank %}{{ release_s }}{% endif %}" data-drop-url="{{ target_url }}" data-state="{% if live %}live{% elsif passed %}publishing{% else %}pre{% endif %}"
   aria-labelledby="drop-{{ section.id }}">
   {%- if section.settings.image != blank -%}
-    <div class="drop-photo">
+    <div class="drop-photo"{% if settings.fx_lantern %} data-lantern{% endif %}>
       {{ section.settings.image | image_url: width: 1600 | image_tag: widths: '540, 720, 900, 1200, 1600', sizes: '(min-width: 64rem) 50vw, 100vw', loading: 'eager', fetchpriority: 'high', alt: section.settings.image.alt, class: 'drop-img' }}
+      {%- if settings.fx_lantern -%}
+        {%- comment -%} The lit copy of the same photo (same file, already loaded) shows only inside the torch light. {%- endcomment -%}
+        {{ section.settings.image | image_url: width: 1600 | image_tag: widths: '540, 720, 900, 1200, 1600', sizes: '(min-width: 64rem) 50vw, 100vw', loading: 'eager', alt: '', class: 'drop-img drop-img--lit', aria-hidden: 'true' }}
+      {%- endif -%}
     </div>
   {%- endif -%}
   <div class="shell drop-inner">

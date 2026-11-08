@@ -36,13 +36,13 @@
   assign items = joined | split: '|'
 -%}
 {%- if items.size > 0 -%}
-  <div class="marquee">
+  <div class="marquee{% if section.settings.style == 'graphic' %} marquee--graphic{% endif %}" data-marquee>
     <p class="sr-only">{% for t in items %}{{ t | strip | escape }}. {% endfor %}</p>
-    <div class="marquee-track" aria-hidden="true">
+    <div class="marquee-track" aria-hidden="true" data-marquee-track>
       {%- for round in (1..6) -%}
         {%- for t in items -%}
           {%- assign tt = t | strip -%}
-          {%- if tt != blank -%}<span class="marquee-item">{{ tt | escape }}</span>{%- endif -%}
+          {%- if tt != blank -%}<span class="marquee-item{% cycle '', ' marquee-item--line' %}">{{ tt | escape }}</span>{%- endif -%}
         {%- endfor -%}
       {%- endfor -%}
     </div>
@@ -54,7 +54,11 @@
   "name": "Ticker",
   "class": "section-marquee",
   "settings": [
-    { "type": "text", "id": "text", "label": "Lines (separate with |)", "default": "Drop 001 is out now | Ships worldwide | Secure checkout | Not made to explain" }
+    { "type": "text", "id": "text", "label": "Lines (separate with |)", "default": "Drop 001 is out now | Ships worldwide | Secure checkout | Not made to explain" },
+    { "type": "select", "id": "style", "label": "Look", "default": "quiet", "options": [
+      { "value": "quiet", "label": "Small line" },
+      { "value": "graphic", "label": "Large type on black" }
+    ], "info": "Large type follows your scroll when Scroll effects is on (Theme settings → Atmosphere)." }
   ],
   "presets": [{ "name": "Ticker" }]
 }

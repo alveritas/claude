@@ -996,6 +996,14 @@
   const drops = document.querySelectorAll("[data-drop]");
   if (!drops.length) return;
   const pad = (n) => String(n).padStart(2, "0");
+  // A digit that changes rolls in (unless the visitor asked for less motion).
+  const roll = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const set = (el, v) => {
+    if (!el || el.dataset.v === v) return;
+    el.dataset.v = v;
+    if (roll) { const sp = document.createElement("span"); sp.className = "cd-roll"; sp.textContent = v; el.replaceChildren(sp); }
+    else el.textContent = v;
+  };
   drops.forEach((root) => {
     const at = Number(root.dataset.release) * 1000;
     const box = root.querySelector("[data-countdown]");
@@ -1034,10 +1042,10 @@
       const left = at - Date.now();
       if (left <= 0) { clearInterval(timer); check(); return; }
       const s = Math.floor(left / 1000);
-      if (cells.d) cells.d.textContent = pad(Math.floor(s / 86400));
-      if (cells.h) cells.h.textContent = pad(Math.floor((s % 86400) / 3600));
-      if (cells.m) cells.m.textContent = pad(Math.floor((s % 3600) / 60));
-      if (cells.s) cells.s.textContent = pad(s % 60);
+      set(cells.d, pad(Math.floor(s / 86400)));
+      set(cells.h, pad(Math.floor((s % 86400) / 3600)));
+      set(cells.m, pad(Math.floor((s % 3600) / 60)));
+      set(cells.s, pad(s % 60));
     };
     if (root.dataset.state === "live") return;
     if (!at) { if (box) box.hidden = true; return; }
@@ -1065,4 +1073,151 @@
       if (count) count.textContent = "1 / " + track.querySelectorAll(".gallery-slide:not([hidden])").length;
     });
   });
+})();
+
+/* ── Atmosphere (Theme settings → Atmosphere): the torch-lit cover, headings that decode, the ticker that
+   follows the scroll, the statement that lights up word by word, and a "View" label on product photos.
+   None of it runs for visitors who ask for less motion, and none of it touches buying. ── */
+(function () {
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const html = document.documentElement;
+  if (reduce) return;
+
+  /* Torch-lit cover: the light follows the cursor or a finger, and drifts on its own when left alone. */
+  document.querySelectorAll("[data-lantern]").forEach((box) => {
+    if (!box.querySelector(".drop-img--lit")) return;
+    const area = box.closest(".drop") || box;
+    let w = 0, h = 0, R = 0, x = 0, y = 0, tx = 0, ty = 0, r = 0, last = -1e9, visible = true, raf = 0;
+    const t0 = performance.now();
+    const size = () => { const b = box.getBoundingClientRect(); w = b.width; h = b.height; R = Math.max(w, h) * 0.4; };
+    size(); x = tx = w * 0.5; y = ty = h * 0.38;
+    box.classList.add("is-lantern");
+    const frame = (now) => {
+      raf = 0;
+      if (!visible) return;
+      const idle = now - last > 2600;
+      if (idle) {
+        const t = (now - t0) / 1000;
+        tx = w * (0.5 + 0.22 * Math.sin(t * 0.31)); ty = h * (0.42 + 0.2 * Math.sin(t * 0.43 + 1.1));
+      }
+      const k = idle ? 0.025 : 0.16;
+      x += (tx - x) * k; y += (ty - y) * k; r += (R - r) * 0.03;
+      box.style.setProperty("--lx", x.toFixed(1) + "px");
+      box.style.setProperty("--ly", y.toFixed(1) + "px");
+      box.style.setProperty("--lr", r.toFixed(1) + "px");
+      raf = requestAnimationFrame(frame);
+    };
+    const aim = (cx, cy) => { const b = box.getBoundingClientRect(); tx = cx - b.left; ty = cy - b.top; last = performance.now(); };
+    area.addEventListener("pointermove", (e) => { if (e.pointerType !== "touch") aim(e.clientX, e.clientY); }, { passive: true });
+    const touch = (e) => { const t = e.touches && e.touches[0]; if (t) aim(t.clientX, t.clientY); };
+    area.addEventListener("touchstart", touch, { passive: true });
+    area.addEventListener("touchmove", touch, { passive: true });
+    window.addEventListener("resize", size, { passive: true });
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver((es) => { visible = es[0].isIntersecting; if (visible && !raf) raf = requestAnimationFrame(frame); }).observe(box);
+    }
+    raf = requestAnimationFrame(frame);
+  });
+
+  /* Headings decode letter by letter the first time they come into view; nav links do it on hover. */
+  const UP = "ABCDEFGHKNOPRSTUVXYZ0123456789";
+  const LO = "abcdeghknopqrsuvxyz";
+  const scramble = (el, dur) => {
+    if (el.dataset.scrambling || el.children.length) return;
+    const txt = el.dataset.text || (el.dataset.text = el.textContent);
+    if (!txt.trim()) return;
+    const set = getComputedStyle(el).textTransform === "uppercase" ? UP : LO;
+    const n = txt.length, tail = 5, start = performance.now();
+    el.dataset.scrambling = "1";
+    el.setAttribute("aria-label", txt.trim());
+    const step = (now) => {
+      const p = Math.min(1, (now - start) / dur);
+      const settled = Math.floor(p * (n + tail)) - tail;
+      let out = "";
+      for (let i = 0; i < n; i++) {
+        const c = txt[i];
+        out += (p >= 1 || i < settled || /\s/.test(c)) ? c : set[(Math.random() * set.length) | 0];
+      }
+      el.textContent = out;
+      if (p < 1) requestAnimationFrame(step);
+      else { el.textContent = txt; delete el.dataset.scrambling; el.removeAttribute("aria-label"); }
+    };
+    requestAnimationFrame(step);
+  };
+  if (html.classList.contains("nh-gfx")) {
+    const heads = document.querySelectorAll(".section-title, .drop-title, .rich-heading, :is(.template-collection, .template-list-collections) .page-title");
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver((es) => es.forEach((e) => {
+        if (!e.isIntersecting) return;
+        io.unobserve(e.target);
+        scramble(e.target, 650 + Math.min(700, e.target.textContent.length * 28));
+      }), { threshold: 0.6 });
+      heads.forEach((el) => io.observe(el));
+    }
+    if (fine) document.querySelectorAll(".nav-link").forEach((a) => a.addEventListener("mouseenter", () => scramble(a, 380)));
+  }
+
+  /* The large ticker moves with the scroll: faster as you scroll, and the other way when you scroll up. */
+  if (html.classList.contains("nh-scrollfx")) {
+    document.querySelectorAll(".marquee--graphic").forEach((mq) => {
+      const track = mq.querySelector("[data-marquee-track]");
+      if (!track) return;
+      mq.classList.add("is-driven");
+      let x = 0, round = track.scrollWidth / 6, dir = 1, boost = 0, lastY = window.scrollY, visible = false, raf = 0;
+      const frame = () => {
+        raf = 0;
+        if (!visible) return;
+        x -= (0.55 + boost) * dir; boost *= 0.93;
+        if (round > 0) { if (x <= -round) x += round; if (x > 0) x -= round; }
+        track.style.transform = `translate3d(${x.toFixed(2)}px, 0, 0)`;
+        raf = requestAnimationFrame(frame);
+      };
+      window.addEventListener("scroll", () => {
+        const d = window.scrollY - lastY; lastY = window.scrollY;
+        if (d) { dir = d > 0 ? 1 : -1; boost = Math.min(16, boost + Math.abs(d) * 0.1); }
+      }, { passive: true });
+      window.addEventListener("resize", () => { round = track.scrollWidth / 6; }, { passive: true });
+      if ("IntersectionObserver" in window) {
+        new IntersectionObserver((es) => { visible = es[0].isIntersecting; if (visible && !raf) raf = requestAnimationFrame(frame); }).observe(mq);
+      } else { visible = true; raf = requestAnimationFrame(frame); }
+    });
+
+    /* The brand statement lights up word by word as it scrolls up the screen. Lines with links stay as they are. */
+    document.querySelectorAll(".rich--statement .prose").forEach((prose) => {
+      const words = [];
+      prose.querySelectorAll("p").forEach((para) => {
+        if (para.querySelector("a, strong, em")) return;
+        const parts = para.textContent.split(/(\s+)/);
+        para.textContent = "";
+        parts.forEach((t) => {
+          if (!t) return;
+          if (/^\s+$/.test(t)) { para.appendChild(document.createTextNode(t)); return; }
+          const sp = document.createElement("span"); sp.className = "w"; sp.textContent = t;
+          para.appendChild(sp); words.push(sp);
+        });
+      });
+      if (!words.length) return;
+      prose.classList.add("is-wordlit");
+      let raf = 0;
+      const update = () => {
+        raf = 0;
+        const b = prose.getBoundingClientRect(), vh = window.innerHeight;
+        const p = Math.min(1, Math.max(0, (vh * 0.85 - b.top) / (b.height + vh * 0.35)));
+        const lit = Math.round(p * words.length);
+        words.forEach((w, i) => w.classList.toggle("is-lit", i < lit));
+      };
+      window.addEventListener("scroll", () => { if (!raf) raf = requestAnimationFrame(update); }, { passive: true });
+      window.addEventListener("resize", () => { if (!raf) raf = requestAnimationFrame(update); }, { passive: true });
+      update();
+    });
+  }
+
+  /* A small "View" label follows the cursor over product photos. */
+  if (fine) {
+    document.addEventListener("pointerover", (e) => {
+      const a = e.target.closest && e.target.closest(".card-link");
+      if (a && !a.dataset.cursor) a.dataset.cursor = "View";
+    }, { passive: true });
+  }
 })();

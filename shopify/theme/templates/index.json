@@ -32,7 +32,7 @@
         "title": "Friday the 13th",
         "show_date": true,
         "date_label": "11.13.26 · midnight ET",
-        "line": "Five new pieces.",
+        "line": "Six new pieces.",
         "countdown_label": "",
         "button_pre": "Preview the drop",
         "button_live": "Shop the drop",
@@ -96,8 +96,10 @@
     },
     "ticker": {
       "type": "marquee",
-      "disabled": true,
-      "settings": {}
+      "settings": {
+        "text": "Friday the 13th | 11.13 | 12 AM ET | Six new pieces",
+        "style": "graphic"
+      }
     },
     "featured_women": {
       "type": "featured-collection",
@@ -176,6 +178,7 @@
   },
   "order": [
     "drop",
+    "ticker",
     "featured",
     "categories",
     "new_arrivals",
@@ -186,7 +189,6 @@
     "drop_pieces",
     "hero_type",
     "hero",
-    "ticker",
     "featured_men",
     "featured_women",
     "editorial",

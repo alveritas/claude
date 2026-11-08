@@ -89,6 +89,43 @@
     ]
   },
   {
+    "name": "Atmosphere",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "The graphic layer: texture, light and type that move. Everything here switches off for visitors who ask their device for less motion, and nothing in it affects buying."
+      },
+      {
+        "type": "checkbox",
+        "id": "fx_grain",
+        "label": "Film grain",
+        "default": true,
+        "info": "A faint grain over the whole site, like a printed photo."
+      },
+      {
+        "type": "checkbox",
+        "id": "fx_lantern",
+        "label": "Torch-lit cover photo",
+        "default": true,
+        "info": "The cover photo sits in the dark and a soft light follows the cursor (or drifts on its own on phones)."
+      },
+      {
+        "type": "checkbox",
+        "id": "fx_type",
+        "label": "Graphic headings",
+        "default": true,
+        "info": "Section headings set large in condensed capitals that decode letter by letter as they come into view."
+      },
+      {
+        "type": "checkbox",
+        "id": "fx_scroll",
+        "label": "Scroll effects",
+        "default": true,
+        "info": "The ticker speeds up and turns with your scroll, and the brand statement lights up word by word."
+      }
+    ]
+  },
+  {
     "name": "Shipping and returns lines",
     "settings": [
       {

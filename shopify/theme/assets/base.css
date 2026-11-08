@@ -1174,3 +1174,104 @@ body.template-index:not(.is-scrolled) .site-header::after { opacity: 0; }
   .drop--cover .cd-u { font-weight: 500; }
   .drop--cover .cd-sep { color: rgb(255 255 255 / 0.6); }
 }
+
+/* ══ Atmosphere: the graphic layer (Theme settings → Atmosphere). Texture, light and type that move, laid
+   over the same clean pages. All of it stands still for visitors who ask for less motion. ══ */
+
+/* Film grain: one fixed layer of noise, never in the way of a click. It flickers on computers and holds
+   still on phones. */
+.grain {
+  position: fixed; inset: -50%; z-index: 95; pointer-events: none; opacity: 0.55; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0 0 0 0 1'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size: 240px 240px;
+}
+/* overlay blending leaves pure white and pure black alone, so the grain lives in the photos and greys */
+@media (hover: hover) and (pointer: fine) { .grain { animation: grain 1s steps(6) infinite; } }
+@keyframes grain {
+  0% { transform: translate(0, 0); } 17% { transform: translate(-3%, 2%); } 33% { transform: translate(2%, -4%); }
+  50% { transform: translate(-4%, -1%); } 67% { transform: translate(3%, 3%); } 83% { transform: translate(-1%, 4%); } 100% { transform: translate(0, 0); }
+}
+.nh-dark .grain { opacity: 0.4; }
+
+/* Torch-lit cover: the photo waits in the haze (on phones, in the dark) and the light shows it clearly
+   wherever the cursor or a finger is. Script-only: without it the photo shows as normal. */
+.drop-img--lit { opacity: 0; }
+.is-lantern .drop-img { animation: none; }
+.is-lantern .drop-img:not(.drop-img--lit) { filter: var(--haze, grayscale(1) contrast(0.5) brightness(1.2) blur(1.5px)); transition: filter 1.2s var(--ease); }
+.is-lantern .drop-img--lit {
+  opacity: 1; z-index: 0;
+  -webkit-mask-image: radial-gradient(circle var(--lr, 0px) at var(--lx, 50%) var(--ly, 40%), #000 0%, rgb(0 0 0 / 0.92) 38%, rgb(0 0 0 / 0.45) 62%, transparent 78%);
+  mask-image: radial-gradient(circle var(--lr, 0px) at var(--lx, 50%) var(--ly, 40%), #000 0%, rgb(0 0 0 / 0.92) 38%, rgb(0 0 0 / 0.45) 62%, transparent 78%);
+}
+.drop-photo[data-lantern]::after { z-index: 1; }
+@media (max-width: 63.99rem) { .drop-photo[data-lantern] { --haze: grayscale(1) brightness(0.5) contrast(1.05); } }
+@media (pointer: fine) { .is-lantern { cursor: crosshair; } }
+
+/* Graphic headings: condensed capitals, set large, with the count beside them. */
+.nh-gfx .section-title {
+  font-size: clamp(2.5rem, 7.2vw, 5.75rem); font-weight: 800; font-stretch: 62%; text-transform: uppercase;
+  letter-spacing: -0.012em; word-spacing: 0.1em; line-height: 0.86; text-wrap: balance;
+}
+.nh-gfx .section-head { align-items: flex-end; }
+.nh-gfx .section-sub { margin-top: 10px; font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.nh-gfx .drop-title { font-weight: 800; font-stretch: 62%; text-transform: uppercase; letter-spacing: -0.012em; line-height: 0.86; font-size: clamp(3rem, 8.2vw, 7.25rem); }
+.nh-gfx .cd-n { font-stretch: 62%; font-weight: 700; font-size: clamp(2.5rem, 6.6vw, 4.75rem); letter-spacing: 0; }
+.nh-gfx .rich-heading { font-stretch: 62%; font-weight: 800; text-transform: uppercase; letter-spacing: 0; }
+/* letters being decoded keep their place, so the heading never jumps */
+[data-scrambling] { font-variant-numeric: tabular-nums; }
+.scr-glyph { opacity: 0.55; }
+
+/* Countdown digits roll in as they change. */
+.cd-n { display: inline-block; overflow: hidden; vertical-align: top; }
+.cd-roll { display: inline-block; animation: cd-roll 0.55s var(--ease-out) both; }
+@keyframes cd-roll { from { transform: translateY(55%); opacity: 0; filter: blur(3px); } to { transform: none; opacity: 1; filter: none; } }
+
+/* Large ticker on black: condensed capitals, every other line in outline. With scroll effects on, the
+   script drives it, so it speeds up and turns with the scroll. */
+.marquee--graphic { background: #0b0b0b; color: #f2f1ee; border: 0; padding: clamp(14px, 2.4vw, 26px) 0; }
+.marquee--graphic .marquee-item {
+  font-size: clamp(2.75rem, 9vw, 7.5rem); font-weight: 800; font-stretch: 62%; letter-spacing: -0.01em; line-height: 0.9;
+  padding: 0 clamp(18px, 2.6vw, 40px); display: inline-flex; align-items: center; gap: clamp(18px, 2.6vw, 40px);
+}
+.marquee--graphic .marquee-item::after { content: ""; width: 0.16em; height: 0.16em; flex: none; border-radius: 50%; background-color: #f2f1ee; }
+.marquee--graphic .marquee-item--line { color: transparent; -webkit-text-stroke: 1px #f2f1ee; }
+.marquee.is-driven .marquee-track { animation: none; will-change: transform; }
+.nh-lower .marquee--graphic .marquee-item { font-size: clamp(2.75rem, 9vw, 7.5rem); letter-spacing: -0.01em; }
+
+/* Statement: the words light up as you read down the page. */
+.rich--statement .w { transition: opacity 0.5s var(--ease), color 0.5s var(--ease); }
+.is-wordlit .w { opacity: 0.16; }
+.is-wordlit .w.is-lit { opacity: 1; }
+
+/* Product photos open like a shutter from the bottom as they arrive. */
+.nh-gfx.js [data-reveal].card-frame { clip-path: inset(100% 0 0 0); transition: opacity 1.1s var(--ease) var(--d, 0s), transform 1.3s var(--ease-out) var(--d, 0s), clip-path 1.25s var(--ease-out) var(--d, 0s); }
+.nh-gfx.js [data-reveal].card-frame.is-in { clip-path: inset(0 0 0 0); }
+
+/* Footer: the wordmark runs edge to edge. */
+.nh-gfx .footer-mark .footer-logo { width: 100%; }
+.nh-gfx .footer-mark { padding-top: 24px; padding-bottom: 28px; }
+
+/* Nav links decode on hover. */
+.nh-gfx .nav-link { font-variant-numeric: tabular-nums; }
+
+/* Phones skip the full-page grain (it costs smooth scrolling there); the cover keeps a grain of its own. */
+@media (hover: none), (pointer: coarse) { .grain { display: none; } }
+.drop-photo[data-lantern]::before {
+  content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0.5; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0 0 0 0 1'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size: 240px 240px;
+}
+@media (hover: hover) and (pointer: fine) { .drop-photo[data-lantern]::before { display: none; } }
+
+/* Collection pages: the title in the same condensed capitals as the homepage headings. */
+.nh-gfx :is(.template-collection, .template-list-collections, .template-search) .page-title {
+  font-size: clamp(2.75rem, 8vw, 6.25rem); font-weight: 800; font-stretch: 62%; text-transform: uppercase;
+  letter-spacing: -0.012em; word-spacing: 0.1em; line-height: 0.86;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain { animation: none !important; }
+  .cd-roll { animation: none !important; }
+  .is-wordlit .w { opacity: 1 !important; }
+  .nh-gfx.js [data-reveal].card-frame { clip-path: none !important; }
+}
