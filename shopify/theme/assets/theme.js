@@ -1184,34 +1184,14 @@
   }
 })();
 
-/* ── Atmosphere, second layer: the line that tracks the page, category photos and product photos that
-   follow the cursor, and buttons that lean toward it. Headings stay still.
-   Cursor effects run only with a mouse or trackpad; nothing here runs for visitors who ask for less motion,
-   except the progress line, which only mirrors their own scrolling. ── */
+/* ── Atmosphere, second layer: in Shop by category, the photo of the row you point at follows the cursor.
+   Only with a mouse or trackpad, and never for visitors who ask for less motion. ── */
 (function () {
   const html = document.documentElement;
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   const hover = fine && html.classList.contains("nh-hoverfx");
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
-
-  /* Progress line: only on pages long enough to need it. */
-  const line = document.querySelector("[data-scroll-line]");
-  if (line) {
-    let raf = 0;
-    const update = () => {
-      raf = 0;
-      const max = html.scrollHeight - window.innerHeight;
-      const on = max > window.innerHeight * 0.6;
-      line.classList.toggle("is-on", on);
-      line.style.transform = "scaleX(" + (on ? clamp(window.scrollY / max, 0, 1).toFixed(4) : 0) + ")";
-    };
-    const ask = () => { if (!raf) raf = requestAnimationFrame(update); };
-    window.addEventListener("scroll", ask, { passive: true });
-    window.addEventListener("resize", ask, { passive: true });
-    window.addEventListener("load", ask);
-    update();
-  }
 
   if (reduce) return;
 
@@ -1253,28 +1233,5 @@
     list.addEventListener("pointermove", (e) => { target(e.clientX, e.clientY); if (!raf) raf = requestAnimationFrame(frame); }, { passive: true });
     list.addEventListener("pointerleave", () => { on = false; fl.classList.remove("is-on"); });
     window.addEventListener("resize", measure, { passive: true });
-  });
-
-  /* Product photos drift slightly against the cursor inside their frame. */
-  document.addEventListener("pointermove", (e) => {
-    const a = e.target.closest && e.target.closest(".card-link");
-    if (!a) return;
-    const f = a.querySelector(".card-frame");
-    if (!f) return;
-    const b = f.getBoundingClientRect();
-    const rx = clamp((e.clientX - b.left) / b.width - 0.5, -0.5, 0.5), ry = clamp((e.clientY - b.top) / b.height - 0.5, -0.5, 0.5);
-    f.style.setProperty("--px", (-rx * 14).toFixed(1) + "px");
-    f.style.setProperty("--py", (-ry * 14).toFixed(1) + "px");
-  }, { passive: true });
-
-  /* Main buttons lean toward the cursor (never the buying buttons on a product page). */
-  document.querySelectorAll(".drop-btn:not(.drop-btn--2), .cta .btn, .newsletter .btn-solid, .section-head .btn").forEach((btn) => {
-    btn.classList.add("is-magnet");
-    btn.addEventListener("pointermove", (e) => {
-      const b = btn.getBoundingClientRect();
-      const dx = e.clientX - (b.left + b.width / 2), dy = e.clientY - (b.top + b.height / 2);
-      btn.style.transform = `translate(${clamp(dx * 0.2, -9, 9).toFixed(1)}px, ${clamp(dy * 0.3, -6, 6).toFixed(1)}px)`;
-    }, { passive: true });
-    btn.addEventListener("pointerleave", () => { btn.style.transform = ""; });
   });
 })();

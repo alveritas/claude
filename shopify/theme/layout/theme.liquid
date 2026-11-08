@@ -115,7 +115,6 @@
     {% render 'signup-offer' %}
     <p class="sr-only" aria-live="polite" data-announcer></p>
     {%- if settings.fx_grain -%}<div class="grain" aria-hidden="true"></div>{%- endif -%}
-    {%- if settings.fx_progress -%}<div class="scroll-line" aria-hidden="true" data-scroll-line></div>{%- endif -%}
 
     {%- if request.page_type == 'index' -%}
       {%- liquid

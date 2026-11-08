@@ -51,6 +51,7 @@
     },
     "new_arrivals": {
       "type": "featured-collection",
+      "disabled": true,
       "settings": {
         "heading": "New arrivals",
         "all_products": true,

@@ -126,16 +126,9 @@
       {
         "type": "checkbox",
         "id": "fx_hover",
-        "label": "Cursor effects",
+        "label": "Category photos follow the cursor",
         "default": true,
-        "info": "On computers: product photos drift with the cursor, main buttons lean toward it, and category photos follow it. Phones are unaffected."
-      },
-      {
-        "type": "checkbox",
-        "id": "fx_progress",
-        "label": "Scroll progress line",
-        "default": true,
-        "info": "A thin line across the top of the screen that fills as you scroll down the page."
+        "info": "In Shop by category (index layout), on computers. Phones show a small photo in each row instead."
       }
     ]
   },
