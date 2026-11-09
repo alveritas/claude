@@ -1468,3 +1468,6 @@ body.template-index:not(.is-scrolled) .site-header::after { opacity: 0; }
 .nh-gallery body.template-index:not(.is-scrolled) .site-header { background: #fff; }
 .nh-gallery .empty-title { font-size: 0.9375rem; line-height: 1.5; }
 .nh-gallery .search-hits a { text-transform: uppercase; letter-spacing: var(--g-track); font-size: 0.875rem; }
+/* gallery header: the NH monogram, small and centred */
+.logo-mono { display: block; height: 30px; width: auto; }
+@media (min-width: 64rem) { .logo-mono { height: 36px; } }
