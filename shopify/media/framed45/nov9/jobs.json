@@ -1,0 +1,137 @@
+[
+ {
+  "name": "ref-cathedral",
+  "src": "/home/claude/claude/shopify/media/framed45/cathedral-front.jpg",
+  "method": "ref"
+ },
+ {
+  "name": "ref-scripture",
+  "src": "/home/claude/claude/shopify/media/framed45/scripture-front.jpg",
+  "method": "ref"
+ },
+ {
+  "name": "ref-relic",
+  "src": "/home/claude/claude/shopify/media/framed45/relic-front.jpg",
+  "method": "ref"
+ },
+ {
+  "name": "ref-spine",
+  "src": "/home/claude/claude/shopify/media/framed45/spine-front.jpg",
+  "method": "ref"
+ },
+ {
+  "name": "cathedral-front",
+  "src": "/mnt/user-data/attachments/4e64af7f-c720-5453-a93a-efbeb74b2ef8/4ad83cd1-image.jpg",
+  "method": "dark",
+  "match": "ref-cathedral",
+  "out": "out/cathedral-front.jpg"
+ },
+ {
+  "name": "cathedral-back",
+  "src": "/mnt/user-data/attachments/4e64af7f-c720-5453-a93a-efbeb74b2ef8/feef6a8a-image.jpg",
+  "method": "dark",
+  "match": "cathedral-front",
+  "out": "out/cathedral-back.jpg"
+ },
+ {
+  "name": "cathedral-detail",
+  "src": "/mnt/user-data/attachments/4e64af7f-c720-5453-a93a-efbeb74b2ef8/85bfac15-image.jpg",
+  "method": "crop",
+  "focus": [
+   0.5,
+   0.5
+  ],
+  "out": "out/cathedral-detail.jpg"
+ },
+ {
+  "name": "scripture-front",
+  "src": "/mnt/user-data/attachments/4e64af7f-c720-5453-a93a-efbeb74b2ef8/a0d06eac-image.jpg",
+  "method": "dark",
+  "match": "ref-scripture",
+  "out": "out/scripture-front.jpg"
+ },
+ {
+  "name": "scripture-back",
+  "src": "/mnt/user-data/attachments/4e64af7f-c720-5453-a93a-efbeb74b2ef8/ddc3c940-image.jpg",
+  "method": "dark",
+  "match": "scripture-front",
+  "out": "out/scripture-back.jpg"
+ },
+ {
+  "name": "scripture-detail",
+  "src": "/mnt/user-data/attachments/4e64af7f-c720-5453-a93a-efbeb74b2ef8/4c07b10f-image.jpg",
+  "method": "crop",
+  "focus": [
+   0.5,
+   0.5
+  ],
+  "out": "out/scripture-detail.jpg"
+ },
+ {
+  "name": "relic-front",
+  "src": "/mnt/user-data/attachments/4e64af7f-c720-5453-a93a-efbeb74b2ef8/be1191b4-image.jpg",
+  "method": "dark",
+  "thr": 190,
+  "match": "ref-relic",
+  "out": "out/relic-front.jpg"
+ },
+ {
+  "name": "relic-back",
+  "src": "/mnt/user-data/attachments/4e64af7f-c720-5453-a93a-efbeb74b2ef8/6bd6c6c9-image.jpg",
+  "method": "dark",
+  "thr": 190,
+  "match": "relic-front",
+  "out": "out/relic-back.jpg"
+ },
+ {
+  "name": "relic-detail",
+  "src": "/mnt/user-data/attachments/4e64af7f-c720-5453-a93a-efbeb74b2ef8/143e64bf-image.jpg",
+  "method": "crop",
+  "focus": [
+   0.5,
+   0.5
+  ],
+  "wp": [
+   240,
+   240,
+   240
+  ],
+  "out": "out/relic-detail.jpg"
+ },
+ {
+  "name": "spine-obsidian-front",
+  "src": "/mnt/user-data/attachments/4e64af7f-c720-5453-a93a-efbeb74b2ef8/79ea7bc2-image.jpg",
+  "method": "dark",
+  "match": "ref-spine",
+  "out": "out/spine-obsidian-front.jpg"
+ },
+ {
+  "name": "spine-obsidian-back",
+  "src": "/mnt/user-data/attachments/4e64af7f-c720-5453-a93a-efbeb74b2ef8/714f1e76-image.jpg",
+  "method": "dark",
+  "match": "spine-obsidian-front",
+  "out": "out/spine-obsidian-back.jpg"
+ },
+ {
+  "name": "spine-bone-back",
+  "src": "/mnt/user-data/attachments/4e64af7f-c720-5453-a93a-efbeb74b2ef8/a130f520-image.jpg",
+  "method": "light",
+  "thr": 225,
+  "out": "out/spine-bone-back.jpg",
+  "fit": [
+   0.72,
+   0.84
+  ]
+ },
+ {
+  "name": "spine-pair",
+  "src": "/mnt/user-data/attachments/4e64af7f-c720-5453-a93a-efbeb74b2ef8/d238220d-image.jpg",
+  "method": "light",
+  "thr": 225,
+  "fit": [
+   0.88,
+   0.84
+  ],
+  "out": "out/spine-pair.jpg"
+ }
+]
