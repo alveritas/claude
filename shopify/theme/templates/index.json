@@ -32,7 +32,7 @@
         "title": "Friday the 13th",
         "show_date": true,
         "date_label": "11.13.26 · midnight ET",
-        "line": "Seven new pieces.",
+        "line": "Six new pieces.",
         "countdown_label": "",
         "button_pre": "Preview the drop",
         "button_live": "Shop the drop",
@@ -104,7 +104,7 @@
     "ticker": {
       "type": "marquee",
       "settings": {
-        "text": "Friday the 13th | 11.13 | 12 AM ET | Seven new pieces",
+        "text": "Friday the 13th | 11.13 | 12 AM ET | Six new pieces",
         "style": "graphic"
       },
       "disabled": true
