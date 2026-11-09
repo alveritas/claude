@@ -1,0 +1,169 @@
+[
+ {
+  "name": "spine-front",
+  "src": "/home/claude/claude/shopify/media/levelled/spine-front.jpg",
+  "out": "out/spine-front.jpg",
+  "keepbg": true,
+  "tol": 4
+ },
+ {
+  "name": "relic-front",
+  "src": "/home/claude/claude/shopify/media/levelled/relic-front.jpg",
+  "out": "out/relic-front.jpg",
+  "T": 215
+ },
+ {
+  "name": "relic-back",
+  "src": "/home/claude/claude/shopify/media/levelled/relic-back.jpg",
+  "out": "out/relic-back.jpg",
+  "T": 215
+ },
+ {
+  "name": "veil-front",
+  "src": "/home/claude/claude/shopify/media/levelled/veil-front.jpg",
+  "out": "out/veil-front.jpg",
+  "T": 170
+ },
+ {
+  "name": "veil-back",
+  "src": "/home/claude/claude/shopify/media/levelled/veil-back.jpg",
+  "out": "out/veil-back.jpg",
+  "T": 170
+ },
+ {
+  "name": "vesper-front",
+  "src": "/home/claude/claude/shopify/media/levelled/vesper-front.jpg",
+  "out": "out/vesper-front.jpg",
+  "T": 170
+ },
+ {
+  "name": "vesper-back",
+  "src": "/home/claude/claude/shopify/media/levelled/vesper-back.jpg",
+  "out": "out/vesper-back.jpg",
+  "T": 170
+ },
+ {
+  "name": "requiem-back",
+  "src": "/home/claude/claude/shopify/media/levelled/requiem-back.jpg",
+  "out": "out/requiem-back.jpg",
+  "T": 170
+ },
+ {
+  "name": "requiem-front",
+  "src": "/home/claude/claude/shopify/media/levelled/requiem-front.jpg",
+  "out": "out/requiem-front.jpg",
+  "T": 170
+ },
+ {
+  "name": "cathedral-front",
+  "src": "/home/claude/claude/shopify/media/levelled/cathedral-front.jpg",
+  "out": "out/cathedral-front.jpg",
+  "T": 170
+ },
+ {
+  "name": "cathedral-back",
+  "src": "/home/claude/claude/shopify/media/levelled/cathedral-back.jpg",
+  "out": "out/cathedral-back.jpg",
+  "T": 170
+ },
+ {
+  "name": "scripture-front",
+  "src": "/home/claude/claude/shopify/media/levelled/scripture-front.jpg",
+  "out": "out/scripture-front.jpg",
+  "T": 170
+ },
+ {
+  "name": "chapel-front",
+  "src": "/home/claude/claude/shopify/media/levelled/chapel-front.jpg",
+  "out": "out/chapel-front.jpg",
+  "T": 170
+ },
+ {
+  "name": "chapel-back",
+  "src": "/home/claude/claude/shopify/media/levelled/chapel-back.jpg",
+  "out": "out/chapel-back.jpg",
+  "T": 170
+ },
+ {
+  "name": "new-corset-back",
+  "src": "/home/claude/claude/shopify/media/levelled/new-corset-back.jpg",
+  "out": "out/new-corset-back.jpg",
+  "T": 170
+ },
+ {
+  "name": "new-bomber-front",
+  "src": "/home/claude/claude/shopify/media/levelled/new-bomber-front.jpg",
+  "out": "out/new-bomber-front.jpg",
+  "T": 170
+ },
+ {
+  "name": "new-bomber-back",
+  "src": "/home/claude/claude/shopify/media/levelled/new-bomber-back.jpg",
+  "out": "out/new-bomber-back.jpg",
+  "T": 170
+ },
+ {
+  "name": "new-distressed-vneck-front",
+  "src": "/home/claude/claude/shopify/media/levelled/new-distressed-vneck-front.jpg",
+  "out": "out/new-distressed-vneck-front.jpg",
+  "T": 170
+ },
+ {
+  "name": "new-distressed-vneck-back",
+  "src": "/home/claude/claude/shopify/media/levelled/new-distressed-vneck-back.jpg",
+  "out": "out/new-distressed-vneck-back.jpg",
+  "T": 170
+ },
+ {
+  "name": "new-floral-knit-front",
+  "src": "/home/claude/claude/shopify/media/levelled/new-floral-knit-front.jpg",
+  "out": "out/new-floral-knit-front.jpg",
+  "T": 190
+ },
+ {
+  "name": "new-floral-knit-back",
+  "src": "/home/claude/claude/shopify/media/levelled/new-floral-knit-back.jpg",
+  "out": "out/new-floral-knit-back.jpg",
+  "T": 190
+ },
+ {
+  "name": "new-bag-front",
+  "src": "/home/claude/claude/shopify/media/levelled/new-bag-front.jpg",
+  "out": "out/new-bag-front.jpg",
+  "T": 170
+ },
+ {
+  "name": "new-bag-back",
+  "src": "/home/claude/claude/shopify/media/levelled/new-bag-back.jpg",
+  "out": "out/new-bag-back.jpg",
+  "T": 170
+ },
+ {
+  "name": "nocturnal-front-new",
+  "src": "/mnt/user-data/attachments/4e64af7f-c720-5453-a93a-efbeb74b2ef8/38c4b23f-image.jpg",
+  "out": "out/nocturnal-front-new.jpg",
+  "match": "new-corset-back",
+  "T": 120
+ },
+ {
+  "name": "sovereign-front",
+  "src": "/home/claude/claude/shopify/media/f13/sovereign-jacket-front.jpg",
+  "out": "out/sovereign-front.jpg",
+  "match": "new-corset-back",
+  "T": 110
+ },
+ {
+  "name": "sovereign-back",
+  "src": "/home/claude/claude/shopify/media/f13/sovereign-jacket-back.jpg",
+  "out": "out/sovereign-back.jpg",
+  "match": "sovereign-front",
+  "T": 110
+ },
+ {
+  "name": "sovereign-detail",
+  "src": "/home/claude/claude/shopify/media/f13/sovereign-jacket-detail.jpg",
+  "out": "out/sovereign-detail.jpg",
+  "crop": 0.42,
+  "T": 170
+ }
+]
