@@ -57,6 +57,9 @@
       </button>
 
       <nav class="header-nav desktop-only" aria-label="Main">
+        {%- if section.settings.simple -%}
+        <a class="nav-link{% if on_shop %} is-active{% endif %}" href="{{ routes.all_products_collection_url }}"{% if on_shop %} aria-current="page"{% endif %}>Shop</a>
+        {%- else -%}
         <div class="nav-item has-mega" data-mega>
           <a class="nav-link{% if on_shop %} is-active{% endif %}" href="{{ routes.all_products_collection_url }}"{% if on_shop %} aria-current="true"{% endif %}>Shop all</a>
           <div class="mega" data-mega-panel>
@@ -103,6 +106,7 @@
             </div>
           </div>
         </div>
+        {%- endif -%}
         {%- if has_men -%}
           <a class="nav-link{% if on_men %} is-active{% endif %}" href="{{ men_url }}"{% if on_men %} aria-current="page"{% endif %}>Men</a>
         {%- endif -%}
@@ -113,7 +117,7 @@
           {%- for link in menu.links -%}
             <a class="nav-link{% if link.active %} is-active{% endif %}" href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title }}</a>
           {%- endfor -%}
-        {%- else -%}
+        {%- elsif section.settings.simple == false -%}
           {%- assign on_cols = false -%}{%- if request.page_type == 'list-collections' -%}{%- assign on_cols = true -%}{%- endif -%}
           <a class="nav-link{% if on_cols %} is-active{% endif %}" href="{{ routes.collections_url }}"{% if on_cols %} aria-current="page"{% endif %}>Collections</a>
         {%- endif -%}
@@ -172,22 +176,22 @@
     </div>
     {%- assign n = 0 -%}
     <ul class="mobile-links">
-      <li style="--i: {{ n }}"><a href="{{ routes.all_products_collection_url }}">Shop all</a></li>
+      <li style="--i: {{ n }}"><a href="{{ routes.all_products_collection_url }}">{% if section.settings.simple %}Shop{% else %}Shop all{% endif %}</a></li>
       {%- if has_men -%}
         {%- assign n = n | plus: 1 -%}
         <li style="--i: {{ n }}"><a href="{{ men_url }}">Men</a></li>
-        {%- for type in men_types -%}
+        {%- unless section.settings.simple -%}{%- for type in men_types -%}
           {%- assign n = n | plus: 1 -%}
           <li class="sub" style="--i: {{ n }}"><a href="{{ men_url }}/{{ type | handle }}">{{ type }}</a></li>
-        {%- endfor -%}
+        {%- endfor -%}{%- endunless -%}
       {%- endif -%}
       {%- if has_women -%}
         {%- assign n = n | plus: 1 -%}
         <li style="--i: {{ n }}"><a href="{{ women_url }}">Women</a></li>
-        {%- for type in women_types -%}
+        {%- unless section.settings.simple -%}{%- for type in women_types -%}
           {%- assign n = n | plus: 1 -%}
           <li class="sub" style="--i: {{ n }}"><a href="{{ women_url }}/{{ type | handle }}">{{ type }}</a></li>
-        {%- endfor -%}
+        {%- endfor -%}{%- endunless -%}
       {%- endif -%}
       {%- if menu.links.size > 0 -%}
         {%- for link in menu.links -%}
@@ -217,8 +221,9 @@
       "type": "link_list",
       "id": "menu",
       "label": "Extra menu links",
-      "info": "Shown after Women. Leave empty to show Collections."
-    }
+      "info": "Shown after Women. Leave empty to show Collections (not in the simple header)."
+    },
+    { "type": "checkbox", "id": "simple", "label": "Simple header", "default": true, "info": "Shop, Men and Women only: no drop-down panel and no category rows in the phone menu." }
   ]
 }
 {% endschema %}

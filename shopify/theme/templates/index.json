@@ -23,7 +23,7 @@
       "settings": {
         "heading": "Drop 001",
         "subheading": "",
-        "limit": 6
+        "limit": 8
       }
     },
     "drop": {
@@ -75,7 +75,8 @@
         "women_label": "Shop women",
         "men_word": "Men",
         "women_word": "Women"
-      }
+      },
+      "disabled": true
     },
     "statement": {
       "type": "rich-text",
@@ -84,7 +85,8 @@
         "text": "<p>NEVERHOLLOW is an independent clothing label making men’s and women’s pieces in black, bone and washed grey.</p><p>Each piece starts with its silhouette, then the script or NH monogram that finishes it.</p><p><a href=\"/pages/about\">About the label</a></p>",
         "large": true,
         "statement": true
-      }
+      },
+      "disabled": true
     },
     "newsletter": {
       "type": "newsletter",
@@ -103,7 +105,8 @@
       "settings": {
         "text": "Friday the 13th | 11.13 | 12 AM ET | Seven new pieces",
         "style": "graphic"
-      }
+      },
+      "disabled": true
     },
     "featured_women": {
       "type": "featured-collection",
@@ -128,7 +131,8 @@
       "settings": {
         "heading": "Shop by category",
         "layout": "index"
-      }
+      },
+      "disabled": true
     },
     "editorial": {
       "type": "editorial",
@@ -178,19 +182,20 @@
         "pay",
         "help"
       ],
-      "settings": {}
+      "settings": {},
+      "disabled": true
     }
   },
   "order": [
     "drop",
-    "ticker",
     "featured",
+    "newsletter",
+    "ticker",
     "categories",
     "new_arrivals",
     "collection_001",
     "statement",
     "trust",
-    "newsletter",
     "drop_pieces",
     "hero_type",
     "hero",

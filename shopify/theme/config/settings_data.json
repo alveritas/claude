@@ -32,11 +32,11 @@
       "offer_heading": "25% off your first order",
       "offer_text": "Join the list for new drops and restocks. Your code shows up as soon as you join.",
       "lowercase": false,
-      "fx_grain": true,
-      "fx_lantern": true,
+      "fx_grain": false,
+      "fx_lantern": false,
       "fx_type": true,
-      "fx_scroll": true,
-      "fx_hover": true
+      "fx_scroll": false,
+      "fx_hover": false
     }
   }
 }

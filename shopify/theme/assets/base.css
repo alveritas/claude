@@ -1214,7 +1214,7 @@ body.template-index:not(.is-scrolled) .site-header::after { opacity: 0; }
 
 /* Countdown digits roll in as they change. */
 .cd-n { display: inline-block; overflow: hidden; vertical-align: top; }
-.cd-roll { display: inline-block; animation: cd-roll 0.55s var(--ease-out) both; }
+.nh-scrollfx .cd-roll { display: inline-block; animation: cd-roll 0.55s var(--ease-out) both; }
 @keyframes cd-roll { from { transform: translateY(55%); opacity: 0; filter: blur(3px); } to { transform: none; opacity: 1; filter: none; } }
 
 /* Large ticker on black: condensed capitals, every other line in outline. With scroll effects on, the
@@ -1235,8 +1235,8 @@ body.template-index:not(.is-scrolled) .site-header::after { opacity: 0; }
 .is-wordlit .w.is-lit { opacity: 1; }
 
 /* Product photos open like a shutter from the bottom as they arrive. */
-.nh-gfx.js [data-reveal].card-frame { clip-path: inset(100% 0 0 0); transition: opacity 1.1s var(--ease) var(--d, 0s), transform 1.3s var(--ease-out) var(--d, 0s), clip-path 1.25s var(--ease-out) var(--d, 0s); }
-.nh-gfx.js [data-reveal].card-frame.is-in { clip-path: inset(0 0 0 0); }
+.nh-scrollfx.js [data-reveal].card-frame { clip-path: inset(100% 0 0 0); transition: opacity 1.1s var(--ease) var(--d, 0s), transform 1.3s var(--ease-out) var(--d, 0s), clip-path 1.25s var(--ease-out) var(--d, 0s); }
+.nh-scrollfx.js [data-reveal].card-frame.is-in { clip-path: inset(0 0 0 0); }
 
 /* Footer: the wordmark runs edge to edge. */
 .nh-gfx .footer-mark .footer-logo { width: 100%; }
@@ -1262,13 +1262,13 @@ body.template-index:not(.is-scrolled) .site-header::after { opacity: 0; }
   .grain { animation: none !important; }
   .cd-roll { animation: none !important; }
   .is-wordlit .w { opacity: 1 !important; }
-  .nh-gfx.js [data-reveal].card-frame { clip-path: none !important; }
+  .nh-scrollfx.js [data-reveal].card-frame { clip-path: none !important; }
 }
 
 /* ══ Atmosphere, second layer: the category index and the men & women split panels. ══ */
 
-/* Real piece counts sit beside the large headings, like a footnote. */
-.nh-gfx .section-title[data-count]::after {
+/* Real piece counts beside the large headings (only with scroll effects on, the busier look). */
+.nh-scrollfx.nh-gfx .section-title[data-count]::after {
   content: "(" attr(data-count) ")"; content: "(" attr(data-count) ")" / "";
   display: inline-block; vertical-align: top; margin: 0.12em 0 0 0.3em;
   font-size: max(0.75rem, 0.2em); font-weight: 500; font-stretch: 100%; letter-spacing: 0.04em; line-height: 1;
@@ -1376,3 +1376,12 @@ body.template-index:not(.is-scrolled) .site-header::after { opacity: 0; }
 /* A measurement diagram under Size & fit, at full width on white. */
 .size-guide-img { margin: 16px 0 0; }
 .size-guide-img img { display: block; width: 100%; height: auto; }
+
+/* ══ Simple header and footer (Header / Footer → "Simple"). ══ */
+.footer-simple { display: grid; gap: 28px; padding-top: 40px; padding-bottom: 28px; justify-items: center; text-align: center; }
+.footer-simple .footer-logo { display: block; width: min(100%, 300px); }
+.footer-simple .brand-wordmark { width: 100%; color: var(--black); }
+.footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 22px; list-style: none; margin: 0; padding: 0; font-size: 0.875rem; }
+.footer-links a { padding-bottom: 1px; }
+@media (hover: hover) { .footer-links a:hover { text-decoration: underline; text-underline-offset: 3px; } }
+@media (max-width: 47.99rem) { .footer-links { font-size: 0.9375rem; gap: 12px 20px; } }

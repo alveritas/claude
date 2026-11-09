@@ -3,6 +3,25 @@
   assign live_types = collections.all.products | map: 'type' | uniq | sort
 -%}
 <footer class="site-footer">
+  {%- if section.settings.simple -%}
+  <div class="shell footer-simple">
+    <a href="{{ routes.root_url }}" class="footer-logo" aria-label="{{ brand | escape }}, home"><span class="brand-mark brand-wordmark" aria-hidden="true"></span></a>
+    <nav aria-label="Footer">
+      <ul class="footer-links">
+        <li><a href="{{ routes.all_products_collection_url }}">Shop</a></li>
+        <li><a href="/pages/about">About</a></li>
+        <li><a href="/pages/faq">FAQ</a></li>
+        {%- if shop.shipping_policy.url != blank -%}<li><a href="{{ shop.shipping_policy.url }}">Shipping</a></li>{%- endif -%}
+        {%- if shop.refund_policy.url != blank -%}<li><a href="{{ shop.refund_policy.url }}">Returns</a></li>{%- endif -%}
+        <li><a href="/pages/contact">Contact</a></li>
+        {%- if settings.instagram_url != blank -%}<li><a href="{{ settings.instagram_url }}" rel="noopener" target="_blank">Instagram</a></li>{%- endif -%}
+        {%- if settings.tiktok_url != blank -%}<li><a href="{{ settings.tiktok_url }}" rel="noopener" target="_blank">TikTok</a></li>{%- endif -%}
+        {%- if shop.privacy_policy.url != blank -%}<li><a href="{{ shop.privacy_policy.url }}">Privacy</a></li>{%- endif -%}
+        {%- if shop.terms_of_service.url != blank -%}<li><a href="{{ shop.terms_of_service.url }}">Terms</a></li>{%- endif -%}
+      </ul>
+    </nav>
+  </div>
+  {%- else -%}
   <div class="shell footer-top">
     <div class="footer-brand">
       {%- comment -%} The homepage has its own sign-up section, so the footer doesn't repeat it there. {%- endcomment -%}
@@ -66,6 +85,7 @@
     </a>
   </div>
 
+  {%- endif -%}
   <div class="shell footer-bottom">
     <p class="micro muted">&copy; {{ 'now' | date: '%Y' }} {{ brand }}{% if settings.contact_email != blank %} · <a href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a>{% endif %}</p>
     {%- if shop.enabled_payment_types.size > 0 -%}
@@ -83,6 +103,7 @@
   "name": "Footer",
   "class": "section-footer",
   "settings": [
+    { "type": "checkbox", "id": "simple", "label": "Simple footer", "default": true, "info": "Logo and one row of links instead of columns and a sign-up form." },
     { "type": "text", "id": "signup_heading", "label": "Sign-up heading", "default": "Mailing list" },
     { "type": "text", "id": "signup_text", "label": "Sign-up text", "default": "New releases and restocks, by email." },
     { "type": "textarea", "id": "brand_text", "label": "Brand line (homepage)", "default": "An independent clothing label." }
