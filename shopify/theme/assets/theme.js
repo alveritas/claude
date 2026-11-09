@@ -403,11 +403,13 @@
       });
       layout();
     }
-    const filterGallery = (color) => {
+    // Photos before the first colour's own (e.g. both colours side by side) are shared: they show when the page
+    // opens, and once the shopper picks a colour only that colour's photos remain.
+    const filterGallery = (color, arriving) => {
       if (!track || colorIdx === null || colorIdx === undefined) return;
       const hasGroups = Object.values(groupOf).some((g) => g !== null);
       if (!hasGroups) return;
-      $$(".gallery-slide", track).forEach((s) => { s.hidden = groupOf[s.dataset.mediaId] !== color; });
+      $$(".gallery-slide", track).forEach((s) => { const g = groupOf[s.dataset.mediaId]; s.hidden = !(g === color || (arriving && g === null)); });
       if (!slides().length) $$(".gallery-slide", track).forEach((s) => (s.hidden = false));
       layout();
       goTo(0, false);
@@ -471,7 +473,7 @@
         if (availability) { availability.textContent = CLOSED ? CLOSED_TEXT : AVAIL; availability.hidden = !CLOSED; }
         const stickyMeta = $("[data-sticky-meta]", root);
         if (stickyMeta) stickyMeta.textContent = `${money((v || initial).price)}, choose a ${missing()[0].toLowerCase()}`;
-        if (changed === colorIdx || changed === "init") filterGallery(selected[colorIdx]);
+        if (changed === colorIdx || changed === "init") filterGallery(selected[colorIdx], changed === "init" && !chosenByLink);
         return;
       }
       if (!v) {
@@ -498,7 +500,7 @@
         url.searchParams.set("variant", v.id);
         history.replaceState(history.state, "", url.toString());
       }
-      if (changed === colorIdx || changed === "init") filterGallery(selected[colorIdx]);
+      if (changed === colorIdx || changed === "init") filterGallery(selected[colorIdx], changed === "init" && !chosenByLink);
     };
     // A short shake points at the choice that still needs making.
     const nudge = (el) => {

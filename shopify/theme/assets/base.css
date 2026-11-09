@@ -1471,3 +1471,27 @@ body.template-index:not(.is-scrolled) .site-header::after { opacity: 0; }
 /* gallery header: the NH monogram, small and centred */
 .logo-mono { display: block; height: 46px; width: auto; }
 @media (min-width: 64rem) { .logo-mono { height: 54px; } }
+
+/* ══ Gallery style, quieter type: everything a step smaller, a touch more letter-spacing so small capitals stay
+   readable. ══ */
+.nh-gallery { --g-track: 0.06em; }
+.nh-gallery body { font-size: 0.875rem; }
+.nh-gallery .card-title, .nh-gallery .card-price { font-size: 0.75rem; line-height: 1.6; }
+.nh-gallery .card-body { padding-top: 14px; }
+.nh-gallery .section-title { font-size: 0.75rem; }
+.nh-gallery .page-title { font-size: 0.8125rem; }
+.nh-gallery .product-info .page-title { font-size: 0.9375rem; }
+.nh-gallery .price { font-size: 0.875rem; }
+.nh-gallery .btn { font-size: 0.75rem; }
+.nh-gallery .mobile-links--gallery a { font-size: 0.9375rem; padding-block: 10px; }
+.nh-gallery .drawer-foot--gallery { font-size: 0.8125rem; }
+.nh-gallery .search-input { font-size: 0.875rem; }
+.nh-gallery .footer-gallery-links ul { font-size: 0.75rem; gap: 12px; }
+.nh-gallery .nl-line-input { font-size: 0.8125rem; }
+.nh-gallery .nl-line-btn { font-size: 1.0625rem; }
+.nh-gallery .footer-gallery-copy { font-size: 0.6875rem; }
+.nh-gallery .featured--bare { padding-top: clamp(24px, 4vw, 48px); }
+@media (max-width: 47.99rem) {
+  .nh-gallery .card-title, .nh-gallery .card-price { font-size: 0.75rem; }
+  .nh-gallery .footer-gallery-links ul { font-size: 0.8125rem; }
+}

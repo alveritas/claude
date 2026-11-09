@@ -21,9 +21,11 @@
     "featured": {
       "type": "featured-collection",
       "settings": {
-        "heading": "Drop 001",
+        "heading": "",
         "subheading": "",
-        "limit": 8
+        "limit": 24,
+        "all_products": true,
+        "sort": "newest"
       }
     },
     "drop": {
@@ -39,7 +41,8 @@
         "button2_label": "Shop Drop 001",
         "button2_link": "shopify://collections/drop-001",
         "image": "shopify://shop_images/nh-cover-nocturnal.jpg"
-      }
+      },
+      "disabled": true
     },
     "drop_pieces": {
       "type": "drop-preview",
@@ -188,8 +191,8 @@
     }
   },
   "order": [
-    "drop",
     "featured",
+    "drop",
     "newsletter",
     "ticker",
     "categories",

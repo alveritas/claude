@@ -52,7 +52,11 @@
     endif
   endif
 -%}
-<section class="shell section-pad featured" aria-labelledby="featured-{{ section.id }}">
+<section class="shell section-pad featured{% if section.settings.heading == blank %} featured--bare{% endif %}" aria-labelledby="featured-{{ section.id }}">
+  {%- if section.settings.heading == blank -%}
+    {%- comment -%} No visible heading: the products are the page. Screen readers still get one. {%- endcomment -%}
+    <h1 id="featured-{{ section.id }}" class="sr-only">{{ settings.brand_name | default: shop.name }}</h1>
+  {%- else -%}
   <div class="section-head">
     <div>
       {%- liquid
@@ -70,6 +74,7 @@
     </div>
     <a class="text-link section-link" href="{{ view_all }}">{% if tag != blank %}Shop all {{ tag | downcase }}’s{% else %}Shop all{% endif %}</a>
   </div>
+  {%- endif -%}
   {%- if n > 0 -%}
     <div class="grid grid--4 featured-grid">
       {%- assign shown = 0 -%}
@@ -105,14 +110,14 @@
   "name": "Featured products",
   "class": "section-featured",
   "settings": [
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Drop 001" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Drop 001", "info": "Leave empty to show only the products, with no heading above them." },
     { "type": "text", "id": "subheading", "label": "Subheading" },
     { "type": "collection", "id": "collection", "label": "Collection", "info": "Leave empty for the Drop 001 collection (or all products)." },
     { "type": "checkbox", "id": "all_products", "label": "Use every piece in the store", "default": false, "info": "For a New arrivals row: pair it with Newest first." },
     { "type": "text", "id": "tag", "label": "Only pieces tagged", "info": "Men or Women shows just that section, with a link to it. Leave empty for every piece." },
     { "type": "product_list", "id": "picks", "label": "Hand-picked pieces", "limit": 12, "info": "Shown in this order instead of the collection." },
     { "type": "select", "id": "sort", "label": "Order", "default": "collection", "options": [{ "value": "collection", "label": "The collection's own order" }, { "value": "newest", "label": "Newest first" }] },
-    { "type": "range", "id": "limit", "label": "Products shown", "min": 2, "max": 12, "step": 1, "default": 8 },
+    { "type": "range", "id": "limit", "label": "Products shown", "min": 2, "max": 24, "step": 1, "default": 8 },
     { "type": "product_list", "id": "exclude", "label": "Leave out", "limit": 8, "info": "For example the pieces already shown in the cover above, so the page doesn't repeat itself." }
   ],
   "presets": [{ "name": "Featured products" }]
