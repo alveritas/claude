@@ -14,7 +14,7 @@
         <div class="empty-bag">
           <p class="empty-title">Your bag is empty.</p>
           {% render 'bag-suggestions' %}
-          <a href="{{ routes.all_products_collection_url }}" class="btn btn-solid btn-block">Shop the drop</a>
+          {%- if settings.gallery_mode -%}<a href="{{ routes.all_products_collection_url }}" class="text-link">Continue shopping</a>{%- else -%}<a href="{{ routes.all_products_collection_url }}" class="btn btn-solid btn-block">Shop the drop</a>{%- endif -%}
         </div>
       {%- endif -%}
     </div>

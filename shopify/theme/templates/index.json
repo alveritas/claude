@@ -90,7 +90,8 @@
     },
     "newsletter": {
       "type": "newsletter",
-      "settings": {}
+      "settings": {},
+      "disabled": true
     },
     "hero": {
       "type": "hero",

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ request.locale.iso_code }}" class="{% if settings.lowercase %}nh-lower{% endif %}{% if settings.dark_mode %} nh-dark{% endif %}{% if settings.flats_only %} nh-flats{% endif %}{% if settings.fx_type %} nh-gfx{% endif %}{% if settings.fx_scroll %} nh-scrollfx{% endif %}{% if settings.fx_hover %} nh-hoverfx{% endif %}">
+<html lang="{{ request.locale.iso_code }}" class="{% if settings.lowercase %}nh-lower{% endif %}{% if settings.dark_mode %} nh-dark{% endif %}{% if settings.flats_only %} nh-flats{% endif %}{% if settings.fx_type %} nh-gfx{% endif %}{% if settings.fx_scroll %} nh-scrollfx{% endif %}{% if settings.fx_hover %} nh-hoverfx{% endif %}{% if settings.gallery_mode %} nh-gallery{% endif %}">
   <head>
     {%- liquid
       assign brand = settings.brand_name | default: shop.name
@@ -103,7 +103,7 @@
       </div>
     {%- endif -%}
     <a class="skip-link" href="#main">Skip to content</a>
-    {% section 'announcement-bar' %}
+    {%- unless settings.gallery_mode -%}{% section 'announcement-bar' %}{%- endunless -%}
     {% section 'header' %}
 
     <main id="main" tabindex="-1">

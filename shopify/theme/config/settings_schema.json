@@ -89,6 +89,18 @@
     ]
   },
   {
+    "name": "Style",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "gallery_mode",
+        "label": "Gallery style",
+        "default": false,
+        "info": "Quiet gallery look: white throughout, small capitals, a menu button with the logo in the middle, a two-column product grid with plenty of space, and a plain list footer with an email line. No announcement bar."
+      }
+    ]
+  },
+  {
     "name": "Atmosphere",
     "settings": [
       {

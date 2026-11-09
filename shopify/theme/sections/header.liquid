@@ -175,6 +175,20 @@
       <button type="button" class="icon-btn" data-close aria-label="Close menu">{% render 'icon', name: 'close' %}</button>
     </div>
     {%- assign n = 0 -%}
+    {%- if settings.gallery_mode -%}
+    <ul class="mobile-links mobile-links--gallery">
+      <li style="--i: 0"><a href="{{ routes.all_products_collection_url }}">Shop</a></li>
+      {%- if has_men -%}<li style="--i: 1"><a href="{{ men_url }}">Men</a></li>{%- endif -%}
+      {%- if has_women -%}<li style="--i: 2"><a href="{{ women_url }}">Women</a></li>{%- endif -%}
+      {%- if shop.customer_accounts_enabled -%}<li style="--i: 3"><a href="{{ routes.account_url }}">Track order</a></li>{%- endif -%}
+      <li style="--i: 4"><a href="/pages/contact">Contact</a></li>
+    </ul>
+    <div class="drawer-foot drawer-foot--gallery">
+      {%- if shop.customer_accounts_enabled -%}<a href="{{ routes.account_url }}">Account</a>{%- endif -%}
+      {%- if settings.instagram_url != blank -%}<a href="{{ settings.instagram_url }}" rel="noopener" target="_blank">Instagram</a>{%- endif -%}
+      {%- if settings.tiktok_url != blank -%}<a href="{{ settings.tiktok_url }}" rel="noopener" target="_blank">TikTok</a>{%- endif -%}
+    </div>
+    {%- else -%}
     <ul class="mobile-links">
       <li style="--i: {{ n }}"><a href="{{ routes.all_products_collection_url }}">{% if section.settings.simple %}Shop{% else %}Shop all{% endif %}</a></li>
       {%- if has_men -%}
@@ -209,6 +223,7 @@
       {%- if shop.customer_accounts_enabled -%}<a class="text-link" href="{{ routes.account_url }}">Account</a>{%- endif -%}
       {%- if settings.contact_email != blank -%}<a class="muted small" href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a>{%- endif -%}
     </div>
+    {%- endif -%}
   </nav>
 </div>
 

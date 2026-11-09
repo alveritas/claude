@@ -3,7 +3,35 @@
   assign live_types = collections.all.products | map: 'type' | uniq | sort
 -%}
 <footer class="site-footer">
-  {%- if section.settings.simple -%}
+  {%- if settings.gallery_mode -%}
+  <div class="shell footer-gallery">
+    <nav class="footer-gallery-links" aria-label="Footer">
+      <ul>
+        {%- if shop.customer_accounts_enabled -%}<li><a href="{{ routes.account_url }}">Track order</a></li>{%- endif -%}
+        <li><a href="/pages/contact">Contact us</a></li>
+        {%- if shop.shipping_policy.url != blank -%}<li><a href="{{ shop.shipping_policy.url }}">Shipping</a></li>{%- endif -%}
+        {%- if shop.refund_policy.url != blank -%}<li><a href="{{ shop.refund_policy.url }}">Refund policy</a></li>{%- endif -%}
+        {%- if shop.terms_of_service.url != blank -%}<li><a href="{{ shop.terms_of_service.url }}">Terms of service</a></li>{%- endif -%}
+        {%- if shop.privacy_policy.url != blank -%}<li><a href="{{ shop.privacy_policy.url }}">Privacy policy</a></li>{%- endif -%}
+      </ul>
+      <ul>
+        <li><a href="/pages/about">About</a></li>
+        <li><a href="/pages/faq">FAQ</a></li>
+        {%- if settings.instagram_url != blank -%}<li><a href="{{ settings.instagram_url }}" rel="noopener" target="_blank">Instagram</a></li>{%- endif -%}
+        {%- if settings.tiktok_url != blank -%}<li><a href="{{ settings.tiktok_url }}" rel="noopener" target="_blank">TikTok</a></li>{%- endif -%}
+      </ul>
+    </nav>
+    {%- liquid
+      assign g_code = settings.offer_code | strip
+      assign g_line = 'Email for new drops'
+      if settings.offer_enabled and g_code != blank and settings.offer_amount != blank
+        assign g_line = 'Email for ' | append: settings.offer_amount
+      endif
+    -%}
+    <div class="footer-gallery-form">{% render 'newsletter-form', form_id: 'newsletter-footer', compact: true, line: g_line %}</div>
+    <p class="footer-gallery-copy">&copy; {{ 'now' | date: '%Y' }} {{ brand }}</p>
+  </div>
+  {%- elsif section.settings.simple -%}
   <div class="shell footer-simple">
     <a href="{{ routes.root_url }}" class="footer-logo" aria-label="{{ brand | escape }}, home"><span class="brand-mark brand-wordmark" aria-hidden="true"></span></a>
     <nav aria-label="Footer">
@@ -86,6 +114,7 @@
   </div>
 
   {%- endif -%}
+  {%- unless settings.gallery_mode -%}
   <div class="shell footer-bottom">
     <p class="micro muted">&copy; {{ 'now' | date: '%Y' }} {{ brand }}{% if settings.contact_email != blank %} · <a href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a>{% endif %}</p>
     {%- if shop.enabled_payment_types.size > 0 -%}
@@ -96,6 +125,7 @@
       </ul>
     {%- endif -%}
   </div>
+  {%- endunless -%}
 </footer>
 
 {% schema %}

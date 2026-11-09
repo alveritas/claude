@@ -34,6 +34,14 @@
       <p class="nl-done" role="status" tabindex="-1">You’re on the list. New drops and restocks reach you first.</p>
     {%- endif -%}
   {%- else -%}
+    {%- if line != blank -%}
+    <div class="nl-line">
+      <label class="sr-only" for="{{ form_id }}-email">Email address</label>
+      <input class="nl-line-input" id="{{ form_id }}-email" type="email" name="contact[email]" autocomplete="email" inputmode="email" placeholder="{{ line | escape }}" required
+        {% if form.errors %}aria-invalid="true" aria-describedby="{{ form_id }}-error"{% endif %}>
+      <button type="submit" class="nl-line-btn" aria-label="{{ btn_label | escape }}">&rarr;</button>
+    </div>
+    {%- else -%}
     <div class="nl-row">
       <div class="nl-field">
         <label class="label" for="{{ form_id }}-email">Email address</label>
@@ -42,6 +50,7 @@
       </div>
       <button type="submit" class="btn btn-solid">{{ btn_label | escape }}</button>
     </div>
+    {%- endif -%}
     {%- if form.errors -%}
       <p class="form-error" id="{{ form_id }}-error" role="alert">Enter a valid email address.</p>
     {%- endif -%}
