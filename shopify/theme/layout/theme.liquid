@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ request.locale.iso_code }}" class="{% if settings.lowercase %}nh-lower{% endif %}{% if settings.dark_mode %} nh-dark{% endif %}{% if settings.flats_only %} nh-flats{% endif %}{% if settings.fx_type %} nh-gfx{% endif %}{% if settings.fx_scroll %} nh-scrollfx{% endif %}{% if settings.fx_hover %} nh-hoverfx{% endif %}{% if settings.gallery_mode %} nh-gallery{% endif %}">
+<html lang="{{ request.locale.iso_code }}" class="{% if settings.lowercase %}nh-lower{% endif %}{% if settings.dark_mode %} nh-dark{% endif %}{% if settings.flats_only %} nh-flats{% endif %}{% if settings.fx_type %} nh-gfx{% endif %}{% if settings.fx_scroll %} nh-scrollfx{% endif %}{% if settings.fx_hover %} nh-hoverfx{% endif %}{% if settings.gallery_mode %} nh-gallery{% endif %}{% if settings.typeface != "archivo" %} nh-inter{% endif %}">
   <head>
     {%- liquid
       assign brand = settings.brand_name | default: shop.name
@@ -59,7 +59,12 @@
       Archivo is served from the store itself, trimmed to the widths (62–100%) and weights (400–900)
       the site uses, so the first screen never waits on a third-party font server.
     {%- endcomment -%}
-    <link rel="preload" href="{{ 'archivo-nh.woff2' | asset_url }}" as="font" type="font/woff2" crossorigin>
+    {%- comment -%} Inter (the default) is also served from the store: regular and medium, Latin only. {%- endcomment -%}
+    {%- if settings.typeface == 'archivo' -%}
+      <link rel="preload" href="{{ 'archivo-nh.woff2' | asset_url }}" as="font" type="font/woff2" crossorigin>
+    {%- else -%}
+      <link rel="preload" href="{{ 'inter-nh-400.woff' | asset_url }}" as="font" type="font/woff" crossorigin>
+    {%- endif -%}
     {%- comment -%} The logo is a CSS mask, and masks are fetched in CORS mode, so the preload says so too. {%- endcomment -%}
     <link rel="preload" href="{{ 'nh-logo.svg' | asset_url }}" as="image" type="image/svg+xml" crossorigin>
     <style>
@@ -71,6 +76,8 @@
         font-style: normal;
         font-display: swap;
       }
+      @font-face { font-family: Inter; src: url("{{ 'inter-nh-400.woff' | asset_url }}") format("woff"); font-weight: 400; font-style: normal; font-display: swap; }
+      @font-face { font-family: Inter; src: url("{{ 'inter-nh-500.woff' | asset_url }}") format("woff"); font-weight: 500 900; font-style: normal; font-display: swap; }
       :root { --mark-wordmark: url("{{ 'nh-logo.svg' | asset_url }}"); }
       {{ settings.accent_font | font_face: font_display: 'swap' }}
       :root { --accent-font: {{ settings.accent_font.family }}, {{ settings.accent_font.fallback_families }}; --accent-style: {{ settings.accent_font.style }}; --accent-weight: {{ settings.accent_font.weight }}; }

@@ -33,6 +33,7 @@
       "offer_text": "Join the list for new drops and restocks. Your code shows up as soon as you join.",
       "lowercase": false,
       "gallery_mode": true,
+      "typeface": "inter",
       "fx_grain": false,
       "fx_lantern": false,
       "fx_type": false,

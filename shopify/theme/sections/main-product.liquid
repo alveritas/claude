@@ -307,6 +307,11 @@
           endif
         endfor
       -%}
+      {%- comment -%}
+        In the gallery style the material and sizing already sit under Details and Size & fit, so the list below
+        is left out and shipping, returns and payment go in one more drawer at the end.
+      {%- endcomment -%}
+      {%- unless settings.gallery_mode -%}
       <dl class="spec">
         {%- if product.metafields.custom.fabric != blank -%}
           <div><dt>Material</dt><dd>{{ product.metafields.custom.fabric | escape }}</dd></div>
@@ -322,6 +327,7 @@
         {%- endif -%}
         <div><dt>Payment</dt><dd>Secure, encrypted checkout through Shopify.{% if shop.enabled_payment_types.size > 0 %} <span class="trust-pay" aria-label="Ways to pay">{% for type in shop.enabled_payment_types limit: 6 %}{{ type | payment_type_svg_tag: class: 'pay-icon pay-icon--sm' }}{% endfor %}</span>{% endif %}</dd></div>
       </dl>
+      {%- endunless -%}
 
       <div class="accordions">
         <details class="acc" open>
@@ -366,6 +372,22 @@
               <figure class="size-guide-img">{{ guide_media.preview_image | image_url: width: 1600 | image_tag: widths: '540, 800, 1200, 1600', sizes: '(min-width: 768px) 40vw, 100vw', loading: 'lazy', decoding: 'async', alt: guide_media.alt }}</figure>
             {%- endif -%}
             <p class="muted">Not sure which size to get?{% if settings.contact_email != blank %} Email <a class="text-link" href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a> with your usual size and we’ll help you choose.{% endif %}</p>
+          </div>
+        </details>
+        {%- endif -%}
+        {%- if settings.gallery_mode -%}
+        <details class="acc" id="shipping-returns">
+          <summary>Shipping &amp; returns {% render 'icon', name: 'plus', size: 14 %}</summary>
+          <div class="acc-body rte">
+            {%- if settings.shipping_summary != blank -%}<p>{{ settings.shipping_summary | escape }}{% if settings.processing_time != blank %} {{ settings.processing_time | escape }}{% endif %}</p>{%- endif -%}
+            {%- if settings.returns_note != blank -%}<p>{{ returns_line | escape }}</p>{%- endif -%}
+            <p>Secure, encrypted checkout through Shopify.</p>
+            {%- if shop.shipping_policy.url != blank or shop.refund_policy.url != blank -%}
+              <p class="acc-links">
+                {%- if shop.shipping_policy.url != blank -%}<a class="text-link" href="{{ shop.shipping_policy.url }}">Shipping policy</a>{%- endif -%}
+                {%- if shop.refund_policy.url != blank -%}<a class="text-link" href="{{ shop.refund_policy.url }}">Refund policy</a>{%- endif -%}
+              </p>
+            {%- endif -%}
           </div>
         </details>
         {%- endif -%}

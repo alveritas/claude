@@ -40,9 +40,9 @@
         "button_live": "Shop the drop",
         "button2_label": "Shop Drop 001",
         "button2_link": "shopify://collections/drop-001",
-        "image": "shopify://shop_images/nh-cover-nocturnal.jpg"
-      },
-      "disabled": true
+        "image": "shopify://shop_images/nh-cover-nocturnal.jpg",
+        "compact": true
+      }
     },
     "drop_pieces": {
       "type": "drop-preview",
@@ -191,8 +191,8 @@
     }
   },
   "order": [
-    "featured",
     "drop",
+    "featured",
     "newsletter",
     "ticker",
     "categories",

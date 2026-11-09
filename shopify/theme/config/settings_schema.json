@@ -97,6 +97,17 @@
         "label": "Gallery style",
         "default": false,
         "info": "Quiet gallery look: white throughout, small capitals, a menu button with the logo in the middle, a two-column product grid with plenty of space, and a plain list footer with an email line. No announcement bar."
+      },
+      {
+        "type": "select",
+        "id": "typeface",
+        "label": "Typeface",
+        "default": "inter",
+        "options": [
+          { "value": "inter", "label": "Inter (plain, minimal)" },
+          { "value": "archivo", "label": "Archivo (the earlier one)" }
+        ],
+        "info": "Both are served from the store itself. Inter is the quieter, more neutral of the two."
       }
     ]
   },

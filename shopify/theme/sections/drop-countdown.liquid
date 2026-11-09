@@ -32,10 +32,11 @@
     assign tag = 'h1'
   endif
 -%}
-<section class="drop{% if section.settings.page_title %} drop--page{% endif %}{% if section.settings.image != blank %} drop--cover{% endif %}" data-drop
+{%- assign compact = section.settings.compact -%}
+<section class="drop{% if section.settings.page_title %} drop--page{% endif %}{% if compact %} drop--compact{% elsif section.settings.image != blank %} drop--cover{% endif %}" data-drop
   data-release="{% if release != blank %}{{ release_s }}{% endif %}" data-drop-url="{{ target_url }}" data-state="{% if live %}live{% elsif passed %}publishing{% else %}pre{% endif %}"
   aria-labelledby="drop-{{ section.id }}">
-  {%- if section.settings.image != blank -%}
+  {%- if section.settings.image != blank and compact == false -%}
     <div class="drop-photo"{% if settings.fx_lantern %} data-lantern{% endif %}>
       {{ section.settings.image | image_url: width: 1600 | image_tag: widths: '540, 720, 900, 1200, 1600', sizes: '(min-width: 64rem) 50vw, 100vw', loading: 'eager', fetchpriority: 'high', alt: section.settings.image.alt, class: 'drop-img' }}
       {%- if settings.fx_lantern -%}
@@ -47,7 +48,7 @@
   <div class="shell drop-inner">
     <{{ tag }} id="drop-{{ section.id }}" class="drop-title">{{ section.settings.title | escape }}</{{ tag }}>
     {%- if section.settings.show_date and date_label != blank -%}<p class="drop-date tabular">{{ date_label | escape }}</p>{%- endif -%}
-    <p class="drop-line">{{ section.settings.line | escape }}</p>
+    {%- unless compact -%}<p class="drop-line">{{ section.settings.line | escape }}</p>{%- endunless -%}
 
     {%- unless live -%}
       <div class="countdown" data-countdown role="timer" aria-label="{{ section.settings.countdown_label | default: 'time until release' | escape }}"{% if passed or release == blank %} hidden{% endif %}>
@@ -71,7 +72,7 @@
         {%- if live -%}{{ section.settings.button_live | escape }}{%- else -%}{{ section.settings.button_pre | escape }}{%- endif -%}
       </a>
     {%- endif -%}
-    {%- if section.settings.button2_label != blank and section.settings.button2_link != blank -%}
+    {%- if compact == false and section.settings.button2_label != blank and section.settings.button2_link != blank -%}
       <a class="btn btn-line drop-btn drop-btn--2" href="{{ section.settings.button2_link }}">{{ section.settings.button2_label | escape }}</a>
     {%- endif -%}
   </div>
@@ -96,6 +97,7 @@
     { "type": "collection", "id": "collection", "label": "Release collection", "info": "Leave empty for /collections/friday-the-13th." },
     { "type": "text", "id": "release_at", "label": "Fallback release time", "default": "2026-11-13T00:00:00-05:00", "info": "Used only if the shop metafield neverhollow.release_at is missing. Format: 2026-11-13T00:00:00-05:00." },
     { "type": "image_picker", "id": "image", "label": "Cover photo", "info": "Shown beside the countdown on larger screens, above it on phones." },
+    { "type": "checkbox", "id": "compact", "label": "Compact", "default": false, "info": "A small centred countdown above the products: name, date, the four numbers and one link. No photo, no line, no second button." },
     { "type": "checkbox", "id": "page_title", "label": "Page heading (first section on the page)", "default": false }
   ],
   "presets": [{ "name": "Friday the 13th" }]
