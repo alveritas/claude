@@ -1372,3 +1372,7 @@ body.template-index:not(.is-scrolled) .site-header::after { opacity: 0; }
   .footer-col ul { font-size: 1rem; gap: 14px; }
   .card-title, .card-price { font-size: 0.9375rem; }
 }
+
+/* A measurement diagram under Size & fit, at full width on white. */
+.size-guide-img { margin: 16px 0 0; }
+.size-guide-img img { display: block; width: 100%; height: auto; }
