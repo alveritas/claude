@@ -23,9 +23,10 @@
       "settings": {
         "heading": "",
         "subheading": "",
+        "collection": "frontpage",
         "limit": 24,
-        "all_products": true,
-        "sort": "newest"
+        "all_products": false,
+        "sort": "collection"
       }
     },
     "drop": {
