@@ -55,7 +55,7 @@
 <section class="shell section-pad featured{% if section.settings.heading == blank %} featured--bare{% endif %}" aria-labelledby="featured-{{ section.id }}">
   {%- if section.settings.heading == blank -%}
     {%- comment -%} No visible heading: the products are the page. Screen readers still get one. {%- endcomment -%}
-    <h1 id="featured-{{ section.id }}" class="sr-only">{{ settings.brand_name | default: shop.name }}</h1>
+    <h2 id="featured-{{ section.id }}" class="sr-only">{% if request.page_type == 'index' %}All pieces{% else %}{{ settings.brand_name | default: shop.name }}{% endif %}</h2>
   {%- else -%}
   <div class="section-head">
     <div>

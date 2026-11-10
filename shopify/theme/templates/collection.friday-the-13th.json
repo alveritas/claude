@@ -8,7 +8,8 @@
         "line": "",
         "countdown_label": "",
         "title": "Friday the 13th",
-        "show_date": false
+        "show_date": false,
+        "compact": true
       }
     },
     "preview": {

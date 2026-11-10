@@ -1601,3 +1601,16 @@ body.template-index:not(.is-scrolled) .site-header::after { opacity: 0; }
 .nh-gallery .cart-offer { font-size: 0.6875rem; }
 .nh-gallery .cart-offer strong { font-weight: 400; }
 .nh-gallery .cart-page-aside .panel, .nh-gallery .cart-summary .panel { border-color: var(--g-line); }
+
+/* release page in the compact look; About's opening lines a step quieter */
+.drop--page.drop--compact .drop-inner { padding-top: clamp(32px, 5vw, 64px); padding-bottom: clamp(20px, 3vw, 36px); }
+.nh-gallery .prose--lg { font-size: 1rem; line-height: 1.6; letter-spacing: 0; max-width: 46ch; }
+@media (min-width: 48rem) { .nh-gallery .prose--lg { font-size: 1.0625rem; } }
+.nh-gallery .rich--statement .prose--lg { font-size: 1.0625rem; }
+.nh-gallery .preview-desc, .nh-gallery .drop-preview .card-meta { font-size: 0.6875rem; line-height: 1.55; }
+.nh-gallery .preview-tag { font-size: 0.5625rem; letter-spacing: var(--g-track); }
+.nh-gallery .rich-heading { font-size: 0.6875rem; font-weight: 400; }
+.nh-gallery .rte.prose:not(.prose--lg) { font-size: 0.8125rem; line-height: 1.7; }
+.nh-gallery .sticky-buy-text .truncate { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: var(--g-track); }
+.nh-gallery .sticky-buy-text { font-size: 0.6875rem; }
+.nh-gallery .sticky-buy .btn { min-height: 40px; }

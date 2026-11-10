@@ -114,6 +114,7 @@
     {% section 'header' %}
 
     <main id="main" tabindex="-1">
+      {%- if request.page_type == 'index' -%}<h1 class="sr-only">{{ settings.brand_name | default: shop.name }}</h1>{%- endif -%}
       {{ content_for_layout }}
     </main>
 

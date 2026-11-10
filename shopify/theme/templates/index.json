@@ -42,7 +42,8 @@
         "button2_label": "Shop Drop 001",
         "button2_link": "shopify://collections/drop-001",
         "image": "shopify://shop_images/nh-cover-nocturnal.jpg",
-        "compact": true
+        "compact": true,
+        "hide_after_days": 7
       }
     },
     "drop_pieces": {

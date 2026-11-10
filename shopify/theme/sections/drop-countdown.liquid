@@ -31,7 +31,18 @@
   if section.settings.page_title
     assign tag = 'h1'
   endif
+  # The compact block (homepage) takes itself down a set number of days after the release, so nobody has to.
+  assign gone = false
+  unless section.settings.page_title
+    if section.settings.compact and section.settings.hide_after_days > 0 and release != blank
+      assign hide_at = section.settings.hide_after_days | times: 86400 | plus: release_s
+      if now_s >= hide_at
+        assign gone = true
+      endif
+    endif
+  endunless
 -%}
+{%- unless gone -%}
 {%- assign compact = section.settings.compact -%}
 <section class="drop{% if section.settings.page_title %} drop--page{% endif %}{% if compact %} drop--compact{% elsif section.settings.image != blank %} drop--cover{% endif %}" data-drop
   data-release="{% if release != blank %}{{ release_s }}{% endif %}" data-drop-url="{{ target_url }}" data-state="{% if live %}live{% elsif passed %}publishing{% else %}pre{% endif %}"
@@ -77,6 +88,7 @@
     {%- endif -%}
   </div>
 </section>
+{%- endunless -%}
 
 {% schema %}
 {
@@ -97,6 +109,7 @@
     { "type": "collection", "id": "collection", "label": "Release collection", "info": "Leave empty for /collections/friday-the-13th." },
     { "type": "text", "id": "release_at", "label": "Fallback release time", "default": "2026-11-13T00:00:00-05:00", "info": "Used only if the shop metafield neverhollow.release_at is missing. Format: 2026-11-13T00:00:00-05:00." },
     { "type": "image_picker", "id": "image", "label": "Cover photo", "info": "Shown beside the countdown on larger screens, above it on phones." },
+    { "type": "range", "id": "hide_after_days", "label": "Take the compact countdown down after", "min": 0, "max": 30, "step": 1, "unit": "d", "default": 7, "info": "Days after the release. 0 keeps it up. Only applies to Compact, not to the release page." },
     { "type": "checkbox", "id": "compact", "label": "Compact", "default": false, "info": "A small centred countdown above the products: name, date, the four numbers and one link. No photo, no line, no second button." },
     { "type": "checkbox", "id": "page_title", "label": "Page heading (first section on the page)", "default": false }
   ],
