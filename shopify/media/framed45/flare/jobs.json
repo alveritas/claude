@@ -1,0 +1,5 @@
+[
+ {"name": "flare-front", "src": "originals/flare-front.jpg", "method": "dark", "fit": [0.86, 0.734], "out": "relic-flared-front.jpg"},
+ {"name": "flare-back", "src": "originals/flare-back.jpg", "method": "dark", "match": "flare-front", "out": "relic-flared-back.jpg"},
+ {"name": "flare-detail", "src": "originals/flare-detail.jpg", "method": "crop", "focus": [0.5, 0.5], "out": "relic-flared-detail.jpg"}
+]
