@@ -1,0 +1,8 @@
+[
+ {"name": "ref-vesper", "src": "../vesper-front.jpg", "method": "ref"},
+ {"name": "obsidian-front", "src": "originals/obsidian-front.jpg", "method": "dark", "match": "ref-vesper", "out": "vesper-obsidian-front.jpg"},
+ {"name": "obsidian-back", "src": "originals/obsidian-back.jpg", "method": "dark", "match": "obsidian-front", "out": "vesper-obsidian-back.jpg"},
+ {"name": "bone-front", "src": "originals/bone-front.jpg", "method": "light", "thr": 248, "fit": [0.82, 0.9], "out": "vesper-bone-front.jpg"},
+ {"name": "bone-back", "src": "originals/bone-back.jpg", "method": "light", "thr": 248, "fit": [0.82, 0.9], "out": "vesper-bone-back.jpg"},
+ {"name": "pair", "src": "originals/pair.jpg", "method": "light", "thr": 248, "fit": [0.88, 0.84], "out": "vesper-pair.jpg"}
+]
