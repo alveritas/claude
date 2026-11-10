@@ -1,0 +1,10 @@
+[
+ {"name": "ref-sovereign", "src": "../sovereign-front.jpg", "method": "ref"},
+ {"name": "ref-nocturnal", "src": "../nocturnal-front-new.jpg", "method": "ref"},
+ {"name": "sovereign-front", "src": "originals/sovereign-front.png", "method": "dark", "match": "ref-sovereign", "out": "out/sovereign-front.jpg"},
+ {"name": "sovereign-back", "src": "originals/sovereign-back.png", "method": "dark", "match": "sovereign-front", "out": "out/sovereign-back.jpg"},
+ {"name": "sovereign-detail", "src": "originals/sovereign-detail.png", "method": "crop", "focus": [0.5, 0.3], "out": "out/sovereign-detail.jpg"},
+ {"name": "nocturnal-front", "src": "originals/nocturnal-front.png", "method": "dark", "match": "ref-nocturnal", "out": "out/nocturnal-front.jpg"},
+ {"name": "nocturnal-back", "src": "originals/nocturnal-back.png", "method": "dark", "match": "nocturnal-front", "out": "out/nocturnal-back.jpg"},
+ {"name": "nocturnal-detail", "src": "originals/nocturnal-detail.png", "method": "crop", "focus": [0.5, 0.5], "out": "out/nocturnal-detail.jpg"}
+]
