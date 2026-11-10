@@ -405,12 +405,35 @@
     }
     // Photos before the first colour's own (e.g. both colours side by side) are shared: they show when the page
     // opens, and once the shopper picks a colour only that colour's photos remain.
+    // Worn photos follow the colour too: the "Worn" switch only offers that colour's photos on a person, and
+    // disappears for a colour that has none. On arrival (no colour picked yet) every worn photo is offered.
     const filterGallery = (color, arriving) => {
       if (!track || colorIdx === null || colorIdx === undefined) return;
       const hasGroups = Object.values(groupOf).some((g) => g !== null);
       if (!hasGroups) return;
-      $$(".gallery-slide", track).forEach((s) => { const g = groupOf[s.dataset.mediaId]; s.hidden = !(g === color || (arriving && g === null)); });
-      if (!slides().length) $$(".gallery-slide", track).forEach((s) => (s.hidden = false));
+      const gal = track.closest("[data-gallery]");
+      const wornBtn = gal ? $("[data-worn-toggle]", gal) : null;
+      let wornView = !!(gal && gal.classList.contains("is-worn-view"));
+      const all = $$(".gallery-slide", track);
+      const isWorn = (s) => s.hasAttribute("data-worn");
+      all.forEach((s) => {
+        const g = groupOf[isWorn(s) ? s.dataset.wornId : s.dataset.mediaId];
+        const fits = g === color || (arriving && (g === null || isWorn(s)));
+        if (fits) delete s.dataset.colourOut; else s.dataset.colourOut = "1";
+      });
+      if (wornBtn) {
+        const anyWorn = all.some((s) => isWorn(s) && !s.dataset.colourOut);
+        wornBtn.hidden = !anyWorn;
+        if (!anyWorn && wornView) {
+          wornView = false;
+          gal.classList.remove("is-worn-view");
+          wornBtn.setAttribute("aria-pressed", "false");
+          wornBtn.textContent = wornBtn.dataset.off;
+        }
+      }
+      all.forEach((s) => { s.hidden = !!s.dataset.colourOut || isWorn(s) !== wornView; });
+      if (!slides().length) all.forEach((s) => (s.hidden = isWorn(s) !== wornView));
+      if (!slides().length) all.forEach((s) => (s.hidden = false));
       layout();
       goTo(0, false);
       updateCount();
@@ -1066,7 +1089,10 @@
     if (!track) return;
     btn.addEventListener("click", () => {
       const worn = btn.getAttribute("aria-pressed") !== "true";
-      track.querySelectorAll(".gallery-slide").forEach((s) => { s.hidden = s.hasAttribute("data-worn") ? !worn : worn; });
+      // keep to the colour the shopper picked (photos of the other colour are marked data-colour-out)
+      const all = track.querySelectorAll(".gallery-slide");
+      all.forEach((s) => { s.hidden = (s.hasAttribute("data-worn") ? !worn : worn) || s.dataset.colourOut === "1"; });
+      if (!track.querySelector(".gallery-slide:not([hidden])")) all.forEach((s) => { s.hidden = s.hasAttribute("data-worn") ? !worn : worn; });
       btn.setAttribute("aria-pressed", String(worn));
       btn.textContent = worn ? btn.dataset.on : btn.dataset.off;
       gallery.classList.toggle("is-worn-view", worn);

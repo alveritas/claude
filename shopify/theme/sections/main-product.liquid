@@ -123,7 +123,7 @@
             {%- unless ma contains 'laid flat' -%}
               {%- comment -%} worn photos wait behind the "worn" switch {%- endcomment -%}
               {%- assign worn_n = worn_n | plus: 1 -%}
-              <figure class="gallery-slide frame is-worn" data-worn hidden>
+              <figure class="gallery-slide frame is-worn" data-worn data-worn-id="{{ media.id }}" hidden>
                 <button type="button" class="gallery-zoom" data-zoom aria-label="Open worn photo {{ worn_n }} full screen">
                   {{ media.preview_image | image_url: width: 1800 | image_tag: widths: '540, 720, 900, 1200, 1500, 1800', sizes: '(min-width: 768px) 54vw, 100vw', loading: 'lazy', decoding: 'async', alt: media.alt, class: 'gallery-img' }}
                 </button>
