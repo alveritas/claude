@@ -268,6 +268,14 @@
       {%- endform -%}
 
       {%- comment -%}
+        Shipping cost and time, straight under the buy buttons, so nothing about the total comes as a surprise at checkout.
+        The words come from Theme settings → Shipping and returns lines (the same ones the Shipping & returns drawer uses).
+      {%- endcomment -%}
+      {%- if settings.shipping_summary != blank -%}
+        <p class="buy-note micro muted" style="margin: 12px 0 0; line-height: 1.5;">{{ settings.shipping_summary | escape }}{% if settings.processing_time != blank %} {{ settings.processing_time | escape }}{% endif %}</p>
+      {%- endif -%}
+
+      {%- comment -%}
         Back-in-stock: the request reaches the store as a contact message with the piece and size.
       {%- endcomment -%}
       <div class="restock" data-restock {% if current.available or po_closed %}hidden{% endif %}>

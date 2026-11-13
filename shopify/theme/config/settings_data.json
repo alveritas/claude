@@ -21,7 +21,7 @@
       "preorder_enabled": false,
       "preorder_ship": "2027-01-15",
       "intro_enabled": false,
-      "free_shipping_threshold": 0,
+      "free_shipping_threshold": 100,
       "photo_outline": false,
       "dark_mode": false,
       "flats_only": true,
