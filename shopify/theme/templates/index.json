@@ -32,9 +32,9 @@
     "drop": {
       "type": "drop-countdown",
       "settings": {
-        "title": "Friday the 13th",
+        "title": "Friday the 13th Collection",
         "show_date": true,
-        "date_label": "11.12.26 · 10 PM ET",
+        "date_label": "10 PM ET",
         "line": "Six new pieces.",
         "countdown_label": "",
         "button_pre": "Preview the drop",
