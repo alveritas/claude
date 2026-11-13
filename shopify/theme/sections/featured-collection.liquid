@@ -41,6 +41,11 @@
     assign n = limit
   endif
   assign odd = n | modulo: 2
+  # the count beside the heading: what this row actually shows when pieces are left out
+  assign count = total
+  if skip.size > 0
+    assign count = showable
+  endif
 
   assign view_all = collection.url
   if tag != blank
@@ -62,17 +67,17 @@
       {%- liquid
         assign hide_count = false
         if section.settings.subheading == blank
-          if picked or section.settings.sort == 'newest'
+          if picked or section.settings.sort == 'newest' or section.settings.show_count == false
             assign hide_count = true
           endif
         endif
       -%}
-      <h2 id="featured-{{ section.id }}" class="section-title"{% unless hide_count %} data-count="{{ total }}"{% endunless %}>{{ section.settings.heading | escape }}</h2>
+      <h2 id="featured-{{ section.id }}" class="section-title"{% unless hide_count %} data-count="{{ count }}"{% endunless %}>{{ section.settings.heading | escape }}</h2>
       {%- unless hide_count -%}
-      <p class="section-sub muted">{% if section.settings.subheading != blank %}{{ section.settings.subheading | escape }}{% else %}{{ total }} {% if total == 1 %}piece{% else %}pieces{% endif %}{% if settings.preorder_enabled %}, made to order{% endif %}{% endif %}</p>
+      <p class="section-sub muted">{% if section.settings.subheading != blank %}{{ section.settings.subheading | escape }}{% else %}{{ count }} {% if count == 1 %}piece{% else %}pieces{% endif %}{% if settings.preorder_enabled %}, made to order{% endif %}{% endif %}</p>
       {%- endunless -%}
     </div>
-    <a class="text-link section-link" href="{{ view_all }}">{% if tag != blank %}Shop all {{ tag | downcase }}’s{% else %}Shop all{% endif %}</a>
+    <a class="text-link section-link" href="{{ section.settings.link | default: view_all }}">{% if section.settings.link_label != blank %}{{ section.settings.link_label | escape }}{% elsif tag != blank %}Shop all {{ tag | downcase }}’s{% else %}Shop all{% endif %}</a>
   </div>
   {%- endif -%}
   {%- if n > 0 -%}
@@ -112,6 +117,9 @@
   "settings": [
     { "type": "text", "id": "heading", "label": "Heading", "default": "Drop 001", "info": "Leave empty to show only the products, with no heading above them." },
     { "type": "text", "id": "subheading", "label": "Subheading" },
+    { "type": "checkbox", "id": "show_count", "label": "Show how many pieces", "default": true, "info": "The small count beside the heading, when there's no subheading." },
+    { "type": "url", "id": "link", "label": "Link beside the heading", "info": "Leave empty to link to the collection this row comes from." },
+    { "type": "text", "id": "link_label", "label": "Link text", "info": "Leave empty for \"Shop all\"." },
     { "type": "collection", "id": "collection", "label": "Collection", "info": "Leave empty for the Drop 001 collection (or all products)." },
     { "type": "checkbox", "id": "all_products", "label": "Use every piece in the store", "default": false, "info": "For a New arrivals row: pair it with Newest first." },
     { "type": "text", "id": "tag", "label": "Only pieces tagged", "info": "Men or Women shows just that section, with a link to it. Leave empty for every piece." },
