@@ -24,7 +24,7 @@
       "free_shipping_threshold": 100,
       "photo_outline": false,
       "dark_mode": false,
-      "flats_only": true,
+      "flats_only": false,
       "offer_auto": true,
       "offer_delay": 15,
       "offer_style": "corner",
