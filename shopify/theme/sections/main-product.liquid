@@ -121,13 +121,7 @@
           {%- if flats_here -%}
             {%- assign ma = media.alt | downcase -%}
             {%- unless ma contains 'laid flat' -%}
-              {%- comment -%} worn photos wait behind the "worn" switch {%- endcomment -%}
-              {%- assign worn_n = worn_n | plus: 1 -%}
-              <figure class="gallery-slide frame is-worn" data-worn data-worn-id="{{ media.id }}" hidden>
-                <button type="button" class="gallery-zoom" data-zoom aria-label="Open worn photo {{ worn_n }} full screen">
-                  {{ media.preview_image | image_url: width: 1800 | image_tag: widths: '540, 720, 900, 1200, 1500, 1800', sizes: '(min-width: 768px) 54vw, 100vw', loading: 'lazy', decoding: 'async', alt: media.alt, class: 'gallery-img' }}
-                </button>
-              </figure>
+              {%- comment -%} photos of the piece on a person are not shown; they stay attached in Shopify {%- endcomment -%}
               {%- continue -%}
             {%- endunless -%}
           {%- endif -%}
@@ -163,9 +157,6 @@
           <figure class="gallery-slide frame">{{ 'product-apparel-1' | placeholder_svg_tag: 'placeholder' }}</figure>
         {%- endfor -%}
       </div>
-      {%- if worn_n > 0 -%}
-        <button type="button" class="gallery-worn" data-worn-toggle aria-pressed="false" data-on="Laid flat" data-off="Worn">Worn</button>
-      {%- endif -%}
       {%- if show_n > 1 -%}
         <div class="gallery-bar">
           <span class="muted small" data-gallery-count>1 / {{ show_n }}</span>
